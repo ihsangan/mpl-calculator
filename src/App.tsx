@@ -110,8 +110,8 @@ const calculateStandings = (matches: Match[]): TeamRow[] => {
 }
 
 const getRankBadgeVariant = (idx: number) => {
-  if (idx < 2) return "default" as const // emerald / primary
-  if (idx < 6) return "secondary" as const // blue
+  if (idx < 2) return "default" as const
+  if (idx < 6) return "secondary" as const
   return "outline" as const
 }
 
@@ -123,15 +123,15 @@ const getRankBadgeClass = (idx: number) => {
 
 const getWinrateClass = (winrate: string) => {
   const v = Number(winrate)
-  if (v < 25) return "text-destructive font-semibold"
-  if (v < 50) return "text-yellow-500 font-semibold"
-  if (v < 75) return "text-blue-500 font-semibold"
-  return "text-emerald-500 font-semibold"
+  if (v < 25) return "text-red-600 font-semibold dark:text-red-400"
+  if (v < 50) return "text-amber-600 font-semibold dark:text-yellow-400"
+  if (v < 75) return "text-blue-600 font-semibold dark:text-blue-400"
+  return "text-emerald-600 font-semibold dark:text-emerald-400"
 }
 
 const getDiffClass = (diff: number) => {
-  if (diff > 0) return "text-emerald-500 font-semibold"
-  if (diff < 0) return "text-destructive font-semibold"
+  if (diff > 0) return "text-emerald-600 font-semibold dark:text-emerald-400"
+  if (diff < 0) return "text-red-600 font-semibold dark:text-red-400"
   return "text-muted-foreground"
 }
 
@@ -274,7 +274,9 @@ export default function App() {
                     {standings.map((team, idx) => (
                       <TableRow
                         key={team.id}
-                        className={idx < 6 ? "bg-emerald-950/20" : ""}
+                        className={
+                          idx < 6 ? "bg-emerald-50 dark:bg-emerald-950/20" : ""
+                        }
                       >
                         <TableCell className="py-2.5 text-center">
                           <Badge
@@ -346,13 +348,13 @@ export default function App() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Team</TableHead>
-                      <TableHead className="text-right text-emerald-600">
+                      <TableHead className="text-right text-emerald-700 dark:text-emerald-500">
                         Top 1–2 (Upper)
                       </TableHead>
-                      <TableHead className="text-right text-blue-500">
+                      <TableHead className="text-right text-blue-700 dark:text-blue-500">
                         Top 3–6 (Lower)
                       </TableHead>
-                      <TableHead className="text-right text-destructive">
+                      <TableHead className="text-right text-red-700 dark:text-red-400">
                         Eliminated
                       </TableHead>
                     </TableRow>
@@ -378,29 +380,17 @@ export default function App() {
                         }
                         return (
                           <TableRow key={team.id}>
+                            {/* Team name only, no logo */}
                             <TableCell className="py-2.5 font-medium">
-                              <div className="flex items-center gap-3">
-                                <div className="flex w-8 shrink-0 justify-center">
-                                  <img
-                                    src={
-                                      TEAMS.find(
-                                        (t: { id: string }) => t.id === team.id
-                                      )?.logo
-                                    }
-                                    alt={team.name}
-                                    className="max-h-5 w-auto object-contain"
-                                  />
-                                </div>
-                                <span>{team.id}</span>
-                              </div>
+                              {team.id}
                             </TableCell>
-                            <TableCell className="py-2.5 text-right font-semibold text-emerald-500 tabular-nums">
+                            <TableCell className="py-2.5 text-right font-semibold text-emerald-600 tabular-nums dark:text-emerald-400">
                               {prob.top2}%
                             </TableCell>
-                            <TableCell className="py-2.5 text-right font-semibold text-blue-500 tabular-nums">
+                            <TableCell className="py-2.5 text-right font-semibold text-blue-600 tabular-nums dark:text-blue-400">
                               {prob.playoffs}%
                             </TableCell>
-                            <TableCell className="py-2.5 text-right font-semibold text-destructive tabular-nums">
+                            <TableCell className="py-2.5 text-right font-semibold text-red-600 tabular-nums dark:text-red-400">
                               {prob.eliminated}%
                             </TableCell>
                           </TableRow>
@@ -433,7 +423,7 @@ export default function App() {
                     } else if (isCompleted) {
                       variant = "secondary"
                       extra =
-                        "bg-emerald-600/20 text-emerald-400 border-emerald-600/40 hover:bg-emerald-600/30"
+                        "bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200 dark:bg-emerald-600/20 dark:text-emerald-400 dark:border-emerald-600/40 dark:hover:bg-emerald-600/30"
                     }
 
                     return (
@@ -479,27 +469,15 @@ export default function App() {
                             key={match.id}
                             className="flex items-center gap-2 rounded-lg border bg-muted/40 px-3 py-2.5"
                           >
-                            {/* Team A */}
-                            <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
+                            {/* Team A – text only */}
+                            <div className="flex min-w-0 flex-1 justify-end">
                               <span className="truncate text-sm font-semibold">
                                 {match.teamA}
                               </span>
-                              <div className="flex w-6 shrink-0 justify-center">
-                                <img
-                                  src={
-                                    TEAMS.find(
-                                      (t: { id: string }) =>
-                                        t.id === match.teamA
-                                    )?.logo
-                                  }
-                                  alt={match.teamA}
-                                  className="max-h-5 w-auto object-contain"
-                                />
-                              </div>
                             </div>
 
                             {/* Score selector */}
-                            <div className="w-28 shrink-0">
+                            <div className="w-17 shrink-0">
                               <Select
                                 value={currentValue}
                                 onValueChange={(v) =>
@@ -509,7 +487,7 @@ export default function App() {
                                 <SelectTrigger
                                   className={`h-8 justify-center gap-1 text-center text-xs font-bold ${
                                     match.isPlayed
-                                      ? "border-emerald-600/50 bg-emerald-950/30 text-emerald-400"
+                                      ? "border-emerald-400 bg-emerald-50 text-emerald-700 dark:border-emerald-600/50 dark:bg-emerald-950/30 dark:text-emerald-400"
                                       : ""
                                   }`}
                                 >
@@ -527,20 +505,8 @@ export default function App() {
                               </Select>
                             </div>
 
-                            {/* Team B */}
-                            <div className="flex min-w-0 flex-1 items-center gap-2">
-                              <div className="flex w-6 shrink-0 justify-center">
-                                <img
-                                  src={
-                                    TEAMS.find(
-                                      (t: { id: string }) =>
-                                        t.id === match.teamB
-                                    )?.logo
-                                  }
-                                  alt={match.teamB}
-                                  className="max-h-5 w-auto object-contain"
-                                />
-                              </div>
+                            {/* Team B – text only */}
+                            <div className="flex min-w-0 flex-1">
                               <span className="truncate text-sm font-semibold">
                                 {match.teamB}
                               </span>
