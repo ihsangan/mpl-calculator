@@ -1,0 +1,5 @@
+/
+   # Link: <https://wsrv.nl>; rel=preconnect; crossorigin
+  !access-control-allow-origin
+/assets/*
+  Cache-Control: public, max-age=2592000

@@ -123,15 +123,15 @@ const getRankBadgeClass = (idx: number) => {
 
 const getWinrateClass = (winrate: string) => {
   const v = Number(winrate)
-  if (v < 25) return "text-red-600 font-semibold dark:text-red-400"
-  if (v < 50) return "text-amber-600 font-semibold dark:text-yellow-400"
-  if (v < 75) return "text-blue-600 font-semibold dark:text-blue-400"
-  return "text-emerald-600 font-semibold dark:text-emerald-400"
+  if (v < 25) return "text-red-600 dark:text-red-400"
+  if (v < 50) return "text-amber-600 dark:text-yellow-400"
+  if (v < 75) return "text-blue-600  dark:text-blue-400"
+  return "text-emerald-600 dark:text-emerald-400"
 }
 
 const getDiffClass = (diff: number) => {
-  if (diff > 0) return "text-emerald-600 font-semibold dark:text-emerald-400"
-  if (diff < 0) return "text-red-600 font-semibold dark:text-red-400"
+  if (diff > 0) return "text-emerald-600 dark:text-emerald-400"
+  if (diff < 0) return "text-red-600 dark:text-red-400"
   return "text-muted-foreground"
 }
 
@@ -155,7 +155,7 @@ export default function App() {
   const standings = useMemo(() => calculateStandings(matches), [matches])
 
   useEffect(() => {
-    setIsSimulating(true)
+    // setIsSimulating(true)
     const id = setTimeout(() => {
       const ITERATIONS = 1000
       const stats: Record<
@@ -340,7 +340,7 @@ export default function App() {
               <CardHeader className="pb-3">
                 <CardTitle>Playoff Probabilities</CardTitle>
                 <CardDescription>
-                  Monte Carlo simulation · 1 000 iterations
+                  Monte Carlo simulation · 1.000 iterations
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
