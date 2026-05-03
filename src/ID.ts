@@ -69,9 +69,9 @@ id: "w6m8",
 week: 6,
 teamA: "GEEK",
 teamB: "EVOS",
-scoreA: 0,
+scoreA: 2,
 scoreB: 0,
-isPlayed: false,
+isPlayed: true,
 },
 // --- WEEK 7 ---
 {
