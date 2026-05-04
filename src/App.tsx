@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Loader2 } from "lucide-react"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -225,13 +226,16 @@ export default function App() {
     <div className="min-h-screen bg-background p-4 text-foreground md:p-8">
       <div className="mx-auto max-w-7xl space-y-8">
         {/* ── Header ── */}
-        <div className="border-b pb-6">
-          <h1 className="mb-1 text-3xl font-bold tracking-tight md:text-4xl">
-            MPL Indonesia Season 17
-          </h1>
-          <p className="text-muted-foreground">
-            Standings and playoff probabilities calculator.
-          </p>
+        <div className="flex items-start justify-between gap-4 border-b pb-6">
+          <div>
+            <h1 className="mb-1 text-3xl font-bold tracking-tight md:text-4xl">
+              MPL Indonesia Season 17
+            </h1>
+            <p className="text-muted-foreground">
+              Standings and playoff probabilities calculator.
+            </p>
+          </div>
+          <ThemeToggle />
         </div>
 
         <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
