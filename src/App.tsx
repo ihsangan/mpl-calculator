@@ -227,14 +227,14 @@ export default function App() {
       <div className="mx-auto max-w-7xl space-y-8">
         {/* ── Header ── */}
         <div className="flex items-start justify-between gap-4 border-b pb-6">
-        <div>
-          <h1 className="mb-1 text-3xl font-bold tracking-tight md:text-4xl">
-            MPL Indonesia Season 17
-          </h1>
-          <p className="text-muted-foreground">
-            Standings and playoff probabilities calculator.
-          </p>
-        </div>
+          <div>
+            <h1 className="mb-1 text-3xl font-bold tracking-tight md:text-4xl">
+              MPL Indonesia Season 17
+            </h1>
+            <p className="text-muted-foreground">
+              Standings and playoff probabilities calculator.
+            </p>
+          </div>
           <ThemeToggle />
         </div>
         <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
@@ -242,94 +242,100 @@ export default function App() {
           <div className="space-y-8 xl:col-span-7">
             {/* Standings */}
             <main role="main">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle>Current Standings</CardTitle>
-                <CardDescription>
-                  <span className="inline-flex items-center gap-3 text-xs">
-                    <span>
-                      <span className="mr-1 inline-block h-2.5 w-2.5 rounded-full bg-emerald-600" />
-                      Top 2 – Upper Bracket
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle>Current Standings</CardTitle>
+                  <CardDescription>
+                    <span className="inline-flex items-center gap-3 text-xs">
+                      <span>
+                        <span className="mr-1 inline-block h-2.5 w-2.5 rounded-full bg-emerald-600" />
+                        Top 2 – Upper Bracket
+                      </span>
+                      <span>
+                        <span className="mr-1 inline-block h-2.5 w-2.5 rounded-full bg-blue-600" />
+                        Top 3–6 – Lower Bracket
+                      </span>
+                      <span>
+                        <span className="mr-1 inline-block h-2.5 w-2.5 rounded-full border bg-muted" />
+                        Eliminated
+                      </span>
                     </span>
-                    <span>
-                      <span className="mr-1 inline-block h-2.5 w-2.5 rounded-full bg-blue-600" />
-                      Top 3–6 – Lower Bracket
-                    </span>
-                    <span>
-                      <span className="mr-1 inline-block h-2.5 w-2.5 rounded-full border bg-muted" />
-                      Eliminated
-                    </span>
-                  </span>
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-14 text-center">Rank</TableHead>
-                      <TableHead>Team</TableHead>
-                      <TableHead className="text-center">Match (W-L)</TableHead>
-                      <TableHead className="text-center">Game (W-L)</TableHead>
-                      <TableHead className="text-center">Winrate</TableHead>
-                      <TableHead className="text-center">Diff</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {standings.map((team, idx) => (
-                      <TableRow
-                        key={team.id}
-                        className={
-                          idx < 6 ? "bg-emerald-50 dark:bg-emerald-950/20" : ""
-                        }
-                      >
-                        <TableCell className="py-2.5 text-center">
-                          <Badge
-                            variant={getRankBadgeVariant(idx)}
-                            className={`flex h-6 w-6 items-center justify-center rounded-full p-0 text-xs ${getRankBadgeClass(idx)}`}
-                          >
-                            {idx + 1}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="py-2.5">
-                          <div className="flex items-center gap-3">
-                            <div className="flex w-8 shrink-0 justify-center">
-                              <img
-                                src={
-                                  TEAMS.find(
-                                    (t: { id: string }) => t.id === team.id
-                                  )?.logo
-                                }
-                                alt={`Logo of ${team.name}`}
-                                className="max-h-5 w-auto object-contain"
-                              />
-                            </div>
-                            <span className="font-medium whitespace-nowrap">
-                              {team.name}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="py-2.5 text-center tabular-nums">
-                          {team.matchW}–{team.matchL}
-                        </TableCell>
-                        <TableCell className="py-2.5 text-center tabular-nums">
-                          {team.gameW}–{team.gameL}
-                        </TableCell>
-                        <TableCell
-                          className={`py-2.5 text-center tabular-nums ${getWinrateClass(team.winrate)}`}
-                        >
-                          {team.winrate}%
-                        </TableCell>
-                        <TableCell
-                          className={`py-2.5 text-center tabular-nums ${getDiffClass(team.diff)}`}
-                        >
-                          {team.diff > 0 ? `+${team.diff}` : team.diff}
-                        </TableCell>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-14 text-center">Rank</TableHead>
+                        <TableHead>Team</TableHead>
+                        <TableHead className="text-center">
+                          Match (W-L)
+                        </TableHead>
+                        <TableHead className="text-center">
+                          Game (W-L)
+                        </TableHead>
+                        <TableHead className="text-center">Winrate</TableHead>
+                        <TableHead className="text-center">Diff</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+                    </TableHeader>
+                    <TableBody>
+                      {standings.map((team, idx) => (
+                        <TableRow
+                          key={team.id}
+                          className={
+                            idx < 6
+                              ? "bg-emerald-50 dark:bg-emerald-950/20"
+                              : ""
+                          }
+                        >
+                          <TableCell className="py-2.5 text-center">
+                            <Badge
+                              variant={getRankBadgeVariant(idx)}
+                              className={`flex h-6 w-6 items-center justify-center rounded-full p-0 text-xs ${getRankBadgeClass(idx)}`}
+                            >
+                              {idx + 1}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="py-2.5">
+                            <div className="flex items-center gap-3">
+                              <div className="flex w-8 shrink-0 justify-center">
+                                <img
+                                  src={
+                                    TEAMS.find(
+                                      (t: { id: string }) => t.id === team.id
+                                    )?.logo
+                                  }
+                                  alt={`Logo of ${team.name}`}
+                                  className="max-h-5 w-auto object-contain"
+                                />
+                              </div>
+                              <span className="font-medium whitespace-nowrap">
+                                {team.name}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-2.5 text-center tabular-nums">
+                            {team.matchW}–{team.matchL}
+                          </TableCell>
+                          <TableCell className="py-2.5 text-center tabular-nums">
+                            {team.gameW}–{team.gameL}
+                          </TableCell>
+                          <TableCell
+                            className={`py-2.5 text-center tabular-nums ${getWinrateClass(team.winrate)}`}
+                          >
+                            {team.winrate}%
+                          </TableCell>
+                          <TableCell
+                            className={`py-2.5 text-center tabular-nums ${getDiffClass(team.diff)}`}
+                          >
+                            {team.diff > 0 ? `+${team.diff}` : team.diff}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
             </main>
 
             {/* Probabilities */}
@@ -490,6 +496,7 @@ export default function App() {
                                 }
                               >
                                 <SelectTrigger
+                                  aria-label={`Score for ${match.teamA} vs ${match.teamB}`}
                                   className={`h-8 justify-center gap-1 text-center text-xs font-bold ${
                                     match.isPlayed
                                       ? "border-emerald-400 bg-emerald-50 text-emerald-700 dark:border-emerald-600/50 dark:bg-emerald-950/30 dark:text-emerald-400"
