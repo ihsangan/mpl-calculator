@@ -227,21 +227,21 @@ export default function App() {
       <div className="mx-auto max-w-7xl space-y-8">
         {/* ── Header ── */}
         <div className="flex items-start justify-between gap-4 border-b pb-6">
-          <div>
-            <h1 className="mb-1 text-3xl font-bold tracking-tight md:text-4xl">
-              MPL Indonesia Season 17
-            </h1>
-            <p className="text-muted-foreground">
-              Standings and playoff probabilities calculator.
-            </p>
-          </div>
+        <div>
+          <h1 className="mb-1 text-3xl font-bold tracking-tight md:text-4xl">
+            MPL Indonesia Season 17
+          </h1>
+          <p className="text-muted-foreground">
+            Standings and playoff probabilities calculator.
+          </p>
+        </div>
           <ThemeToggle />
         </div>
-
         <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
           {/* ── LEFT: Standings + Probabilities ── */}
           <div className="space-y-8 xl:col-span-7">
             {/* Standings */}
+            <main role="main">
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle>Current Standings</CardTitle>
@@ -299,7 +299,7 @@ export default function App() {
                                     (t: { id: string }) => t.id === team.id
                                   )?.logo
                                 }
-                                alt={team.name}
+                                alt={`Logo of ${team.name}`}
                                 className="max-h-5 w-auto object-contain"
                               />
                             </div>
@@ -330,6 +330,7 @@ export default function App() {
                 </Table>
               </CardContent>
             </Card>
+            </main>
 
             {/* Probabilities */}
             <Card className="relative overflow-hidden">
