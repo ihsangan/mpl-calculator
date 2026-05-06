@@ -77,6 +77,15 @@ const calculateStandings = (matches: Match[]): TeamRow[] => {
     }
   })
 
+  // Build H2H record: h2h[teamA][teamB] = wins of teamA against teamB
+  const h2h: Record<string, Record<string, number>> = {}
+  TEAMS.forEach((t: { id: string }) => {
+    h2h[t.id] = {}
+    TEAMS.forEach((t2: { id: string }) => {
+      h2h[t.id][t2.id] = 0
+    })
+  })
+
   matches.forEach((m: Match) => {
     if (!m.isPlayed) return
 
@@ -89,10 +98,12 @@ const calculateStandings = (matches: Match[]): TeamRow[] => {
       table[m.teamA].matchW += 1
       table[m.teamB].matchL += 1
       table[m.teamA].pts += 1
+      h2h[m.teamA][m.teamB] += 1
     } else if (m.scoreB > m.scoreA) {
       table[m.teamB].matchW += 1
       table[m.teamA].matchL += 1
       table[m.teamB].pts += 1
+      h2h[m.teamB][m.teamA] += 1
     }
   })
 
@@ -104,8 +115,15 @@ const calculateStandings = (matches: Match[]): TeamRow[] => {
   })
 
   return Object.values(table).sort((a, b) => {
+    // 1. Match wins
     if (b.matchW !== a.matchW) return b.matchW - a.matchW
+    // 2. Game difference
     if (b.diff !== a.diff) return b.diff - a.diff
+    // 3. Head-to-head tiebreaker
+    const aWinsVsB = h2h[a.id][b.id]
+    const bWinsVsA = h2h[b.id][a.id]
+    if (aWinsVsB !== bWinsVsA) return bWinsVsA - aWinsVsB
+    // 4. Fallback: alphabetical
     return a.name.localeCompare(b.name)
   })
 }
@@ -279,14 +297,21 @@ export default function App() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {standings.map((team, idx) => (
+                      {standings.map((team, idx) => {
+                      const prob = probabilities[team.id]
+                      const eliminated = prob ? Number(prob.eliminated) : null
+                      let rowBg = ""
+                      if (eliminated === 0) {
+                        // Qualified - 0% elimination probability
+                        rowBg = "bg-emerald-50 dark:bg-emerald-950/20"
+                      } else if (eliminated === 100) {
+                        // Eliminated - 100% elimination probability
+                        rowBg = "bg-red-50 dark:bg-red-950/20"
+                      }
+                      return (
                         <TableRow
                           key={team.id}
-                          className={
-                            idx < 6
-                              ? "bg-emerald-50 dark:bg-emerald-950/20"
-                              : ""
-                          }
+                          className={rowBg}
                         >
                           <TableCell className="py-2.5 text-center">
                             <Badge
@@ -331,7 +356,8 @@ export default function App() {
                             {team.diff > 0 ? `+${team.diff}` : team.diff}
                           </TableCell>
                         </TableRow>
-                      ))}
+                      )
+                    })}
                     </TableBody>
                   </Table>
                 </CardContent>
