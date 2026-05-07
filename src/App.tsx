@@ -27,6 +27,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Loader2 } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useTheme } from "@/components/theme-provider"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -59,6 +60,18 @@ interface Probability {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
+
+const getTeamLogo = (teamId: string, isDarkMode: boolean): string => {
+  const team = TEAMS.find((t) => t.id === teamId)
+  if (!team) return ""
+  
+  // Use dark mode logo if available and dark mode is active
+  if (isDarkMode && team.logoDark) {
+    return team.logoDark
+  }
+  
+  return team.logo
+}
 
 const calculateStandings = (matches: Match[]): TeamRow[] => {
   const table: Record<string, TeamRow> = {}
@@ -170,8 +183,26 @@ export default function App() {
   const [probabilities, setProbabilities] = useState<
     Record<string, Probability>
   >({})
+  const { theme } = useTheme()
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light')
 
   const standings = useMemo(() => calculateStandings(matches), [matches])
+
+  // Detect dark mode from HTML class and theme setting
+  useEffect(() => {
+    const updateTheme = () => {
+      const isDark = document.documentElement.classList.contains('dark')
+      setResolvedTheme(isDark ? 'dark' : 'light')
+    }
+    
+    updateTheme()
+    
+    // Watch for class changes
+    const observer = new MutationObserver(updateTheme)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    
+    return () => observer.disconnect()
+  }, [theme])
 
   useEffect(() => {
     // setIsSimulating(true)
@@ -325,11 +356,7 @@ export default function App() {
                             <div className="flex items-center gap-3">
                               <div className="flex w-8 shrink-0 justify-center">
                                 <img
-                                  src={
-                                    TEAMS.find(
-                                      (t: { id: string }) => t.id === team.id
-                                    )?.logo
-                                  }
+                                  src={getTeamLogo(team.id, resolvedTheme === 'dark')}
                                   alt={`Logo of ${team.name}`}
                                   className="max-h-5 w-auto object-contain"
                                 />
