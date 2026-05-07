@@ -661,14 +661,22 @@ export const ALL_MATCHES = [
 ]
 const imgPre =
   "https://res.cloudinary.com/isans/image/upload/f_webp,q_auto:eco,h_60/teams/"
-export const TEAMS = [
-  { id: "TLID", name: "Team Liquid ID", logo: `${imgPre}liquid_lightmode` },
-  { id: "ONIC", name: "ONIC Esports", logo: `${imgPre}onic_lightmode` },
+
+export interface Team {
+  id: string
+  name: string
+  logo: string
+  logoDark?: string
+}
+
+export const TEAMS: Team[] = [
+  { id: "TLID", name: "Team Liquid ID", logo: `${imgPre}liquid_lightmode`, logoDark: `${imgPre}liquid_darkmode` },
+  { id: "ONIC", name: "ONIC Esports", logo: `${imgPre}onic_lightmode`, logoDark: `${imgPre}onic_darkmode` },
   { id: "DEWA", name: "Dewa United Esports", logo: `${imgPre}dewa` },
   { id: "AE", name: "Alter Ego Esports", logo: `${imgPre}ae` },
   { id: "BTR", name: "Bigetron by Vitality", logo: `${imgPre}btrvit` },
   { id: "EVOS", name: "EVOS Esports", logo: `${imgPre}evos` },
-  { id: "NAVI", name: "Natus Vincere", logo: `${imgPre}navi_lightmode` },
+  { id: "NAVI", name: "Natus Vincere", logo: `${imgPre}navi_lightmode`, logoDark: `${imgPre}navi_darkmode` },
   { id: "GEEK", name: "Geek Fam ID", logo: `${imgPre}geek` },
   { id: "RRQ", name: "RRQ Hoshi", logo: `${imgPre}rrq` },
 ]
