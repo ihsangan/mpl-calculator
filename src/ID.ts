@@ -660,15 +660,15 @@ export const ALL_MATCHES = [
   },
 ]
 const imgPre =
-  "https://mpl.isan.eu.org/cdn-cgi/image/f=avif,h=60,q=70/https://i.isan.eu.org/team/"
+  "https://res.cloudinary.com/isans/image/upload/f_webp,q_auto:eco,h_60/teams/"
 export const TEAMS = [
-  { id: "TLID", name: "Team Liquid ID", logo: `${imgPre}tl.png` },
-  { id: "ONIC", name: "ONIC Esports", logo: `${imgPre}onic.png` },
-  { id: "DEWA", name: "Dewa United Esports", logo: `${imgPre}dewa.png` },
-  { id: "AE", name: "Alter Ego Esports", logo: `${imgPre}ae.png` },
-  { id: "BTR", name: "Bigetron by Vitality", logo: `${imgPre}btr.png` },
-  { id: "EVOS", name: "EVOS Esports", logo: `${imgPre}evos.png` },
-  { id: "NAVI", name: "Natus Vincere", logo: `${imgPre}navi.png` },
-  { id: "GEEK", name: "Geek Fam ID", logo: `${imgPre}geek.png` },
-  { id: "RRQ", name: "RRQ Hoshi", logo: `${imgPre}rrq.png` },
+  { id: "TLID", name: "Team Liquid ID", logo: `${imgPre}liquid_lightmode` },
+  { id: "ONIC", name: "ONIC Esports", logo: `${imgPre}onic_lightmode` },
+  { id: "DEWA", name: "Dewa United Esports", logo: `${imgPre}dewa` },
+  { id: "AE", name: "Alter Ego Esports", logo: `${imgPre}ae` },
+  { id: "BTR", name: "Bigetron by Vitality", logo: `${imgPre}btrvit` },
+  { id: "EVOS", name: "EVOS Esports", logo: `${imgPre}evos` },
+  { id: "NAVI", name: "Natus Vincere", logo: `${imgPre}navi_lightmode` },
+  { id: "GEEK", name: "Geek Fam ID", logo: `${imgPre}geek` },
+  { id: "RRQ", name: "RRQ Hoshi", logo: `${imgPre}rrq` },
 ]
