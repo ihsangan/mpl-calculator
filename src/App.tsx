@@ -29,8 +29,6 @@ import { Loader2 } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useTheme } from "@/components/theme-provider"
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
 interface TeamRow {
   id: string
   name: string
@@ -59,17 +57,15 @@ interface Probability {
   eliminated: string
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
 const getTeamLogo = (teamId: string, isDarkMode: boolean): string => {
   const team = TEAMS.find((t) => t.id === teamId)
   if (!team) return ""
-  
+
   // Use dark mode logo if available and dark mode is active
   if (isDarkMode && team.logoDark) {
     return team.logoDark
   }
-  
+
   return team.logo
 }
 
@@ -184,23 +180,26 @@ export default function App() {
     Record<string, Probability>
   >({})
   const { theme } = useTheme()
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light')
+  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light")
 
   const standings = useMemo(() => calculateStandings(matches), [matches])
 
   // Detect dark mode from HTML class and theme setting
   useEffect(() => {
     const updateTheme = () => {
-      const isDark = document.documentElement.classList.contains('dark')
-      setResolvedTheme(isDark ? 'dark' : 'light')
+      const isDark = document.documentElement.classList.contains("dark")
+      setResolvedTheme(isDark ? "dark" : "light")
     }
-    
+
     updateTheme()
-    
+
     // Watch for class changes
     const observer = new MutationObserver(updateTheme)
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-    
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    })
+
     return () => observer.disconnect()
   }, [theme])
 
@@ -329,62 +328,62 @@ export default function App() {
                     </TableHeader>
                     <TableBody>
                       {standings.map((team, idx) => {
-                      const prob = probabilities[team.id]
-                      const eliminated = prob ? Number(prob.eliminated) : null
-                      let rowBg = ""
-                      if (eliminated === 0) {
-                        // Qualified - 0% elimination probability
-                        rowBg = "bg-emerald-50 dark:bg-emerald-950/20"
-                      } else if (eliminated === 100) {
-                        // Eliminated - 100% elimination probability
-                        rowBg = "bg-red-50 dark:bg-red-950/20"
-                      }
-                      return (
-                        <TableRow
-                          key={team.id}
-                          className={rowBg}
-                        >
-                          <TableCell className="py-2.5 text-center">
-                            <Badge
-                              variant={getRankBadgeVariant(idx)}
-                              className={`flex h-6 w-6 items-center justify-center rounded-full p-0 text-xs ${getRankBadgeClass(idx)}`}
-                            >
-                              {idx + 1}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="py-2.5">
-                            <div className="flex items-center gap-3">
-                              <div className="flex w-8 shrink-0 justify-center">
-                                <img
-                                  src={getTeamLogo(team.id, resolvedTheme === 'dark')}
-                                  alt={`Logo of ${team.name}`}
-                                  className="max-h-5 w-auto object-contain"
-                                />
+                        const prob = probabilities[team.id]
+                        const eliminated = prob ? Number(prob.eliminated) : null
+                        let rowBg = ""
+                        if (eliminated === 0) {
+                          // Qualified - 0% elimination probability
+                          rowBg = "bg-emerald-50 dark:bg-emerald-950/20"
+                        } else if (eliminated === 100) {
+                          // Eliminated - 100% elimination probability
+                          rowBg = "bg-red-50 dark:bg-red-950/20"
+                        }
+                        return (
+                          <TableRow key={team.id} className={rowBg}>
+                            <TableCell className="py-2.5 text-center">
+                              <Badge
+                                variant={getRankBadgeVariant(idx)}
+                                className={`flex h-6 w-6 items-center justify-center rounded-full p-0 text-xs ${getRankBadgeClass(idx)}`}
+                              >
+                                {idx + 1}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="py-2.5">
+                              <div className="flex items-center gap-3">
+                                <div className="flex w-8 shrink-0 justify-center">
+                                  <img
+                                    src={getTeamLogo(
+                                      team.id,
+                                      resolvedTheme === "dark"
+                                    )}
+                                    alt={`Logo of ${team.name}`}
+                                    className="max-h-5 w-auto object-contain"
+                                  />
+                                </div>
+                                <span className="font-medium whitespace-nowrap">
+                                  {team.name}
+                                </span>
                               </div>
-                              <span className="font-medium whitespace-nowrap">
-                                {team.name}
-                              </span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="py-2.5 text-center tabular-nums">
-                            {team.matchW}–{team.matchL}
-                          </TableCell>
-                          <TableCell className="py-2.5 text-center tabular-nums">
-                            {team.gameW}–{team.gameL}
-                          </TableCell>
-                          <TableCell
-                            className={`py-2.5 text-center tabular-nums ${getWinrateClass(team.winrate)}`}
-                          >
-                            {team.winrate}%
-                          </TableCell>
-                          <TableCell
-                            className={`py-2.5 text-center tabular-nums ${getDiffClass(team.diff)}`}
-                          >
-                            {team.diff > 0 ? `+${team.diff}` : team.diff}
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })}
+                            </TableCell>
+                            <TableCell className="py-2.5 text-center tabular-nums">
+                              {team.matchW}–{team.matchL}
+                            </TableCell>
+                            <TableCell className="py-2.5 text-center tabular-nums">
+                              {team.gameW}–{team.gameL}
+                            </TableCell>
+                            <TableCell
+                              className={`py-2.5 text-center tabular-nums ${getWinrateClass(team.winrate)}`}
+                            >
+                              {team.winrate}%
+                            </TableCell>
+                            <TableCell
+                              className={`py-2.5 text-center tabular-nums ${getDiffClass(team.diff)}`}
+                            >
+                              {team.diff > 0 ? `+${team.diff}` : team.diff}
+                            </TableCell>
+                          </TableRow>
+                        )
+                      })}
                     </TableBody>
                   </Table>
                 </CardContent>
