@@ -670,13 +670,37 @@ export interface Team {
 }
 
 export const TEAMS: Team[] = [
-  { id: "TLID", name: "Team Liquid ID", logo: `${imgPre}liquid_lightmode`, logoDark: `${imgPre}liquid_darkmode` },
-  { id: "ONIC", name: "ONIC Esports", logo: `${imgPre}onic_lightmode`, logoDark: `${imgPre}onic` },
-  { id: "DEWA", name: "Dewa United Esports", logo: "https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_60,c_pad,ar_17:12/teams/dewa" },
+  {
+    id: "TLID",
+    name: "Team Liquid ID",
+    logo: `${imgPre}liquid_lightmode`,
+    logoDark: `${imgPre}liquid_darkmode`,
+  },
+  {
+    id: "ONIC",
+    name: "ONIC Esports",
+    logo: `${imgPre}onic_lightmode`,
+    logoDark: `${imgPre}onic`,
+  },
+  {
+    id: "DEWA",
+    name: "Dewa United Esports",
+    logo: "https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_60,c_pad,ar_17:12/teams/dewa",
+  },
   { id: "AE", name: "Alter Ego Esports", logo: `${imgPre}ae` },
-  { id: "BTR", name: "Bigetron by Vitality", logo: `${imgPre}btrvit`, logoDark: `${imgPre}btrvit_darkmode` },
+  {
+    id: "BTR",
+    name: "Bigetron by Vitality",
+    logo: `${imgPre}btrvit`,
+    logoDark: `${imgPre}btrvit_darkmode`,
+  },
   { id: "EVOS", name: "EVOS Esports", logo: `${imgPre}evos` },
-  { id: "NAVI", name: "Natus Vincere", logo: `${imgPre}navi_lightmode`, logoDark: `${imgPre}navi_darkmode` },
+  {
+    id: "NAVI",
+    name: "Natus Vincere",
+    logo: `${imgPre}navi_lightmode`,
+    logoDark: `${imgPre}navi_darkmode`,
+  },
   { id: "GEEK", name: "Geek Fam ID", logo: `${imgPre}geek` },
   { id: "RRQ", name: "RRQ Hoshi", logo: `${imgPre}rrq` },
 ]
