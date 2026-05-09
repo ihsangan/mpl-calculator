@@ -181,6 +181,8 @@ export default function App() {
   >({})
   const { theme } = useTheme()
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light")
+  const [iterations, setIterations] = useState<number>(1000)
+  const [iterationInput, setIterationInput] = useState<string>("1000")
 
   const standings = useMemo(() => calculateStandings(matches), [matches])
 
@@ -206,7 +208,7 @@ export default function App() {
   useEffect(() => {
     // setIsSimulating(true)
     const id = setTimeout(() => {
-      const ITERATIONS = 1000
+      const ITERATIONS = iterations
       const stats: Record<
         string,
         { top2: number; playoffs: number; eliminated: number }
@@ -247,7 +249,7 @@ export default function App() {
     }, 50)
 
     return () => clearTimeout(id)
-  }, [matches])
+  }, [matches, iterations])
 
   const handleScoreChange = (matchId: string, value: string) => {
     setIsSimulating(true)
@@ -402,8 +404,39 @@ export default function App() {
               )}
               <CardHeader className="pb-3">
                 <CardTitle>Playoff Probabilities</CardTitle>
-                <CardDescription>
-                  Monte Carlo simulation · 1.000 iterations
+                <CardDescription className="flex items-center justify-between">
+                  <span>Monte Carlo simulation · {iterations.toLocaleString()} iterations</span>
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      value={iterationInput}
+                      onChange={(e) => setIterationInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          const value = parseInt(iterationInput, 10)
+                          if (value > 0) {
+                            setIterations(value)
+                            setIsSimulating(true)
+                          }
+                        }
+                      }}
+                      placeholder="1000"
+                      className="h-8 w-24 rounded border bg-background px-2 py-1 text-sm text-foreground"
+                    />
+                    <Button
+                      size="sm"
+                      className="h-8"
+                      onClick={() => {
+                        const value = parseInt(iterationInput, 10)
+                        if (value > 0) {
+                          setIterations(value)
+                          setIsSimulating(true)
+                        }
+                      }}
+                    >
+                      Simulate
+                    </Button>
+                  </div>
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
@@ -527,6 +560,9 @@ export default function App() {
                           ? `${match.scoreA}-${match.scoreB}`
                           : "unplayed"
 
+                        const teamAColor = match.isPlayed ? (match.scoreA > match.scoreB ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400") : ""
+                        const teamBColor = match.isPlayed ? (match.scoreB > match.scoreA ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400") : ""
+
                         return (
                           <div
                             key={match.id}
@@ -534,7 +570,7 @@ export default function App() {
                           >
                             {/* Team A – text only */}
                             <div className="flex min-w-0 flex-1 justify-end">
-                              <span className="truncate text-sm font-semibold">
+                              <span className={`truncate text-sm font-semibold ${teamAColor}`}>
                                 {match.teamA}
                               </span>
                             </div>
@@ -551,7 +587,7 @@ export default function App() {
                                   aria-label={`Score for ${match.teamA} vs ${match.teamB}`}
                                   className={`h-8 justify-center gap-1 text-center text-xs font-bold ${
                                     match.isPlayed
-                                      ? "border-emerald-400 bg-emerald-50 text-emerald-700 dark:border-emerald-600/50 dark:bg-emerald-950/30 dark:text-emerald-400"
+                                      ? "border-blue-400 bg-blue-50 text-blue-700 dark:border-blue-600/50 dark:bg-blue-950/30 dark:text-blue-400"
                                       : ""
                                   }`}
                                 >
@@ -571,7 +607,7 @@ export default function App() {
 
                             {/* Team B – text only */}
                             <div className="flex min-w-0 flex-1">
-                              <span className="truncate text-sm font-semibold">
+                              <span className={`truncate text-sm font-semibold ${teamBColor}`}>
                                 {match.teamB}
                               </span>
                             </div>
