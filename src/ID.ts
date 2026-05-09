@@ -685,8 +685,8 @@ export const TEAMS: Team[] = [
   {
     id: "DEWA",
     name: "Dewa United Esports",
-    logo: "https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_60,c_pad,ar_17:12/teams/dewa",
-    logoDark: "https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_60,c_pad,ar_17:12/teams/dewa_darkmode"
+    logo: "https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_60,c_pad,ar_21:15/teams/dewa",
+    logoDark: "https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_60,c_pad,ar_21:15/teams/dewa_darkmode"
   },
   { id: "AE", name: "Alter Ego Esports", logo: `${imgPre}ae` },
   {
