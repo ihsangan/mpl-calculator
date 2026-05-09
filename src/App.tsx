@@ -526,6 +526,16 @@ export default function App() {
                         const currentValue = match.isPlayed
                           ? `${match.scoreA}-${match.scoreB}`
                           : "unplayed"
+                        const teamAColor = match.isPlayed
+                          ? match.scoreA > match.scoreB
+                            ? "text-green-600 dark:text-green-400"
+                            : "text-red-600 dark:text-red-400"
+                          : ""
+                        const teamBColor = match.isPlayed
+                          ? match.scoreB > match.scoreA
+                            ? "text-green-600 dark:text-green-400"
+                            : "text-red-600 dark:text-red-400"
+                          : ""
 
                         return (
                           <div
@@ -534,7 +544,9 @@ export default function App() {
                           >
                             {/* Team A – text only */}
                             <div className="flex min-w-0 flex-1 justify-end">
-                              <span className="truncate text-sm font-semibold">
+                              <span
+                                className={`truncate text-sm font-semibold ${teamAColor}`}
+                              >
                                 {match.teamA}
                               </span>
                             </div>
@@ -551,7 +563,7 @@ export default function App() {
                                   aria-label={`Score for ${match.teamA} vs ${match.teamB}`}
                                   className={`h-8 justify-center gap-1 text-center text-xs font-bold ${
                                     match.isPlayed
-                                      ? "border-emerald-400 bg-emerald-50 text-emerald-700 dark:border-emerald-600/50 dark:bg-emerald-950/30 dark:text-emerald-400"
+                                      ? "border-blue-400 bg-blue-50 text-blue-700 dark:border-blue-600/50 dark:bg-blue-950/30 dark:text-blue-400"
                                       : ""
                                   }`}
                                 >
@@ -571,7 +583,9 @@ export default function App() {
 
                             {/* Team B – text only */}
                             <div className="flex min-w-0 flex-1">
-                              <span className="truncate text-sm font-semibold">
+                              <span
+                                className={`truncate text-sm font-semibold ${teamBColor}`}
+                              >
                                 {match.teamB}
                               </span>
                             </div>

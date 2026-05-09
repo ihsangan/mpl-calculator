@@ -42,9 +42,9 @@ export const ALL_MATCHES = [
     week: 7,
     teamA: "ONIC",
     teamB: "NAVI",
-    scoreA: 0,
+    scoreA: 2,
     scoreB: 0,
-    isPlayed: false,
+    isPlayed: true,
   },
   {
     id: "w7m6",
@@ -686,7 +686,8 @@ export const TEAMS: Team[] = [
     id: "DEWA",
     name: "Dewa United Esports",
     logo: "https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_60,c_pad,ar_21:15/teams/dewa",
-    logoDark: "https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_60,c_pad,ar_21:15/teams/dewa_darkmode"
+    logoDark:
+      "https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_60,c_pad,ar_21:15/teams/dewa_darkmode",
   },
   { id: "AE", name: "Alter Ego Esports", logo: `${imgPre}ae` },
   {
