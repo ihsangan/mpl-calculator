@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, useRef } from "react"
 import { CURRENT_WEEK, TEAMS, ALL_MATCHES } from "./ID"
 import {
   Table,
@@ -179,6 +179,10 @@ export default function App() {
   const [probabilities, setProbabilities] = useState<
     Record<string, Probability>
   >({})
+  const [iterations, setIterations] = useState(1000)
+  const [iterationsInput, setIterationsInput] = useState("1000")
+  const [simulateTrigger, setSimulateTrigger] = useState(0)
+  const iterationsRef = useRef(1000)
   const { theme } = useTheme()
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light")
 
@@ -204,9 +208,8 @@ export default function App() {
   }, [theme])
 
   useEffect(() => {
-    // setIsSimulating(true)
     const id = setTimeout(() => {
-      const ITERATIONS = 1000
+      const ITERATIONS = iterationsRef.current
       const stats: Record<
         string,
         { top2: number; playoffs: number; eliminated: number }
@@ -247,7 +250,17 @@ export default function App() {
     }, 50)
 
     return () => clearTimeout(id)
-  }, [matches])
+  }, [matches, simulateTrigger])
+
+  const handleSimulate = () => {
+    const parsed = parseInt(iterationsInput, 10)
+    const clamped = isNaN(parsed) || parsed < 1 ? 1 : Math.min(parsed, 100000)
+    iterationsRef.current = clamped
+    setIterations(clamped)
+    setIterationsInput(String(clamped))
+    setIsSimulating(true)
+    setSimulateTrigger((n) => n + 1)
+  }
 
   const handleScoreChange = (matchId: string, value: string) => {
     setIsSimulating(true)
@@ -401,10 +414,31 @@ export default function App() {
                 </div>
               )}
               <CardHeader className="pb-3">
-                <CardTitle>Playoff Probabilities</CardTitle>
-                <CardDescription>
-                  Monte Carlo simulation · 1.000 iterations
-                </CardDescription>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <CardTitle>Playoff Probabilities</CardTitle>
+                    <CardDescription>
+                      Monte Carlo simulation · {iterations.toLocaleString()} iterations
+                    </CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <input
+                      type="number"
+                      min={1}
+                      max={100000}
+                      value={iterationsInput}
+                      onChange={(e) => setIterationsInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSimulate()
+                      }}
+                      className="h-8 w-24 rounded-lg border border-input bg-transparent px-2.5 text-sm tabular-nums outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+                      aria-label="Number of iterations"
+                    />
+                    <Button size="sm" onClick={handleSimulate} className="h-8">
+                      Simulate
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="p-0">
                 <Table>
