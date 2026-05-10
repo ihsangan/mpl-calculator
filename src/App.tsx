@@ -418,10 +418,11 @@ export default function App() {
                   <div>
                     <CardTitle>Playoff Probabilities</CardTitle>
                     <CardDescription>
-                      Monte Carlo simulation · {iterations.toLocaleString()} iterations
+                      Monte Carlo simulation · {iterations.toLocaleString()}{" "}
+                      iterations
                     </CardDescription>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex shrink-0 items-center gap-2">
                     <input
                       type="number"
                       min={1}
