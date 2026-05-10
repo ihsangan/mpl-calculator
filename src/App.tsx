@@ -438,10 +438,18 @@ export default function App() {
                   <div className="space-y-3 p-4">
                     {Array.from({ length: standings.length + 1 }).map((_, i) => (
                       <div key={i} className="flex items-center justify-between gap-4">
-                        <Skeleton className="h-6 w-20" />
-                        <Skeleton className="h-6 w-16" />
-                        <Skeleton className="h-6 w-16" />
-                        <Skeleton className="h-6 w-16" />
+                        {/* Mobile: 4 columns */}
+                        <Skeleton className="h-6 w-20 md:hidden" />
+                        <Skeleton className="h-6 w-16 md:hidden" />
+                        <Skeleton className="h-6 w-16 md:hidden" />
+                        <Skeleton className="h-6 w-16 md:hidden" />
+                        
+                        {/* Desktop: 5 columns */}
+                        <Skeleton className="hidden h-6 w-20 md:block" />
+                        <Skeleton className="hidden h-6 w-16 md:block" />
+                        <Skeleton className="hidden h-6 w-16 md:block" />
+                        <Skeleton className="hidden h-6 w-16 md:block" />
+                        <Skeleton className="hidden h-6 w-16 md:block" />
                       </div>
                     ))}
                   </div>
