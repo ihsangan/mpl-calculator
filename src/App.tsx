@@ -25,7 +25,7 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Loader2 } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useTheme } from "@/components/theme-provider"
 
@@ -405,14 +405,6 @@ export default function App() {
 
             {/* Probabilities */}
             <Card className="relative overflow-hidden">
-              {isSimulating && (
-                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-background/80 backdrop-blur-sm">
-                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                  <span className="text-sm font-medium text-muted-foreground">
-                    Calculating…
-                  </span>
-                </div>
-              )}
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -442,60 +434,73 @@ export default function App() {
                 </div>
               </CardHeader>
               <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Team</TableHead>
-                      <TableHead className="text-right text-emerald-700 dark:text-emerald-500">
-                        Top 1–2 (Upper)
-                      </TableHead>
-                      <TableHead className="text-right text-blue-700 dark:text-blue-500">
-                        Top 3–6 (Lower)
-                      </TableHead>
-                      <TableHead className="text-right text-red-700 dark:text-red-400">
-                        Eliminated
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {[...standings]
-                      .sort((a, b) => {
-                        const pA = probabilities[a.id]
-                          ? Number(probabilities[a.id].top2) +
-                            Number(probabilities[a.id].playoffs)
-                          : 0
-                        const pB = probabilities[b.id]
-                          ? Number(probabilities[b.id].top2) +
-                            Number(probabilities[b.id].playoffs)
-                          : 0
-                        return pB - pA
-                      })
-                      .map((team) => {
-                        const prob = probabilities[team.id] || {
-                          top2: "0.00",
-                          playoffs: "0.00",
-                          eliminated: "0.00",
-                        }
-                        return (
-                          <TableRow key={team.id}>
-                            {/* Team name only, no logo */}
-                            <TableCell className="py-2.5 font-medium">
-                              {team.id}
-                            </TableCell>
-                            <TableCell className="py-2.5 text-right font-semibold text-emerald-600 tabular-nums dark:text-emerald-400">
-                              {prob.top2}%
-                            </TableCell>
-                            <TableCell className="py-2.5 text-right font-semibold text-blue-600 tabular-nums dark:text-blue-400">
-                              {prob.playoffs}%
-                            </TableCell>
-                            <TableCell className="py-2.5 text-right font-semibold text-red-600 tabular-nums dark:text-red-400">
-                              {prob.eliminated}%
-                            </TableCell>
-                          </TableRow>
-                        )
-                      })}
-                  </TableBody>
-                </Table>
+                {isSimulating ? (
+                  <div className="space-y-3 p-4">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                      <div key={i} className="flex items-center justify-between gap-4">
+                        <Skeleton className="h-6 w-20" />
+                        <Skeleton className="h-6 w-16" />
+                        <Skeleton className="h-6 w-16" />
+                        <Skeleton className="h-6 w-16" />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Team</TableHead>
+                        <TableHead className="text-right text-emerald-700 dark:text-emerald-500">
+                          Top 1–2 (Upper)
+                        </TableHead>
+                        <TableHead className="text-right text-blue-700 dark:text-blue-500">
+                          Top 3–6 (Lower)
+                        </TableHead>
+                        <TableHead className="text-right text-red-700 dark:text-red-400">
+                          Eliminated
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {[...standings]
+                        .sort((a, b) => {
+                          const pA = probabilities[a.id]
+                            ? Number(probabilities[a.id].top2) +
+                              Number(probabilities[a.id].playoffs)
+                            : 0
+                          const pB = probabilities[b.id]
+                            ? Number(probabilities[b.id].top2) +
+                              Number(probabilities[b.id].playoffs)
+                            : 0
+                          return pB - pA
+                        })
+                        .map((team) => {
+                          const prob = probabilities[team.id] || {
+                            top2: "0.00",
+                            playoffs: "0.00",
+                            eliminated: "0.00",
+                          }
+                          return (
+                            <TableRow key={team.id}>
+                              {/* Team name only, no logo */}
+                              <TableCell className="py-2.5 font-medium">
+                                {team.id}
+                              </TableCell>
+                              <TableCell className="py-2.5 text-right font-semibold text-emerald-600 tabular-nums dark:text-emerald-400">
+                                {prob.top2}%
+                              </TableCell>
+                              <TableCell className="py-2.5 text-right font-semibold text-blue-600 tabular-nums dark:text-blue-400">
+                                {prob.playoffs}%
+                              </TableCell>
+                              <TableCell className="py-2.5 text-right font-semibold text-red-600 tabular-nums dark:text-red-400">
+                                {prob.eliminated}%
+                              </TableCell>
+                            </TableRow>
+                          )
+                        })}
+                    </TableBody>
+                  </Table>
+                )}
               </CardContent>
             </Card>
           </div>
