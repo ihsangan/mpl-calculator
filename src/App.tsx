@@ -436,7 +436,7 @@ export default function App() {
               <CardContent className="p-0">
                 {isSimulating ? (
                   <div className="space-y-3 p-4">
-                    {Array.from({ length: 8 }).map((_, i) => (
+                    {Array.from({ length: standings.length + 1 }).map((_, i) => (
                       <div key={i} className="flex items-center justify-between gap-4">
                         <Skeleton className="h-6 w-20" />
                         <Skeleton className="h-6 w-16" />
