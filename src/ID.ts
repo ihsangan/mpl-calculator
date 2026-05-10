@@ -60,9 +60,9 @@ export const ALL_MATCHES = [
     week: 7,
     teamA: "NAVI",
     teamB: "BTR",
-    scoreA: 0,
-    scoreB: 0,
-    isPlayed: false,
+    scoreA: 2,
+    scoreB: 1,
+    isPlayed: true,
   },
   {
     id: "w7m8",

@@ -436,22 +436,27 @@ export default function App() {
               <CardContent className="p-0">
                 {isSimulating ? (
                   <div className="space-y-3 p-4">
-                    {Array.from({ length: standings.length + 1 }).map((_, i) => (
-                      <div key={i} className="flex items-center justify-between gap-4">
-                        {/* Mobile: 4 columns */}
-                        <Skeleton className="h-6 w-20 md:hidden" />
-                        <Skeleton className="h-6 w-16 md:hidden" />
-                        <Skeleton className="h-6 w-16 md:hidden" />
-                        <Skeleton className="h-6 w-16 md:hidden" />
-                        
-                        {/* Desktop: 5 columns */}
-                        <Skeleton className="hidden h-6 w-20 md:block" />
-                        <Skeleton className="hidden h-6 w-16 md:block" />
-                        <Skeleton className="hidden h-6 w-16 md:block" />
-                        <Skeleton className="hidden h-6 w-16 md:block" />
-                        <Skeleton className="hidden h-6 w-16 md:block" />
-                      </div>
-                    ))}
+                    {Array.from({ length: standings.length + 1 }).map(
+                      (_, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center justify-between gap-4"
+                        >
+                          {/* Mobile: 4 columns */}
+                          <Skeleton className="h-6 w-20 md:hidden" />
+                          <Skeleton className="h-6 w-16 md:hidden" />
+                          <Skeleton className="h-6 w-16 md:hidden" />
+                          <Skeleton className="h-6 w-16 md:hidden" />
+
+                          {/* Desktop: 5 columns */}
+                          <Skeleton className="hidden h-6 w-20 md:block" />
+                          <Skeleton className="hidden h-6 w-16 md:block" />
+                          <Skeleton className="hidden h-6 w-16 md:block" />
+                          <Skeleton className="hidden h-6 w-16 md:block" />
+                          <Skeleton className="hidden h-6 w-16 md:block" />
+                        </div>
+                      )
+                    )}
                   </div>
                 ) : (
                   <Table>
@@ -504,7 +509,10 @@ export default function App() {
                                 {prob.playoffs}%
                               </TableCell>
                               <TableCell className="py-2.5 text-right font-semibold text-purple-600 tabular-nums dark:text-purple-400">
-                                {(Number(prob.top2) + Number(prob.playoffs)).toFixed(2)}%
+                                {(
+                                  Number(prob.top2) + Number(prob.playoffs)
+                                ).toFixed(2)}
+                                %
                               </TableCell>
                               <TableCell className="py-2.5 text-right font-semibold text-red-600 tabular-nums dark:text-red-400">
                                 {prob.eliminated}%
