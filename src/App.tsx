@@ -456,6 +456,9 @@ export default function App() {
                         <TableHead className="text-right text-blue-700 dark:text-blue-500">
                           Top 3–6 (Lower)
                         </TableHead>
+                        <TableHead className="text-right text-purple-700 dark:text-purple-500">
+                          Chances to Playoff
+                        </TableHead>
                         <TableHead className="text-right text-red-700 dark:text-red-400">
                           Eliminated
                         </TableHead>
@@ -491,6 +494,9 @@ export default function App() {
                               </TableCell>
                               <TableCell className="py-2.5 text-right font-semibold text-blue-600 tabular-nums dark:text-blue-400">
                                 {prob.playoffs}%
+                              </TableCell>
+                              <TableCell className="py-2.5 text-right font-semibold text-purple-600 tabular-nums dark:text-purple-400">
+                                {(Number(prob.top2) + Number(prob.playoffs)).toFixed(2)}%
                               </TableCell>
                               <TableCell className="py-2.5 text-right font-semibold text-red-600 tabular-nums dark:text-red-400">
                                 {prob.eliminated}%
