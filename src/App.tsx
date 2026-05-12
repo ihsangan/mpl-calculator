@@ -378,19 +378,19 @@ export default function App() {
                                 </span>
                               </div>
                             </TableCell>
-                            <TableCell className="py-2.5 text-center tabular-nums">
+                            <TableCell className="py-2.5 text-center font-medium tabular-nums">
                               {team.matchW}–{team.matchL}
                             </TableCell>
-                            <TableCell className="py-2.5 text-center tabular-nums">
+                            <TableCell className="py-2.5 text-center font-medium tabular-nums">
                               {team.gameW}–{team.gameL}
                             </TableCell>
                             <TableCell
-                              className={`py-2.5 text-center tabular-nums ${getWinrateClass(team.winrate)}`}
+                              className={`py-2.5 text-center font-medium tabular-nums ${getWinrateClass(team.winrate)}`}
                             >
                               {team.winrate}%
                             </TableCell>
                             <TableCell
-                              className={`py-2.5 text-center tabular-nums ${getDiffClass(team.diff)}`}
+                              className={`py-2.5 text-center font-medium tabular-nums ${getDiffClass(team.diff)}`}
                             >
                               {team.diff > 0 ? `+${team.diff}` : team.diff}
                             </TableCell>
@@ -417,8 +417,6 @@ export default function App() {
                   <div className="flex shrink-0 items-center gap-2">
                     <input
                       type="number"
-                      min={1}
-                      max={100000}
                       value={iterationsInput}
                       onChange={(e) => setIterationsInput(e.target.value)}
                       onKeyDown={(e) => {
@@ -464,13 +462,17 @@ export default function App() {
                       <TableRow>
                         <TableHead>Team</TableHead>
                         <TableHead className="text-right text-emerald-700 dark:text-emerald-500">
-                          Top 1–2 (Upper)
+                          Top 1–2
+                          <br />
+                          (Upper)
                         </TableHead>
                         <TableHead className="text-right text-blue-700 dark:text-blue-500">
-                          Top 3–6 (Lower)
+                          Top 3–6
+                          <br />
+                          (Lower)
                         </TableHead>
                         <TableHead className="text-right text-purple-700 dark:text-purple-500">
-                          Chances to Playoff
+                          Playoffs
                         </TableHead>
                         <TableHead className="text-right text-red-700 dark:text-red-400">
                           Eliminated
@@ -590,13 +592,13 @@ export default function App() {
                           : "unplayed"
                         const teamAColor = match.isPlayed
                           ? match.scoreA > match.scoreB
-                            ? "text-green-600 dark:text-green-400"
-                            : "text-red-600 dark:text-red-400"
+                            ? "text-green-600 dark:text-green-510"
+                            : "text-red-600 dark:text-red-500"
                           : ""
                         const teamBColor = match.isPlayed
                           ? match.scoreB > match.scoreA
-                            ? "text-green-600 dark:text-green-400"
-                            : "text-red-600 dark:text-red-400"
+                            ? "text-green-600 dark:text-green-510"
+                            : "text-red-600 dark:text-red-500"
                           : ""
 
                         return (

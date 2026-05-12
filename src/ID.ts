@@ -1,4 +1,4 @@
-export const CURRENT_WEEK = 7
+export const CURRENT_WEEK = 8
 export const ALL_MATCHES = [
   // --- WEEK 8 ---
   {
@@ -660,7 +660,7 @@ export const ALL_MATCHES = [
   },
 ]
 const imgPre =
-  "https://res.cloudinary.com/isans/image/upload/f_webp,q_auto:eco,h_60/teams/"
+  "https://mpl.isan.eu.org/cdn-cgi/image/f=webp/https://res.cloudinary.com/isans/image/upload/q_auto:eco,h_60/teams/"
 
 export interface Team {
   id: string
@@ -685,9 +685,9 @@ export const TEAMS: Team[] = [
   {
     id: "DEWA",
     name: "Dewa United Esports",
-    logo: "https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_60,c_pad,ar_21:15/teams/dewa",
+    logo: "https://mpl.isan.eu.org/cdn-cgi/image/f=webp/https://res.cloudinary.com/isans/image/upload/q_auto:eco,h_60,w_82,c_pad/teams/dewa",
     logoDark:
-      "https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_60,c_pad,ar_21:15/teams/dewa_darkmode",
+      "https://mpl.isan.eu.org/cdn-cgi/image/f=webp/https://res.cloudinary.com/isans/image/upload/q_auto:eco,h_60,w_84,c_pad/teams/dewa_darkmode",
   },
   { id: "AE", name: "Alter Ego Esports", logo: `${imgPre}ae` },
   {
