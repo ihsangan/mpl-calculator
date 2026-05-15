@@ -163,6 +163,11 @@ const getDiffClass = (diff: number) => {
   return "text-muted-foreground"
 }
 
+const formatProbability = (value: string): string => {
+  const num = Number(value)
+  return num === 100 ? "100" : value
+}
+
 const POSSIBLE_SCORES = [
   { a: 2, b: 0 },
   { a: 2, b: 1 },
@@ -505,19 +510,21 @@ export default function App() {
                                 {team.id}
                               </TableCell>
                               <TableCell className="py-2.5 text-right font-semibold text-emerald-600 tabular-nums dark:text-emerald-400">
-                                {prob.top2}%
+                                {formatProbability(prob.top2)}%
                               </TableCell>
                               <TableCell className="py-2.5 text-right font-semibold text-blue-600 tabular-nums dark:text-blue-400">
-                                {prob.playoffs}%
+                                {formatProbability(prob.playoffs)}%
                               </TableCell>
                               <TableCell className="py-2.5 text-right font-semibold text-purple-600 tabular-nums dark:text-purple-400">
-                                {(
-                                  Number(prob.top2) + Number(prob.playoffs)
-                                ).toFixed(2)}
+                                {formatProbability(
+                                  (
+                                    Number(prob.top2) + Number(prob.playoffs)
+                                  ).toFixed(2)
+                                )}
                                 %
                               </TableCell>
                               <TableCell className="py-2.5 text-right font-semibold text-red-600 tabular-nums dark:text-red-400">
-                                {prob.eliminated}%
+                                {formatProbability(prob.eliminated)}%
                               </TableCell>
                             </TableRow>
                           )
