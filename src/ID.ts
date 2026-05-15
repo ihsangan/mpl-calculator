@@ -7,8 +7,8 @@ export const ALL_MATCHES = [
     teamA: "BTR",
     teamB: "GEEK",
     scoreA: 0,
-    scoreB: 0,
-    isPlayed: false,
+    scoreB: 2,
+    isPlayed: true,
   },
   {
     id: "w8m2",
