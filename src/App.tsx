@@ -206,6 +206,11 @@ export default function App() {
     })
   }, [matches])
 
+  // Check if all matches are unplayed
+  const allMatchesUnplayed = useMemo(() => {
+    return matches.every((m) => !m.isPlayed)
+  }, [matches])
+
   // Detect dark mode from HTML class and theme setting
   useEffect(() => {
     const updateTheme = () => {
@@ -574,14 +579,16 @@ export default function App() {
                 <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <CardTitle>Schedule</CardTitle>
                   <div className="flex flex-wrap gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={handleResetAllMatches}
-                      className="h-8 text-xs"
-                    >
-                      Reset All
-                    </Button>
+                    {!allMatchesUnplayed && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleResetAllMatches}
+                        className="h-8 text-xs"
+                      >
+                        Reset All
+                      </Button>
+                    )}
                     {hasScoreChanges && (
                       <Button
                         size="sm"
