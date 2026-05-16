@@ -190,8 +190,26 @@ export default function App() {
   const iterationsRef = useRef(1000)
   const { theme } = useTheme()
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light")
+  const initialMatchesRef = useRef<Match[]>(JSON.parse(JSON.stringify(ALL_MATCHES)))
 
   const standings = useMemo(() => calculateStandings(matches), [matches])
+
+  // Check if there are score changes from initial state
+  const hasScoreChanges = useMemo(() => {
+    return matches.some((m, idx) => {
+      const initial = initialMatchesRef.current[idx]
+      return (
+        m.scoreA !== initial.scoreA ||
+        m.scoreB !== initial.scoreB ||
+        m.isPlayed !== initial.isPlayed
+      )
+    })
+  }, [matches])
+
+  // Check if all matches are unplayed
+  const allMatchesUnplayed = useMemo(() => {
+    return matches.every((m) => !m.isPlayed)
+  }, [matches])
 
   // Detect dark mode from HTML class and theme setting
   useEffect(() => {
@@ -278,6 +296,24 @@ export default function App() {
         return { ...m, isPlayed: true, scoreA, scoreB }
       })
     )
+  }
+
+  const handleResetToDefault = () => {
+    setIsSimulating(true)
+    setMatches(JSON.parse(JSON.stringify(initialMatchesRef.current)))
+    setSelectedWeek(CURRENT_WEEK)
+  }
+
+  const handleResetAllMatches = () => {
+    setIsSimulating(true)
+    const resetMatches = matches.map((m) => ({
+      ...m,
+      scoreA: 0,
+      scoreB: 0,
+      isPlayed: false,
+    }))
+    setMatches(resetMatches)
+    setSelectedWeek(1)
   }
 
   const getMatchesByDay = (weekMatches: Match[]) => [
@@ -540,9 +576,33 @@ export default function App() {
           <div className="xl:col-span-5">
             <Card className="sticky top-8">
               <CardHeader className="pb-3">
-                <CardTitle>Schedule</CardTitle>
+                <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <CardTitle>Schedule</CardTitle>
+                  <div className="flex flex-wrap gap-2">
+                    {!allMatchesUnplayed && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleResetAllMatches}
+                        className="h-8 text-xs"
+                      >
+                        Reset All
+                      </Button>
+                    )}
+                    {hasScoreChanges && (
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={handleResetToDefault}
+                        className="h-8 text-xs"
+                      >
+                        Reset Schedule
+                      </Button>
+                    )}
+                  </div>
+                </div>
                 {/* Week selector */}
-                <div className="flex flex-wrap gap-1.5 pt-1">
+                <div className="flex flex-wrap gap-1.5">
                   {weeks.map((week) => {
                     const weekMatches = matches.filter((m) => m.week === week)
                     const isCompleted =
