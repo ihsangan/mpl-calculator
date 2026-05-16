@@ -296,6 +296,7 @@ export default function App() {
   const handleResetToDefault = () => {
     setIsSimulating(true)
     setMatches(JSON.parse(JSON.stringify(initialMatchesRef.current)))
+    setSelectedWeek(CURRENT_WEEK)
   }
 
   const handleResetAllMatches = () => {
@@ -307,6 +308,7 @@ export default function App() {
       isPlayed: false,
     }))
     setMatches(resetMatches)
+    setSelectedWeek(1)
   }
 
   const getMatchesByDay = (weekMatches: Match[]) => [
