@@ -33,9 +33,9 @@ export const ALL_MATCHES = [
     week: 8,
     teamA: "TLID",
     teamB: "RRQ",
-    scoreA: 0,
+    scoreA: 2,
     scoreB: 0,
-    isPlayed: false,
+    isPlayed: true,
   },
   {
     id: "w8m5",
