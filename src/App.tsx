@@ -190,7 +190,9 @@ export default function App() {
   const iterationsRef = useRef(1000)
   const { theme } = useTheme()
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light")
-  const initialMatchesRef = useRef<Match[]>(JSON.parse(JSON.stringify(ALL_MATCHES)))
+  const initialMatchesRef = useRef<Match[]>(
+    JSON.parse(JSON.stringify(ALL_MATCHES))
+  )
 
   const standings = useMemo(() => calculateStandings(matches), [matches])
 
