@@ -70,8 +70,8 @@ export const ALL_MATCHES = [
     teamA: "RRQ",
     teamB: "NAVI",
     scoreA: 0,
-    scoreB: 0,
-    isPlayed: false,
+    scoreB: 2,
+    isPlayed: true,
   },
   // --- WEEK 9 ---
   {
