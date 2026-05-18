@@ -47,13 +47,17 @@ interface Match {
   teamB: string
   scoreA: number
   scoreB: number
-  isPlayed: boolean
 }
 
 // Extract week number from match ID (e.g., "w8m1" -> 8)
 const getWeekFromId = (id: string): number => {
   const match = id.match(/w(\d+)/)
   return match ? parseInt(match[1], 10) : 0
+}
+
+// Check if match has been played (any non-zero score)
+const isMatchPlayed = (match: Match): boolean => {
+  return match.scoreA !== 0 || match.scoreB !== 0
 }
 
 interface Probability {
@@ -101,7 +105,7 @@ const calculateStandings = (matches: Match[]): TeamRow[] => {
   })
 
   matches.forEach((m: Match) => {
-    if (!m.isPlayed) return
+    if (!isMatchPlayed(m)) return
 
     table[m.teamA].gameW += m.scoreA
     table[m.teamA].gameL += m.scoreB
@@ -207,15 +211,14 @@ export default function App() {
       const initial = initialMatchesRef.current[idx]
       return (
         m.scoreA !== initial.scoreA ||
-        m.scoreB !== initial.scoreB ||
-        m.isPlayed !== initial.isPlayed
+        m.scoreB !== initial.scoreB
       )
     })
   }, [matches])
 
   // Check if all matches are unplayed
   const allMatchesUnplayed = useMemo(() => {
-    return matches.every((m) => !m.isPlayed)
+    return matches.every((m) => !isMatchPlayed(m))
   }, [matches])
 
   // Detect dark mode from HTML class and theme setting
@@ -248,14 +251,14 @@ export default function App() {
         stats[t.id] = { top2: 0, playoffs: 0, eliminated: 0 }
       })
 
-      const played = matches.filter((m) => m.isPlayed)
-      const unplayed = matches.filter((m) => !m.isPlayed)
+      const played = matches.filter((m) => isMatchPlayed(m))
+      const unplayed = matches.filter((m) => !isMatchPlayed(m))
 
       for (let i = 0; i < ITERATIONS; i++) {
         const sim = unplayed.map((m) => {
           const r =
             POSSIBLE_SCORES[Math.floor(Math.random() * POSSIBLE_SCORES.length)]
-          return { ...m, scoreA: r.a, scoreB: r.b, isPlayed: true }
+          return { ...m, scoreA: r.a, scoreB: r.b }
         })
         const simStandings = calculateStandings([...played, ...sim])
         simStandings.forEach((team, index) => {
@@ -298,9 +301,9 @@ export default function App() {
       prev.map((m) => {
         if (m.id !== matchId) return m
         if (value === "unplayed")
-          return { ...m, isPlayed: false, scoreA: 0, scoreB: 0 }
+          return { ...m, scoreA: 0, scoreB: 0 }
         const [scoreA, scoreB] = value.split("-").map(Number)
-        return { ...m, isPlayed: true, scoreA, scoreB }
+        return { ...m, scoreA, scoreB }
       })
     )
   }
@@ -317,7 +320,6 @@ export default function App() {
       ...m,
       scoreA: 0,
       scoreB: 0,
-      isPlayed: false,
     }))
     setMatches(resetMatches)
     setSelectedWeek(1)
@@ -622,7 +624,7 @@ export default function App() {
             </Card>
           </div>
 
-          {/* ── RIGHT: Schedule Editor ── */}
+          {/* ── RIGHT: Schedule Editor ─�� */}
           <div className="xl:col-span-5">
             <Card className="sticky top-8">
               <CardHeader className="pb-3">
@@ -684,7 +686,7 @@ export default function App() {
                     const weekMatches = matches.filter((m) => getWeekFromId(m.id) === week)
                     const isCompleted =
                       weekMatches.length > 0 &&
-                      weekMatches.every((m) => m.isPlayed)
+                      weekMatches.every((m) => isMatchPlayed(m))
                     const isSelected = selectedWeek === week
 
                     let variant: "default" | "secondary" | "outline" = "outline"
@@ -731,15 +733,16 @@ export default function App() {
                     {/* Matches */}
                     <div className="space-y-2">
                       {day.matches.map((match) => {
-                        const currentValue = match.isPlayed
+                        const played = isMatchPlayed(match)
+                        const currentValue = played
                           ? `${match.scoreA}-${match.scoreB}`
                           : "unplayed"
-                        const teamAColor = match.isPlayed
+                        const teamAColor = played
                           ? match.scoreA > match.scoreB
                             ? "text-green-600 dark:text-green-510"
                             : "text-red-600 dark:text-red-500"
                           : ""
-                        const teamBColor = match.isPlayed
+                        const teamBColor = played
                           ? match.scoreB > match.scoreA
                             ? "text-green-600 dark:text-green-510"
                             : "text-red-600 dark:text-red-500"
@@ -770,7 +773,7 @@ export default function App() {
                                 <SelectTrigger
                                   aria-label={`Score for ${match.teamA} vs ${match.teamB}`}
                                   className={`h-8 justify-center gap-1 text-center text-xs font-bold ${
-                                    match.isPlayed
+                                    played
                                       ? "border-blue-400 bg-blue-50 text-blue-700 dark:border-blue-600/50 dark:bg-blue-950/30 dark:text-blue-400"
                                       : ""
                                   }`}
