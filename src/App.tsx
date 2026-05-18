@@ -43,12 +43,17 @@ interface TeamRow {
 
 interface Match {
   id: string
-  week: number
   teamA: string
   teamB: string
   scoreA: number
   scoreB: number
   isPlayed: boolean
+}
+
+// Extract week number from match ID (e.g., "w8m1" -> 8)
+const getWeekFromId = (id: string): number => {
+  const match = id.match(/w(\d+)/)
+  return match ? parseInt(match[1], 10) : 0
 }
 
 interface Probability {
@@ -364,7 +369,10 @@ export default function App() {
     { title: "Day 3", matches: weekMatches.slice(5, 8) },
   ]
 
-  const weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  const weeks = useMemo(() => {
+    const weekSet = new Set(matches.map((m) => getWeekFromId(m.id)))
+    return Array.from(weekSet).sort((a, b) => a - b)
+  }, [matches])
 
   return (
     <div className="min-h-screen bg-background p-4 text-foreground md:p-8">
@@ -673,7 +681,7 @@ export default function App() {
                 {/* Week selector */}
                 <div className="flex flex-wrap gap-1.5">
                   {weeks.map((week) => {
-                    const weekMatches = matches.filter((m) => m.week === week)
+                    const weekMatches = matches.filter((m) => getWeekFromId(m.id) === week)
                     const isCompleted =
                       weekMatches.length > 0 &&
                       weekMatches.every((m) => m.isPlayed)
@@ -707,8 +715,8 @@ export default function App() {
               <Separator />
 
               <CardContent className="max-h-[700px] space-y-6 overflow-y-auto p-4">
-                {getMatchesByDay(
-                  matches.filter((m) => m.week === selectedWeek)
+  {getMatchesByDay(
+  matches.filter((m) => getWeekFromId(m.id) === selectedWeek)
                 ).map((day) => (
                   <div key={day.title}>
                     {/* Day header */}

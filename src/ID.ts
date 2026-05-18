@@ -3,7 +3,6 @@ export const ALL_MATCHES = [
   // --- WEEK 8 ---
   {
     id: "w8m1",
-    week: 8,
     teamA: "BTR",
     teamB: "GEEK",
     scoreA: 0,
@@ -12,7 +11,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w8m2",
-    week: 8,
     teamA: "DEWA",
     teamB: "ONIC",
     scoreA: 0,
@@ -21,7 +19,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w8m3",
-    week: 8,
     teamA: "EVOS",
     teamB: "NAVI",
     scoreA: 0,
@@ -30,7 +27,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w8m4",
-    week: 8,
     teamA: "TLID",
     teamB: "RRQ",
     scoreA: 2,
@@ -39,7 +35,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w8m5",
-    week: 8,
     teamA: "ONIC",
     teamB: "AE",
     scoreA: 2,
@@ -48,7 +43,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w8m6",
-    week: 8,
     teamA: "DEWA",
     teamB: "EVOS",
     scoreA: 0,
@@ -57,7 +51,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w8m7",
-    week: 8,
     teamA: "AE",
     teamB: "BTR",
     scoreA: 0,
@@ -66,7 +59,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w8m8",
-    week: 8,
     teamA: "RRQ",
     teamB: "NAVI",
     scoreA: 0,
@@ -76,7 +68,6 @@ export const ALL_MATCHES = [
   // --- WEEK 9 ---
   {
     id: "w9m1",
-    week: 9,
     teamA: "BTR",
     teamB: "DEWA",
     scoreA: 0,
@@ -85,7 +76,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w9m2",
-    week: 9,
     teamA: "TLID",
     teamB: "AE",
     scoreA: 0,
@@ -94,7 +84,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w9m3",
-    week: 9,
     teamA: "GEEK",
     teamB: "TLID",
     scoreA: 0,
@@ -103,7 +92,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w9m4",
-    week: 9,
     teamA: "AE",
     teamB: "RRQ",
     scoreA: 0,
@@ -112,7 +100,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w9m5",
-    week: 9,
     teamA: "BTR",
     teamB: "ONIC",
     scoreA: 0,
@@ -121,7 +108,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w9m6",
-    week: 9,
     teamA: "RRQ",
     teamB: "DEWA",
     scoreA: 0,
@@ -130,7 +116,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w9m7",
-    week: 9,
     teamA: "ONIC",
     teamB: "EVOS",
     scoreA: 0,
@@ -139,7 +124,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w9m8",
-    week: 9,
     teamA: "NAVI",
     teamB: "GEEK",
     scoreA: 0,
@@ -150,7 +134,6 @@ export const ALL_MATCHES = [
   // --- WEEK 1 ---
   {
     id: "w1m1",
-    week: 1,
     teamA: "BTR",
     teamB: "AE",
     scoreA: 2,
@@ -159,7 +142,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w1m2",
-    week: 1,
     teamA: "NAVI",
     teamB: "RRQ",
     scoreA: 2,
@@ -168,7 +150,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w1m3",
-    week: 1,
     teamA: "EVOS",
     teamB: "GEEK",
     scoreA: 2,
@@ -177,7 +158,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w1m4",
-    week: 1,
     teamA: "AE",
     teamB: "ONIC",
     scoreA: 0,
@@ -186,7 +166,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w1m5",
-    week: 1,
     teamA: "TLID",
     teamB: "NAVI",
     scoreA: 2,
@@ -195,7 +174,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w1m6",
-    week: 1,
     teamA: "DEWA",
     teamB: "BTR",
     scoreA: 2,
@@ -204,7 +182,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w1m7",
-    week: 1,
     teamA: "EVOS",
     teamB: "TLID",
     scoreA: 0,
@@ -213,7 +190,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w1m8",
-    week: 1,
     teamA: "RRQ",
     teamB: "ONIC",
     scoreA: 0,
@@ -223,7 +199,6 @@ export const ALL_MATCHES = [
   // --- WEEK 2 ---
   {
     id: "w2m1",
-    week: 2,
     teamA: "ONIC",
     teamB: "GEEK",
     scoreA: 2,
@@ -232,7 +207,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w2m2",
-    week: 2,
     teamA: "DEWA",
     teamB: "NAVI",
     scoreA: 2,
@@ -241,7 +215,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w2m3",
-    week: 2,
     teamA: "GEEK",
     teamB: "BTR",
     scoreA: 2,
@@ -250,7 +223,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w2m4",
-    week: 2,
     teamA: "AE",
     teamB: "EVOS",
     scoreA: 2,
@@ -259,7 +231,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w2m5",
-    week: 2,
     teamA: "TLID",
     teamB: "DEWA",
     scoreA: 2,
@@ -268,7 +239,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w2m6",
-    week: 2,
     teamA: "NAVI",
     teamB: "AE",
     scoreA: 1,
@@ -277,7 +247,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w2m7",
-    week: 2,
     teamA: "RRQ",
     teamB: "TLID",
     scoreA: 0,
@@ -286,7 +255,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w2m8",
-    week: 2,
     teamA: "BTR",
     teamB: "EVOS",
     scoreA: 2,
@@ -296,7 +264,6 @@ export const ALL_MATCHES = [
   // --- WEEK 3 ---
   {
     id: "w3m1",
-    week: 3,
     teamA: "ONIC",
     teamB: "DEWA",
     scoreA: 2,
@@ -305,7 +272,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w3m2",
-    week: 3,
     teamA: "NAVI",
     teamB: "EVOS",
     scoreA: 0,
@@ -314,7 +280,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w3m3",
-    week: 3,
     teamA: "TLID",
     teamB: "GEEK",
     scoreA: 0,
@@ -323,7 +288,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w3m4",
-    week: 3,
     teamA: "ONIC",
     teamB: "BTR",
     scoreA: 1,
@@ -332,7 +296,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w3m5",
-    week: 3,
     teamA: "RRQ",
     teamB: "AE",
     scoreA: 1,
@@ -341,7 +304,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w3m6",
-    week: 3,
     teamA: "BTR",
     teamB: "NAVI",
     scoreA: 1,
@@ -350,7 +312,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w3m7",
-    week: 3,
     teamA: "GEEK",
     teamB: "RRQ",
     scoreA: 2,
@@ -359,7 +320,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w3m8",
-    week: 3,
     teamA: "AE",
     teamB: "DEWA",
     scoreA: 0,
@@ -369,7 +329,6 @@ export const ALL_MATCHES = [
   // --- WEEK 4 ---
   {
     id: "w4m1",
-    week: 4,
     teamA: "NAVI",
     teamB: "ONIC",
     scoreA: 0,
@@ -378,7 +337,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w4m2",
-    week: 4,
     teamA: "EVOS",
     teamB: "DEWA",
     scoreA: 2,
@@ -387,7 +345,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w4m3",
-    week: 4,
     teamA: "TLID",
     teamB: "BTR",
     scoreA: 1,
@@ -396,7 +353,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w4m4",
-    week: 4,
     teamA: "RRQ",
     teamB: "EVOS",
     scoreA: 0,
@@ -405,7 +361,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w4m5",
-    week: 4,
     teamA: "GEEK",
     teamB: "AE",
     scoreA: 1,
@@ -414,7 +369,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w4m6",
-    week: 4,
     teamA: "ONIC",
     teamB: "TLID",
     scoreA: 2,
@@ -423,7 +377,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w4m7",
-    week: 4,
     teamA: "BTR",
     teamB: "RRQ",
     scoreA: 2,
@@ -432,7 +385,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w4m8",
-    week: 4,
     teamA: "DEWA",
     teamB: "GEEK",
     scoreA: 2,
@@ -442,7 +394,6 @@ export const ALL_MATCHES = [
   // --- WEEK 5 ---
   {
     id: "w5m1",
-    week: 5,
     teamA: "GEEK",
     teamB: "NAVI",
     scoreA: 0,
@@ -451,7 +402,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w5m2",
-    week: 5,
     teamA: "EVOS",
     teamB: "ONIC",
     scoreA: 0,
@@ -460,7 +410,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w5m3",
-    week: 5,
     teamA: "DEWA",
     teamB: "RRQ",
     scoreA: 2,
@@ -469,7 +418,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w5m4",
-    week: 5,
     teamA: "AE",
     teamB: "TLID",
     scoreA: 1,
@@ -478,7 +426,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w5m5",
-    week: 5,
     teamA: "EVOS",
     teamB: "BTR",
     scoreA: 0,
@@ -487,7 +434,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w5m6",
-    week: 5,
     teamA: "AE",
     teamB: "NAVI",
     scoreA: 2,
@@ -496,7 +442,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w5m7",
-    week: 5,
     teamA: "GEEK",
     teamB: "ONIC",
     scoreA: 2,
@@ -505,7 +450,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w5m8",
-    week: 5,
     teamA: "DEWA",
     teamB: "TLID",
     scoreA: 2,
@@ -515,7 +459,6 @@ export const ALL_MATCHES = [
   // --- WEEK 6 ---
   {
     id: "w6m1",
-    week: 6,
     teamA: "NAVI",
     teamB: "DEWA",
     scoreA: 1,
@@ -524,7 +467,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w6m2",
-    week: 6,
     teamA: "AE",
     teamB: "GEEK",
     scoreA: 2,
@@ -533,7 +475,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w6m3",
-    week: 6,
     teamA: "EVOS",
     teamB: "AE",
     scoreA: 2,
@@ -542,7 +483,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w6m4",
-    week: 6,
     teamA: "TLID",
     teamB: "ONIC",
     scoreA: 0,
@@ -551,7 +491,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w6m5",
-    week: 6,
     teamA: "RRQ",
     teamB: "BTR",
     scoreA: 2,
@@ -560,7 +499,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w6m6",
-    week: 6,
     teamA: "NAVI",
     teamB: "TLID",
     scoreA: 1,
@@ -569,7 +507,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w6m7",
-    week: 6,
     teamA: "ONIC",
     teamB: "RRQ",
     scoreA: 2,
@@ -578,7 +515,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w6m8",
-    week: 6,
     teamA: "GEEK",
     teamB: "EVOS",
     scoreA: 2,
@@ -588,7 +524,6 @@ export const ALL_MATCHES = [
   // --- WEEK 7 ---
   {
     id: "w7m1",
-    week: 7,
     teamA: "GEEK",
     teamB: "DEWA",
     scoreA: 1,
@@ -597,7 +532,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w7m2",
-    week: 7,
     teamA: "BTR",
     teamB: "TLID",
     scoreA: 0,
@@ -606,7 +540,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w7m3",
-    week: 7,
     teamA: "DEWA",
     teamB: "AE",
     scoreA: 1,
@@ -615,7 +548,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w7m4",
-    week: 7,
     teamA: "EVOS",
     teamB: "RRQ",
     scoreA: 2,
@@ -624,7 +556,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w7m5",
-    week: 7,
     teamA: "ONIC",
     teamB: "NAVI",
     scoreA: 2,
@@ -633,7 +564,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w7m6",
-    week: 7,
     teamA: "RRQ",
     teamB: "GEEK",
     scoreA: 0,
@@ -642,7 +572,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w7m7",
-    week: 7,
     teamA: "NAVI",
     teamB: "BTR",
     scoreA: 2,
@@ -651,7 +580,6 @@ export const ALL_MATCHES = [
   },
   {
     id: "w7m8",
-    week: 7,
     teamA: "TLID",
     teamB: "EVOS",
     scoreA: 0,
