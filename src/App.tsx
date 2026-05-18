@@ -318,6 +318,46 @@ export default function App() {
     setSelectedWeek(1)
   }
 
+  const handleSaveAsJSON = () => {
+    const dataToSave = {
+      matches,
+      selectedWeek,
+      timestamp: new Date().toISOString(),
+    }
+    const jsonString = JSON.stringify(dataToSave, null, 2)
+    const blob = new Blob([jsonString], { type: "application/json" })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = `mpl-matches-${new Date().getTime()}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  const handleLoadFromJSON = (file: File) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string
+        const data = JSON.parse(content)
+        if (data.matches && Array.isArray(data.matches)) {
+          setIsSimulating(true)
+          setMatches(data.matches)
+          if (data.selectedWeek) {
+            setSelectedWeek(data.selectedWeek)
+          }
+        } else {
+          alert("Invalid JSON format. Expected matches array.")
+        }
+      } catch (error) {
+        alert("Error loading JSON file: " + (error instanceof Error ? error.message : String(error)))
+      }
+    }
+    reader.readAsText(file)
+  }
+
   const getMatchesByDay = (weekMatches: Match[]) => [
     { title: "Day 1", matches: weekMatches.slice(0, 2) },
     { title: "Day 2", matches: weekMatches.slice(2, 5) },
@@ -581,6 +621,33 @@ export default function App() {
                 <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <CardTitle>Schedule</CardTitle>
                   <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleSaveAsJSON}
+                      className="h-8 text-xs"
+                    >
+                      Save as JSON
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 text-xs"
+                      onClick={() => {
+                        const input = document.createElement("input")
+                        input.type = "file"
+                        input.accept = ".json"
+                        input.onchange = (e) => {
+                          const file = (e.target as HTMLInputElement).files?.[0]
+                          if (file) {
+                            handleLoadFromJSON(file)
+                          }
+                        }
+                        input.click()
+                      }}
+                    >
+                      Load from JSON
+                    </Button>
                     {!allMatchesUnplayed && (
                       <Button
                         size="sm"
