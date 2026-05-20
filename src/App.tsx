@@ -60,6 +60,18 @@ const isMatchPlayed = (match: Match): boolean => {
   return match.scoreA !== 0 || match.scoreB !== 0
 }
 
+// Sort matches by ID (e.g., w1m1, w1m2, ..., w9m8)
+const sortMatchesById = (matches: Match[]): Match[] => {
+  return [...matches].sort((a, b) => {
+    const aWeek = getWeekFromId(a.id)
+    const bWeek = getWeekFromId(b.id)
+    if (aWeek !== bWeek) return aWeek - bWeek
+    const aMatch = parseInt(a.id.match(/m(\d+)/)?.[1] || "0", 10)
+    const bMatch = parseInt(b.id.match(/m(\d+)/)?.[1] || "0", 10)
+    return aMatch - bMatch
+  })
+}
+
 interface Probability {
   top2: string
   playoffs: string
@@ -209,7 +221,10 @@ export default function App() {
   const hasScoreChanges = useMemo(() => {
     return matches.some((m, idx) => {
       const initial = initialMatchesRef.current[idx]
-      return m.scoreA !== initial.scoreA || m.scoreB !== initial.scoreB
+      return (
+        m.scoreA !== initial.scoreA ||
+        m.scoreB !== initial.scoreB
+      )
     })
   }, [matches])
 
@@ -297,7 +312,8 @@ export default function App() {
     setMatches((prev) =>
       prev.map((m) => {
         if (m.id !== matchId) return m
-        if (value === "unplayed") return { ...m, scoreA: 0, scoreB: 0 }
+        if (value === "unplayed")
+          return { ...m, scoreA: 0, scoreB: 0 }
         const [scoreA, scoreB] = value.split("-").map(Number)
         return { ...m, scoreA, scoreB }
       })
@@ -323,7 +339,7 @@ export default function App() {
 
   const handleSaveAsJSON = () => {
     const dataToSave = {
-      matches,
+      matches: sortMatchesById(matches),
       selectedWeek,
       timestamp: new Date().toISOString(),
     }
@@ -347,7 +363,7 @@ export default function App() {
         const data = JSON.parse(content)
         if (data.matches && Array.isArray(data.matches)) {
           setIsSimulating(true)
-          setMatches(data.matches)
+          setMatches(sortMatchesById(data.matches))
           if (data.selectedWeek) {
             setSelectedWeek(data.selectedWeek)
           }
@@ -355,10 +371,7 @@ export default function App() {
           alert("Invalid JSON format. Expected matches array.")
         }
       } catch (error) {
-        alert(
-          "Error loading JSON file: " +
-            (error instanceof Error ? error.message : String(error))
-        )
+        alert("Error loading JSON file: " + (error instanceof Error ? error.message : String(error)))
       }
     }
     reader.readAsText(file)
@@ -682,9 +695,7 @@ export default function App() {
                 {/* Week selector */}
                 <div className="flex flex-wrap gap-1.5">
                   {weeks.map((week) => {
-                    const weekMatches = matches.filter(
-                      (m) => getWeekFromId(m.id) === week
-                    )
+                    const weekMatches = matches.filter((m) => getWeekFromId(m.id) === week)
                     const isCompleted =
                       weekMatches.length > 0 &&
                       weekMatches.every((m) => isMatchPlayed(m))
@@ -718,8 +729,8 @@ export default function App() {
               <Separator />
 
               <CardContent className="max-h-[700px] space-y-6 overflow-y-auto p-4">
-                {getMatchesByDay(
-                  matches.filter((m) => getWeekFromId(m.id) === selectedWeek)
+  {getMatchesByDay(
+  matches.filter((m) => getWeekFromId(m.id) === selectedWeek)
                 ).map((day) => (
                   <div key={day.title}>
                     {/* Day header */}
