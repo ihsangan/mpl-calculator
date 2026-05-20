@@ -43,12 +43,21 @@ interface TeamRow {
 
 interface Match {
   id: string
-  week: number
   teamA: string
   teamB: string
   scoreA: number
   scoreB: number
-  isPlayed: boolean
+}
+
+// Extract week number from match ID (e.g., "w8m1" -> 8)
+const getWeekFromId = (id: string): number => {
+  const match = id.match(/w(\d+)/)
+  return match ? parseInt(match[1], 10) : 0
+}
+
+// Check if match has been played (any non-zero score)
+const isMatchPlayed = (match: Match): boolean => {
+  return match.scoreA !== 0 || match.scoreB !== 0
 }
 
 interface Probability {
@@ -96,7 +105,7 @@ const calculateStandings = (matches: Match[]): TeamRow[] => {
   })
 
   matches.forEach((m: Match) => {
-    if (!m.isPlayed) return
+    if (!isMatchPlayed(m)) return
 
     table[m.teamA].gameW += m.scoreA
     table[m.teamA].gameL += m.scoreB
@@ -200,17 +209,13 @@ export default function App() {
   const hasScoreChanges = useMemo(() => {
     return matches.some((m, idx) => {
       const initial = initialMatchesRef.current[idx]
-      return (
-        m.scoreA !== initial.scoreA ||
-        m.scoreB !== initial.scoreB ||
-        m.isPlayed !== initial.isPlayed
-      )
+      return m.scoreA !== initial.scoreA || m.scoreB !== initial.scoreB
     })
   }, [matches])
 
   // Check if all matches are unplayed
   const allMatchesUnplayed = useMemo(() => {
-    return matches.every((m) => !m.isPlayed)
+    return matches.every((m) => !isMatchPlayed(m))
   }, [matches])
 
   // Detect dark mode from HTML class and theme setting
@@ -243,14 +248,14 @@ export default function App() {
         stats[t.id] = { top2: 0, playoffs: 0, eliminated: 0 }
       })
 
-      const played = matches.filter((m) => m.isPlayed)
-      const unplayed = matches.filter((m) => !m.isPlayed)
+      const played = matches.filter((m) => isMatchPlayed(m))
+      const unplayed = matches.filter((m) => !isMatchPlayed(m))
 
       for (let i = 0; i < ITERATIONS; i++) {
         const sim = unplayed.map((m) => {
           const r =
             POSSIBLE_SCORES[Math.floor(Math.random() * POSSIBLE_SCORES.length)]
-          return { ...m, scoreA: r.a, scoreB: r.b, isPlayed: true }
+          return { ...m, scoreA: r.a, scoreB: r.b }
         })
         const simStandings = calculateStandings([...played, ...sim])
         simStandings.forEach((team, index) => {
@@ -292,10 +297,9 @@ export default function App() {
     setMatches((prev) =>
       prev.map((m) => {
         if (m.id !== matchId) return m
-        if (value === "unplayed")
-          return { ...m, isPlayed: false, scoreA: 0, scoreB: 0 }
+        if (value === "unplayed") return { ...m, scoreA: 0, scoreB: 0 }
         const [scoreA, scoreB] = value.split("-").map(Number)
-        return { ...m, isPlayed: true, scoreA, scoreB }
+        return { ...m, scoreA, scoreB }
       })
     )
   }
@@ -312,10 +316,52 @@ export default function App() {
       ...m,
       scoreA: 0,
       scoreB: 0,
-      isPlayed: false,
     }))
     setMatches(resetMatches)
     setSelectedWeek(1)
+  }
+
+  const handleSaveAsJSON = () => {
+    const dataToSave = {
+      matches,
+      selectedWeek,
+      timestamp: new Date().toISOString(),
+    }
+    const jsonString = JSON.stringify(dataToSave, null, 2)
+    const blob = new Blob([jsonString], { type: "application/json" })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = `mpl-matches-${new Date().getTime()}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  const handleLoadFromJSON = (file: File) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string
+        const data = JSON.parse(content)
+        if (data.matches && Array.isArray(data.matches)) {
+          setIsSimulating(true)
+          setMatches(data.matches)
+          if (data.selectedWeek) {
+            setSelectedWeek(data.selectedWeek)
+          }
+        } else {
+          alert("Invalid JSON format. Expected matches array.")
+        }
+      } catch (error) {
+        alert(
+          "Error loading JSON file: " +
+            (error instanceof Error ? error.message : String(error))
+        )
+      }
+    }
+    reader.readAsText(file)
   }
 
   const getMatchesByDay = (weekMatches: Match[]) => [
@@ -324,7 +370,10 @@ export default function App() {
     { title: "Day 3", matches: weekMatches.slice(5, 8) },
   ]
 
-  const weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  const weeks = useMemo(() => {
+    const weekSet = new Set(matches.map((m) => getWeekFromId(m.id)))
+    return Array.from(weekSet).sort((a, b) => a - b)
+  }, [matches])
 
   return (
     <div className="min-h-screen bg-background p-4 text-foreground md:p-8">
@@ -574,13 +623,40 @@ export default function App() {
             </Card>
           </div>
 
-          {/* ── RIGHT: Schedule Editor ── */}
+          {/* ── RIGHT: Schedule Editor ─�� */}
           <div className="xl:col-span-5">
             <Card className="sticky top-8">
               <CardHeader className="pb-3">
                 <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <CardTitle>Schedule</CardTitle>
                   <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleSaveAsJSON}
+                      className="h-8 text-xs"
+                    >
+                      Save as JSON
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 text-xs"
+                      onClick={() => {
+                        const input = document.createElement("input")
+                        input.type = "file"
+                        input.accept = ".json"
+                        input.onchange = (e) => {
+                          const file = (e.target as HTMLInputElement).files?.[0]
+                          if (file) {
+                            handleLoadFromJSON(file)
+                          }
+                        }
+                        input.click()
+                      }}
+                    >
+                      Load from JSON
+                    </Button>
                     {!allMatchesUnplayed && (
                       <Button
                         size="sm"
@@ -606,10 +682,12 @@ export default function App() {
                 {/* Week selector */}
                 <div className="flex flex-wrap gap-1.5">
                   {weeks.map((week) => {
-                    const weekMatches = matches.filter((m) => m.week === week)
+                    const weekMatches = matches.filter(
+                      (m) => getWeekFromId(m.id) === week
+                    )
                     const isCompleted =
                       weekMatches.length > 0 &&
-                      weekMatches.every((m) => m.isPlayed)
+                      weekMatches.every((m) => isMatchPlayed(m))
                     const isSelected = selectedWeek === week
 
                     let variant: "default" | "secondary" | "outline" = "outline"
@@ -641,7 +719,7 @@ export default function App() {
 
               <CardContent className="max-h-[700px] space-y-6 overflow-y-auto p-4">
                 {getMatchesByDay(
-                  matches.filter((m) => m.week === selectedWeek)
+                  matches.filter((m) => getWeekFromId(m.id) === selectedWeek)
                 ).map((day) => (
                   <div key={day.title}>
                     {/* Day header */}
@@ -656,15 +734,16 @@ export default function App() {
                     {/* Matches */}
                     <div className="space-y-2">
                       {day.matches.map((match) => {
-                        const currentValue = match.isPlayed
+                        const played = isMatchPlayed(match)
+                        const currentValue = played
                           ? `${match.scoreA}-${match.scoreB}`
                           : "unplayed"
-                        const teamAColor = match.isPlayed
+                        const teamAColor = played
                           ? match.scoreA > match.scoreB
                             ? "text-green-600 dark:text-green-510"
                             : "text-red-600 dark:text-red-500"
                           : ""
-                        const teamBColor = match.isPlayed
+                        const teamBColor = played
                           ? match.scoreB > match.scoreA
                             ? "text-green-600 dark:text-green-510"
                             : "text-red-600 dark:text-red-500"
@@ -695,7 +774,7 @@ export default function App() {
                                 <SelectTrigger
                                   aria-label={`Score for ${match.teamA} vs ${match.teamB}`}
                                   className={`h-8 justify-center gap-1 text-center text-xs font-bold ${
-                                    match.isPlayed
+                                    played
                                       ? "border-blue-400 bg-blue-50 text-blue-700 dark:border-blue-600/50 dark:bg-blue-950/30 dark:text-blue-400"
                                       : ""
                                   }`}
