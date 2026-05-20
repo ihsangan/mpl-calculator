@@ -60,6 +60,18 @@ const isMatchPlayed = (match: Match): boolean => {
   return match.scoreA !== 0 || match.scoreB !== 0
 }
 
+// Sort matches by ID (e.g., w1m1, w1m2, ..., w9m8)
+const sortMatchesById = (matches: Match[]): Match[] => {
+  return [...matches].sort((a, b) => {
+    const aWeek = getWeekFromId(a.id)
+    const bWeek = getWeekFromId(b.id)
+    if (aWeek !== bWeek) return aWeek - bWeek
+    const aMatch = parseInt(a.id.match(/m(\d+)/)?.[1] || "0", 10)
+    const bMatch = parseInt(b.id.match(/m(\d+)/)?.[1] || "0", 10)
+    return aMatch - bMatch
+  })
+}
+
 interface Probability {
   top2: string
   playoffs: string
@@ -327,7 +339,7 @@ export default function App() {
 
   const handleSaveAsJSON = () => {
     const dataToSave = {
-      matches,
+      matches: sortMatchesById(matches),
       selectedWeek,
       timestamp: new Date().toISOString(),
     }
@@ -351,7 +363,7 @@ export default function App() {
         const data = JSON.parse(content)
         if (data.matches && Array.isArray(data.matches)) {
           setIsSimulating(true)
-          setMatches(data.matches)
+          setMatches(sortMatchesById(data.matches))
           if (data.selectedWeek) {
             setSelectedWeek(data.selectedWeek)
           }
