@@ -1,62 +1,5 @@
-export const CURRENT_WEEK = 8
+export const CURRENT_WEEK = 9
 export const ALL_MATCHES = [
-  // --- WEEK 8 ---
-  {
-    id: "w8m1",
-    teamA: "BTR",
-    teamB: "GEEK",
-    scoreA: 0,
-    scoreB: 2,
-  },
-  {
-    id: "w8m2",
-    teamA: "DEWA",
-    teamB: "ONIC",
-    scoreA: 0,
-    scoreB: 2,
-  },
-  {
-    id: "w8m3",
-    teamA: "EVOS",
-    teamB: "NAVI",
-    scoreA: 0,
-    scoreB: 2,
-  },
-  {
-    id: "w8m4",
-    teamA: "TLID",
-    teamB: "RRQ",
-    scoreA: 2,
-    scoreB: 0,
-  },
-  {
-    id: "w8m5",
-    teamA: "ONIC",
-    teamB: "AE",
-    scoreA: 2,
-    scoreB: 1,
-  },
-  {
-    id: "w8m6",
-    teamA: "DEWA",
-    teamB: "EVOS",
-    scoreA: 0,
-    scoreB: 2,
-  },
-  {
-    id: "w8m7",
-    teamA: "AE",
-    teamB: "BTR",
-    scoreA: 0,
-    scoreB: 2,
-  },
-  {
-    id: "w8m8",
-    teamA: "RRQ",
-    teamB: "NAVI",
-    scoreA: 0,
-    scoreB: 2,
-  },
   // --- WEEK 9 ---
   {
     id: "w9m1",
@@ -511,6 +454,63 @@ export const ALL_MATCHES = [
     id: "w7m8",
     teamA: "TLID",
     teamB: "EVOS",
+    scoreA: 0,
+    scoreB: 2,
+  },
+  // --- WEEK 8 ---
+  {
+    id: "w8m1",
+    teamA: "BTR",
+    teamB: "GEEK",
+    scoreA: 0,
+    scoreB: 2,
+  },
+  {
+    id: "w8m2",
+    teamA: "DEWA",
+    teamB: "ONIC",
+    scoreA: 0,
+    scoreB: 2,
+  },
+  {
+    id: "w8m3",
+    teamA: "EVOS",
+    teamB: "NAVI",
+    scoreA: 0,
+    scoreB: 2,
+  },
+  {
+    id: "w8m4",
+    teamA: "TLID",
+    teamB: "RRQ",
+    scoreA: 2,
+    scoreB: 0,
+  },
+  {
+    id: "w8m5",
+    teamA: "ONIC",
+    teamB: "AE",
+    scoreA: 2,
+    scoreB: 1,
+  },
+  {
+    id: "w8m6",
+    teamA: "DEWA",
+    teamB: "EVOS",
+    scoreA: 0,
+    scoreB: 2,
+  },
+  {
+    id: "w8m7",
+    teamA: "AE",
+    teamB: "BTR",
+    scoreA: 0,
+    scoreB: 2,
+  },
+  {
+    id: "w8m8",
+    teamA: "RRQ",
+    teamB: "NAVI",
     scoreA: 0,
     scoreB: 2,
   },
