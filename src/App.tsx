@@ -458,7 +458,7 @@ export default function App() {
                         }
                         return (
                           <TableRow key={team.id} className={rowBg}>
-                            <TableCell className="py-2.5 text-center">
+                            <TableCell className="py-2.5 pr-1.5">
                               <Badge
                                 variant={getRankBadgeVariant(idx)}
                                 className={`flex h-6 w-6 items-center justify-center rounded-full p-0 text-xs ${getRankBadgeClass(idx)}`}
@@ -466,7 +466,7 @@ export default function App() {
                                 {idx + 1}
                               </Badge>
                             </TableCell>
-                            <TableCell className="py-2.5">
+                            <TableCell className="py-2.5 pl-1.5">
                               <div className="flex items-center gap-3">
                                 <div className="flex w-8 shrink-0 justify-center">
                                   <img
