@@ -209,10 +209,7 @@ export default function App() {
   const hasScoreChanges = useMemo(() => {
     return matches.some((m, idx) => {
       const initial = initialMatchesRef.current[idx]
-      return (
-        m.scoreA !== initial.scoreA ||
-        m.scoreB !== initial.scoreB
-      )
+      return m.scoreA !== initial.scoreA || m.scoreB !== initial.scoreB
     })
   }, [matches])
 
@@ -300,8 +297,7 @@ export default function App() {
     setMatches((prev) =>
       prev.map((m) => {
         if (m.id !== matchId) return m
-        if (value === "unplayed")
-          return { ...m, scoreA: 0, scoreB: 0 }
+        if (value === "unplayed") return { ...m, scoreA: 0, scoreB: 0 }
         const [scoreA, scoreB] = value.split("-").map(Number)
         return { ...m, scoreA, scoreB }
       })
@@ -359,7 +355,10 @@ export default function App() {
           alert("Invalid JSON format. Expected matches array.")
         }
       } catch (error) {
-        alert("Error loading JSON file: " + (error instanceof Error ? error.message : String(error)))
+        alert(
+          "Error loading JSON file: " +
+            (error instanceof Error ? error.message : String(error))
+        )
       }
     }
     reader.readAsText(file)
@@ -683,7 +682,9 @@ export default function App() {
                 {/* Week selector */}
                 <div className="flex flex-wrap gap-1.5">
                   {weeks.map((week) => {
-                    const weekMatches = matches.filter((m) => getWeekFromId(m.id) === week)
+                    const weekMatches = matches.filter(
+                      (m) => getWeekFromId(m.id) === week
+                    )
                     const isCompleted =
                       weekMatches.length > 0 &&
                       weekMatches.every((m) => isMatchPlayed(m))
@@ -717,8 +718,8 @@ export default function App() {
               <Separator />
 
               <CardContent className="max-h-[700px] space-y-6 overflow-y-auto p-4">
-  {getMatchesByDay(
-  matches.filter((m) => getWeekFromId(m.id) === selectedWeek)
+                {getMatchesByDay(
+                  matches.filter((m) => getWeekFromId(m.id) === selectedWeek)
                 ).map((day) => (
                   <div key={day.title}>
                     {/* Day header */}
