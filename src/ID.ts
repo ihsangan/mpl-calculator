@@ -12,7 +12,7 @@ export const ALL_MATCHES = [
     id: "w9m2",
     teamA: "TLID",
     teamB: "AE",
-    scoreA: 0,
+    scoreA: 2,
     scoreB: 0,
   },
   {
