@@ -33,8 +33,8 @@ export const ALL_MATCHES = [
     id: "w9m5",
     teamA: "BTR",
     teamB: "ONIC",
-    scoreA: 0,
-    scoreB: 0,
+    scoreA: 2,
+    scoreB: 1,
   },
   {
     id: "w9m6",
