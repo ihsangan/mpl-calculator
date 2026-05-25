@@ -40,22 +40,22 @@ export const ALL_MATCHES = [
     id: "w9m6",
     teamA: "RRQ",
     teamB: "DEWA",
-    scoreA: 0,
-    scoreB: 0,
+    scoreA: 1,
+    scoreB: 2,
   },
   {
     id: "w9m7",
     teamA: "ONIC",
     teamB: "EVOS",
-    scoreA: 0,
+    scoreA: 2,
     scoreB: 0,
   },
   {
     id: "w9m8",
     teamA: "NAVI",
     teamB: "GEEK",
-    scoreA: 0,
-    scoreB: 0,
+    scoreA: 1,
+    scoreB: 2,
   },
   // --- COMPLETED ---
   // --- WEEK 1 ---
