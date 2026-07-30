@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react"
-import { CURRENT_WEEK, TEAMS, ALL_MATCHES } from "./ID"
+import { TEAMS } from "./teams"
+import { CURRENT_WEEK, ALL_MATCHES } from "./schedule"
 import {
   Table,
   TableBody,
@@ -60,14 +61,29 @@ const isMatchPlayed = (match: Match): boolean => {
   return match.scoreA !== 0 || match.scoreB !== 0
 }
 
-// Sort matches by ID (e.g., w1m1, w1m2, ..., w9m8)
+// Extract day number from match ID (e.g., "w1d2m1" -> 2)
+const getDayFromId = (id: string): number => {
+  const match = id.match(/d(\d+)/)
+  return match ? parseInt(match[1], 10) : 0
+}
+
+// Extract match number from match ID (e.g., "w1d2m1" -> 1)
+const getMatchNumberFromId = (id: string): number => {
+  const match = id.match(/m(\d+)/)
+  return match ? parseInt(match[1], 10) : 0
+}
+
+// Sort matches by ID (e.g., w1d1m1, w1d1m2, ..., w9d3m3)
 const sortMatchesById = (matches: Match[]): Match[] => {
   return [...matches].sort((a, b) => {
     const aWeek = getWeekFromId(a.id)
     const bWeek = getWeekFromId(b.id)
     if (aWeek !== bWeek) return aWeek - bWeek
-    const aMatch = parseInt(a.id.match(/m(\d+)/)?.[1] || "0", 10)
-    const bMatch = parseInt(b.id.match(/m(\d+)/)?.[1] || "0", 10)
+    const aDay = getDayFromId(a.id)
+    const bDay = getDayFromId(b.id)
+    if (aDay !== bDay) return aDay - bDay
+    const aMatch = getMatchNumberFromId(a.id)
+    const bMatch = getMatchNumberFromId(b.id)
     return aMatch - bMatch
   })
 }
@@ -376,11 +392,26 @@ export default function App() {
     reader.readAsText(file)
   }
 
-  const getMatchesByDay = (weekMatches: Match[]) => [
-    { title: "Day 1", matches: weekMatches.slice(0, 2) },
-    { title: "Day 2", matches: weekMatches.slice(2, 5) },
-    { title: "Day 3", matches: weekMatches.slice(5, 8) },
-  ]
+  const getMatchesByDay = (weekMatches: Match[]) => {
+    // Group matches by day extracted from their ID
+    const matchesByDay: Record<number, Match[]> = {}
+    
+    weekMatches.forEach((match) => {
+      const day = getDayFromId(match.id)
+      if (!matchesByDay[day]) {
+        matchesByDay[day] = []
+      }
+      matchesByDay[day].push(match)
+    })
+    
+    // Sort each day's matches and return as array with titles
+    return Object.entries(matchesByDay)
+      .sort(([dayA], [dayB]) => parseInt(dayA) - parseInt(dayB))
+      .map(([day, matches]) => ({
+        title: `Day ${day}`,
+        matches: matches.sort((a, b) => getMatchNumberFromId(a.id) - getMatchNumberFromId(b.id))
+      }))
+  }
 
   const weeks = useMemo(() => {
     const weekSet = new Set(matches.map((m) => getWeekFromId(m.id)))
