@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react"
-import { CURRENT_WEEK, TEAMS, ALL_MATCHES } from "./ID"
+import { TEAMS } from "./teams"
+import { CURRENT_WEEK, ALL_MATCHES } from "./schedule"
 import {
   Table,
   TableBody,
