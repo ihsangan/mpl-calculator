@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react"
-import { LEAGUES, LEAGUE_OPTIONS, type LeagueConfig } from "./leagues"
+import { LEAGUES, LEAGUE_OPTIONS } from "./leagues"
 import {
   Table,
   TableBody,
