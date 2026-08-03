@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react"
-import { TEAMS } from "./teams"
-import { CURRENT_WEEK, ALL_MATCHES } from "./schedule"
+import { ID_TEAMS } from "./teams"
+import { LEAGUE_NAME, CURRENT_WEEK, ALL_MATCHES } from "./schedule-id.json"
 import {
   Table,
   TableBody,
@@ -95,7 +95,7 @@ interface Probability {
 }
 
 const getTeamLogo = (teamId: string, isDarkMode: boolean): string => {
-  const team = TEAMS.find((t) => t.id === teamId)
+  const team = ID_TEAMS.find((t) => t.id === teamId)
   if (!team) return ""
 
   // Use dark mode logo if available and dark mode is active
@@ -109,7 +109,7 @@ const getTeamLogo = (teamId: string, isDarkMode: boolean): string => {
 const calculateStandings = (matches: Match[]): TeamRow[] => {
   const table: Record<string, TeamRow> = {}
 
-  TEAMS.forEach((t: { id: string; name: string }) => {
+  ID_TEAMS.forEach((t: { id: string; name: string }) => {
     table[t.id] = {
       id: t.id,
       name: t.name,
@@ -125,9 +125,9 @@ const calculateStandings = (matches: Match[]): TeamRow[] => {
 
   // Build H2H record: h2h[teamA][teamB] = wins of teamA against teamB
   const h2h: Record<string, Record<string, number>> = {}
-  TEAMS.forEach((t: { id: string }) => {
+  ID_TEAMS.forEach((t: { id: string }) => {
     h2h[t.id] = {}
-    TEAMS.forEach((t2: { id: string }) => {
+    ID_TEAMS.forEach((t2: { id: string }) => {
       h2h[t.id][t2.id] = 0
     })
   })
@@ -272,7 +272,7 @@ export default function App() {
         string,
         { top2: number; playoffs: number; eliminated: number }
       > = {}
-      TEAMS.forEach((t: { id: string }) => {
+      ID_TEAMS.forEach((t: { id: string }) => {
         stats[t.id] = { top2: 0, playoffs: 0, eliminated: 0 }
       })
 
@@ -395,7 +395,7 @@ export default function App() {
   const getMatchesByDay = (weekMatches: Match[]) => {
     // Group matches by day extracted from their ID
     const matchesByDay: Record<number, Match[]> = {}
-    
+
     weekMatches.forEach((match) => {
       const day = getDayFromId(match.id)
       if (!matchesByDay[day]) {
@@ -403,13 +403,15 @@ export default function App() {
       }
       matchesByDay[day].push(match)
     })
-    
+
     // Sort each day's matches and return as array with titles
     return Object.entries(matchesByDay)
       .sort(([dayA], [dayB]) => parseInt(dayA) - parseInt(dayB))
       .map(([day, matches]) => ({
         title: `Day ${day}`,
-        matches: matches.sort((a, b) => getMatchNumberFromId(a.id) - getMatchNumberFromId(b.id))
+        matches: matches.sort(
+          (a, b) => getMatchNumberFromId(a.id) - getMatchNumberFromId(b.id)
+        ),
       }))
   }
 
@@ -425,7 +427,7 @@ export default function App() {
         <div className="flex items-start justify-between gap-4 border-b pb-6">
           <div>
             <h1 className="mb-1 text-3xl font-bold tracking-tight md:text-4xl">
-              MPL Indonesia Season 17
+              {LEAGUE_NAME}
             </h1>
             <p className="text-muted-foreground">
               Standings and playoff probabilities calculator.

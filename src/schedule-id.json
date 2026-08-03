@@ -1,0 +1,510 @@
+{
+  "LEAGUE_NAME": "MPL Indonesia Season 18",
+  "CURRENT_WEEK": 1,
+  "ALL_MATCHES": [
+    {
+      "id": "w1d1m1",
+      "teamA": "EVOS",
+      "teamB": "RRQ",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w1d1m2",
+      "teamA": "NAVI",
+      "teamB": "AE",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w1d2m1",
+      "teamA": "TLID",
+      "teamB": "GEEK",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w1d2m2",
+      "teamA": "DEWA",
+      "teamB": "RRQ",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w1d2m3",
+      "teamA": "EVOS",
+      "teamB": "NAVI",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w1d3m1",
+      "teamA": "TLID",
+      "teamB": "DEWA",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w1d3m2",
+      "teamA": "GEEK",
+      "teamB": "BTR",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w1d3m3",
+      "teamA": "AE",
+      "teamB": "ONIC",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w2d1m1",
+      "teamA": "TLID",
+      "teamB": "NAVI",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w2d1m2",
+      "teamA": "BTR",
+      "teamB": "DEWA",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w2d2m1",
+      "teamA": "TLID",
+      "teamB": "EVOS",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w2d2m2",
+      "teamA": "NAVI",
+      "teamB": "GEEK",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w2d2m3",
+      "teamA": "ONIC",
+      "teamB": "RRQ",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w2d3m1",
+      "teamA": "DEWA",
+      "teamB": "AE",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w2d3m2",
+      "teamA": "ONIC",
+      "teamB": "BTR",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w2d3m3",
+      "teamA": "GEEK",
+      "teamB": "EVOS",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w3d1m1",
+      "teamA": "BTR",
+      "teamB": "NAVI",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w3d1m2",
+      "teamA": "DEWA",
+      "teamB": "GEEK",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w3d2m1",
+      "teamA": "TLID",
+      "teamB": "ONIC",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w3d2m2",
+      "teamA": "AE",
+      "teamB": "EVOS",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w3d2m3",
+      "teamA": "RRQ",
+      "teamB": "BTR",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w3d3m1",
+      "teamA": "NAVI",
+      "teamB": "ONIC",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w3d3m2",
+      "teamA": "GEEK",
+      "teamB": "RRQ",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w3d3m3",
+      "teamA": "TLID",
+      "teamB": "AE",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w4d1m1",
+      "teamA": "NAVI",
+      "teamB": "DEWA",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w4d1m2",
+      "teamA": "TLID",
+      "teamB": "RRQ",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w4d2m1",
+      "teamA": "DEWA",
+      "teamB": "ONIC",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w4d2m2",
+      "teamA": "AE",
+      "teamB": "BTR",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w4d2m3",
+      "teamA": "GEEK",
+      "teamB": "TLID",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w4d3m1",
+      "teamA": "BTR",
+      "teamB": "EVOS",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w4d3m2",
+      "teamA": "RRQ",
+      "teamB": "AE",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w4d3m3",
+      "teamA": "ONIC",
+      "teamB": "GEEK",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w5d1m1",
+      "teamA": "ONIC",
+      "teamB": "EVOS",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w5d1m2",
+      "teamA": "DEWA",
+      "teamB": "TLID",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w5d2m1",
+      "teamA": "GEEK",
+      "teamB": "AE",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w5d2m2",
+      "teamA": "BTR",
+      "teamB": "RRQ",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w5d2m3",
+      "teamA": "NAVI",
+      "teamB": "TLID",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w5d3m1",
+      "teamA": "DEWA",
+      "teamB": "BTR",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w5d3m2",
+      "teamA": "RRQ",
+      "teamB": "GEEK",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w5d3m3",
+      "teamA": "EVOS",
+      "teamB": "AE",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w6d1m1",
+      "teamA": "BTR",
+      "teamB": "ONIC",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w6d1m2",
+      "teamA": "GEEK",
+      "teamB": "NAVI",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w6d2m1",
+      "teamA": "RRQ",
+      "teamB": "DEWA",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w6d2m2",
+      "teamA": "AE",
+      "teamB": "TLID",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w6d2m3",
+      "teamA": "EVOS",
+      "teamB": "BTR",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w6d3m1",
+      "teamA": "RRQ",
+      "teamB": "NAVI",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w6d3m2",
+      "teamA": "ONIC",
+      "teamB": "AE",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w6d3m3",
+      "teamA": "EVOS",
+      "teamB": "TLID",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w7d1m1",
+      "teamA": "NAVI",
+      "teamB": "BTR",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w7d1m2",
+      "teamA": "AE",
+      "teamB": "DEWA",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w7d2m1",
+      "teamA": "EVOS",
+      "teamB": "GEEK",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w7d2m2",
+      "teamA": "RRQ",
+      "teamB": "ONIC",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w7d2m3",
+      "teamA": "TLID",
+      "teamB": "BTR",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w7d3m1",
+      "teamA": "GEEK",
+      "teamB": "DEWA",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w7d3m2",
+      "teamA": "ONIC",
+      "teamB": "NAVI",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w7d3m3",
+      "teamA": "AE",
+      "teamB": "RRQ",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w8d1m1",
+      "teamA": "NAVI",
+      "teamB": "AE",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w8d1m2",
+      "teamA": "GEEK",
+      "teamB": "BTR",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w8d2m1",
+      "teamA": "DEWA",
+      "teamB": "EVOS",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w8d2m2",
+      "teamA": "RRQ",
+      "teamB": "TLID",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w8d2m3",
+      "teamA": "BTR",
+      "teamB": "AE",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w8d3m1",
+      "teamA": "ONIC",
+      "teamB": "DEWA",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w8d3m2",
+      "teamA": "EVOS",
+      "teamB": "NAVI",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w8d3m3",
+      "teamA": "GEEK",
+      "teamB": "ONIC",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w9d1m1",
+      "teamA": "NAVI",
+      "teamB": "EVOS",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w9d1m2",
+      "teamA": "DEWA",
+      "teamB": "AE",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w9d2m1",
+      "teamA": "BTR",
+      "teamB": "GEEK",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w9d2m2",
+      "teamA": "RRQ",
+      "teamB": "DEWA",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w9d2m3",
+      "teamA": "AE",
+      "teamB": "EVOS",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w9d3m1",
+      "teamA": "NAVI",
+      "teamB": "BTR",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w9d3m2",
+      "teamA": "TLID",
+      "teamB": "GEEK",
+      "scoreA": 0,
+      "scoreB": 0
+    },
+    {
+      "id": "w9d3m3",
+      "teamA": "ONIC",
+      "teamB": "EVOS",
+      "scoreA": 0,
+      "scoreB": 0
+    }
+  ]
+}
