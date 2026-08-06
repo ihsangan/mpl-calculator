@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react"
-import { ID_TEAMS } from "./teams"
-import { LEAGUE_NAME, CURRENT_WEEK, ALL_MATCHES } from "./schedule-id.json"
+import { LEAGUES, LEAGUE_OPTIONS } from "./leagues"
 import {
   Table,
   TableBody,
@@ -94,8 +93,8 @@ interface Probability {
   eliminated: string
 }
 
-const getTeamLogo = (teamId: string, isDarkMode: boolean): string => {
-  const team = ID_TEAMS.find((t) => t.id === teamId)
+const getTeamLogo = (teamId: string, isDarkMode: boolean, teams: typeof LEAGUES.ID.teams): string => {
+  const team = teams.find((t) => t.id === teamId)
   if (!team) return ""
 
   // Use dark mode logo if available and dark mode is active
@@ -106,10 +105,10 @@ const getTeamLogo = (teamId: string, isDarkMode: boolean): string => {
   return team.logo
 }
 
-const calculateStandings = (matches: Match[]): TeamRow[] => {
+const calculateStandings = (matches: Match[], teams: typeof LEAGUES.ID.teams): TeamRow[] => {
   const table: Record<string, TeamRow> = {}
 
-  ID_TEAMS.forEach((t: { id: string; name: string }) => {
+  teams.forEach((t: { id: string; name: string }) => {
     table[t.id] = {
       id: t.id,
       name: t.name,
@@ -125,9 +124,9 @@ const calculateStandings = (matches: Match[]): TeamRow[] => {
 
   // Build H2H record: h2h[teamA][teamB] = wins of teamA against teamB
   const h2h: Record<string, Record<string, number>> = {}
-  ID_TEAMS.forEach((t: { id: string }) => {
+  teams.forEach((t: { id: string }) => {
     h2h[t.id] = {}
-    ID_TEAMS.forEach((t2: { id: string }) => {
+    teams.forEach((t2: { id: string }) => {
       h2h[t.id][t2.id] = 0
     })
   })
@@ -215,8 +214,11 @@ const POSSIBLE_SCORES = [
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function App() {
-  const [matches, setMatches] = useState<Match[]>(ALL_MATCHES as Match[])
-  const [selectedWeek, setSelectedWeek] = useState<number>(CURRENT_WEEK)
+  const [selectedLeague, setSelectedLeague] = useState<string>("ID")
+  const currentLeague = LEAGUES[selectedLeague as keyof typeof LEAGUES]
+  
+  const [matches, setMatches] = useState<Match[]>(currentLeague.allMatches as Match[])
+  const [selectedWeek, setSelectedWeek] = useState<number>(currentLeague.currentWeek)
   const [isSimulating, setIsSimulating] = useState(true)
   const [probabilities, setProbabilities] = useState<
     Record<string, Probability>
@@ -228,10 +230,10 @@ export default function App() {
   const { theme } = useTheme()
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light")
   const initialMatchesRef = useRef<Match[]>(
-    JSON.parse(JSON.stringify(ALL_MATCHES))
+    JSON.parse(JSON.stringify(currentLeague.allMatches))
   )
 
-  const standings = useMemo(() => calculateStandings(matches), [matches])
+  const standings = useMemo(() => calculateStandings(matches, currentLeague.teams), [matches, currentLeague.teams])
 
   // Check if there are score changes from initial state
   const hasScoreChanges = useMemo(() => {
@@ -272,7 +274,7 @@ export default function App() {
         string,
         { top2: number; playoffs: number; eliminated: number }
       > = {}
-      ID_TEAMS.forEach((t: { id: string }) => {
+      currentLeague.teams.forEach((t: { id: string }) => {
         stats[t.id] = { top2: 0, playoffs: 0, eliminated: 0 }
       })
 
@@ -285,7 +287,7 @@ export default function App() {
             POSSIBLE_SCORES[Math.floor(Math.random() * POSSIBLE_SCORES.length)]
           return { ...m, scoreA: r.a, scoreB: r.b }
         })
-        const simStandings = calculateStandings([...played, ...sim])
+        const simStandings = calculateStandings([...played, ...sim], currentLeague.teams)
         simStandings.forEach((team, index) => {
           const rank = index + 1
           if (rank <= 2) stats[team.id].top2++
@@ -308,7 +310,17 @@ export default function App() {
     }, 50)
 
     return () => clearTimeout(id)
-  }, [matches, simulateTrigger])
+  }, [matches, simulateTrigger, currentLeague])
+
+  const handleLeagueChange = (leagueId: string) => {
+    const league = LEAGUES[leagueId as keyof typeof LEAGUES]
+    setSelectedLeague(leagueId)
+    setMatches(JSON.parse(JSON.stringify(league.allMatches)) as Match[])
+    setSelectedWeek(league.currentWeek)
+    setProbabilities({})
+    setIsSimulating(true)
+    setSimulateTrigger((n) => n + 1)
+  }
 
   const handleSimulate = () => {
     const parsed = parseInt(iterationsInput, 10)
@@ -335,7 +347,7 @@ export default function App() {
   const handleResetToDefault = () => {
     setIsSimulating(true)
     setMatches(JSON.parse(JSON.stringify(initialMatchesRef.current)))
-    setSelectedWeek(CURRENT_WEEK)
+    setSelectedWeek(currentLeague.currentWeek)
   }
 
   const handleResetAllMatches = () => {
@@ -425,10 +437,24 @@ export default function App() {
       <div className="mx-auto max-w-7xl space-y-8">
         {/* ── Header ── */}
         <div className="flex items-start justify-between gap-4 border-b pb-6">
-          <div>
-            <h1 className="mb-1 text-3xl font-bold tracking-tight md:text-4xl">
-              {LEAGUE_NAME}
-            </h1>
+          <div className="flex-1 space-y-3">
+            <div className="flex items-end gap-3">
+              <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+                {currentLeague.leagueName}
+              </h1>
+              <Select value={selectedLeague} onValueChange={handleLeagueChange}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Select league" />
+                </SelectTrigger>
+                <SelectContent>
+                  {LEAGUE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <p className="text-muted-foreground">
               Standings and playoff probabilities calculator.
             </p>
@@ -504,7 +530,8 @@ export default function App() {
                                   <img
                                     src={getTeamLogo(
                                       team.id,
-                                      resolvedTheme === "dark"
+                                      resolvedTheme === "dark",
+                                      currentLeague.teams
                                     )}
                                     alt={`Logo of ${team.name}`}
                                     className="max-h-5 w-auto object-contain"
