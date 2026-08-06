@@ -105,6 +105,12 @@ const getTeamLogo = (teamId: string, isDarkMode: boolean, teams: typeof LEAGUES.
   return team.logo
 }
 
+const getScheduleTeamName = (teamId: string): string => {
+  if (teamId === "RRQT") return "RRQ"
+  if (teamId === "ONPH") return "ONIC"
+  return teamId
+}
+
 const calculateStandings = (matches: Match[], teams: typeof LEAGUES.ID.teams): TeamRow[] => {
   const table: Record<string, TeamRow> = {}
 
@@ -831,7 +837,7 @@ export default function App() {
                               <span
                                 className={`truncate text-sm font-semibold ${teamAColor}`}
                               >
-                                {match.teamA}
+                                {getScheduleTeamName(match.teamA)}
                               </span>
                             </div>
 
@@ -844,7 +850,7 @@ export default function App() {
                                 }
                               >
                                 <SelectTrigger
-                                  aria-label={`Score for ${match.teamA} vs ${match.teamB}`}
+                                  aria-label={`Score for ${getScheduleTeamName(match.teamA)} vs ${getScheduleTeamName(match.teamB)}`}
                                   className={`h-8 justify-center gap-1 text-center text-xs font-bold ${
                                     played
                                       ? "border-blue-400 bg-blue-50 text-blue-700 dark:border-blue-600/50 dark:bg-blue-950/30 dark:text-blue-400"
@@ -870,7 +876,7 @@ export default function App() {
                               <span
                                 className={`truncate text-sm font-semibold ${teamBColor}`}
                               >
-                                {match.teamB}
+                                {getScheduleTeamName(match.teamB)}
                               </span>
                             </div>
                           </div>
