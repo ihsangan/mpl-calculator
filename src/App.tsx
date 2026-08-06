@@ -437,27 +437,43 @@ export default function App() {
       <div className="mx-auto max-w-7xl space-y-8">
         {/* ── Header ── */}
         <div className="flex items-start justify-between gap-4 border-b pb-6">
-          <div className="flex-1 space-y-3">
-            <div className="flex items-end gap-3">
+          <div className="min-w-0 flex-1 space-y-4">
+            <div>
               <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
                 {currentLeague.leagueName}
               </h1>
-              <Select value={selectedLeague} onValueChange={handleLeagueChange}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Select league" />
-                </SelectTrigger>
-                <SelectContent>
-                  {LEAGUE_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <p className="mt-2 text-muted-foreground">
+                Standings and playoff probabilities calculator.
+              </p>
             </div>
-            <p className="text-muted-foreground">
-              Standings and playoff probabilities calculator.
-            </p>
+            <div
+              aria-label="Select league"
+              className="flex max-w-full gap-1 overflow-x-auto rounded-xl border bg-muted/40 p-1"
+              role="group"
+            >
+              {LEAGUE_OPTIONS.map((option) => {
+                const isActive = selectedLeague === option.value
+
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    aria-pressed={isActive}
+                    onClick={() => handleLeagueChange(option.value)}
+                    className={`flex min-w-max shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                      isActive
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:bg-background/70 hover:text-foreground"
+                    }`}
+                  >
+                    <span className="font-mono text-xs font-semibold tracking-wide">
+                      {option.value}
+                    </span>
+                    <span>{option.label}</span>
+                  </button>
+                )
+              })}
+            </div>
           </div>
           <ThemeToggle />
         </div>
