@@ -9,14 +9,36 @@ import { StandingsTable } from "./components/standings/standings-table"
 import { ProbabilitiesCard } from "./components/probabilities/probabilities-card"
 import { ScheduleEditor } from "./components/schedule/schedule-editor"
 
+// Parse league ID from URL pathname (e.g. "/ph" → "PH")
+const getLeagueFromUrl = (): string | null => {
+  const slug = window.location.pathname.replace(/^\/+|\/+$/g, "").toUpperCase()
+  return slug && LEAGUES[slug] ? slug : null
+}
+
 export default function App() {
-  const [selectedLeague, setSelectedLeague] = useState<string>("ID")
+  const [selectedLeague, setSelectedLeague] = useState<string>(() => {
+    const fromUrl = getLeagueFromUrl()
+    if (fromUrl) return fromUrl
+
+    // No valid league in URL — fall back to localStorage or default
+    const saved = localStorage.getItem("mpl-league")
+    return saved && LEAGUES[saved] ? saved : "ID"
+  })
   const currentLeague = LEAGUES[selectedLeague] ?? LEAGUES.ID
 
   const [matches, setMatches] = useState<Match[]>(() =>
     JSON.parse(JSON.stringify(currentLeague.allMatches))
   )
-  const [selectedWeek, setSelectedWeek] = useState<number>(currentLeague.currentWeek)
+  const [selectedWeek, setSelectedWeek] = useState<number>(() => {
+    const savedLeague = localStorage.getItem("mpl-league")
+    // Only restore saved week if the URL league matches the localStorage league
+    if (savedLeague === selectedLeague) {
+      const savedWeek = localStorage.getItem("mpl-week")
+      const parsed = savedWeek ? parseInt(savedWeek, 10) : NaN
+      if (!isNaN(parsed) && parsed >= 1) return parsed
+    }
+    return currentLeague.currentWeek
+  })
   const [isSimulating, setIsSimulating] = useState(false)
   const [probabilities, setProbabilities] = useState<Record<string, Probability>>(() =>
     runMonteCarloSimulation(currentLeague.allMatches, currentLeague.teams, 1000)
@@ -24,6 +46,34 @@ export default function App() {
   const [iterations, setIterations] = useState(1000)
   const [iterationsInput, setIterationsInput] = useState("1000")
   const [simulateTrigger, setSimulateTrigger] = useState(0)
+
+  // Sync URL pathname on initial load (replace if missing or wrong)
+  useEffect(() => {
+    const expectedPath = `/${selectedLeague.toLowerCase()}`
+    if (window.location.pathname !== expectedPath) {
+      window.history.replaceState(null, "", expectedPath)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Handle browser back/forward navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      const fromUrl = getLeagueFromUrl()
+      if (fromUrl && fromUrl !== selectedLeague) {
+        const league = LEAGUES[fromUrl]
+        if (!league) return
+        setIsSimulating(true)
+        setSelectedLeague(fromUrl)
+        setMatches(JSON.parse(JSON.stringify(league.allMatches)))
+        setSelectedWeek(league.currentWeek)
+        setProbabilities({})
+        setSimulateTrigger((n) => n + 1)
+      }
+    }
+
+    window.addEventListener("popstate", handlePopState)
+    return () => window.removeEventListener("popstate", handlePopState)
+  }, [selectedLeague])
 
   const { theme } = useTheme()
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light")
@@ -49,6 +99,15 @@ export default function App() {
   const allMatchesUnplayed = useMemo(() => {
     return matches.every((m) => !isMatchPlayed(m))
   }, [matches])
+
+  // Persist selected league and week to localStorage
+  useEffect(() => {
+    localStorage.setItem("mpl-league", selectedLeague)
+  }, [selectedLeague])
+
+  useEffect(() => {
+    localStorage.setItem("mpl-week", String(selectedWeek))
+  }, [selectedWeek])
 
   // Detect dark mode from HTML class and theme setting
   useEffect(() => {
@@ -99,6 +158,8 @@ export default function App() {
     setSelectedWeek(league.currentWeek)
     setProbabilities({})
     setSimulateTrigger((n) => n + 1)
+    // Push new URL so browser history tracks league switches
+    window.history.pushState(null, "", `/${leagueId.toLowerCase()}`)
   }
 
   // Handle manual trigger for simulation iterations
@@ -170,6 +231,7 @@ export default function App() {
               teams={currentLeague.teams}
               probabilities={probabilities}
               resolvedTheme={resolvedTheme}
+              leagueName={currentLeague.leagueName}
             />
 
             <ProbabilitiesCard
@@ -182,6 +244,7 @@ export default function App() {
               onIterationsInputChange={setIterationsInput}
               onSimulate={handleSimulate}
               resolvedTheme={resolvedTheme}
+              leagueName={currentLeague.leagueName}
             />
           </div>
 

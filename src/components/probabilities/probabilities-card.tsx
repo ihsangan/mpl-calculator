@@ -18,6 +18,7 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useSaveAsImage } from "@/hooks/use-save-as-image"
 
 interface ProbabilitiesCardProps {
   standings: TeamRow[]
@@ -29,6 +30,7 @@ interface ProbabilitiesCardProps {
   onIterationsInputChange: (value: string) => void
   onSimulate: () => void
   resolvedTheme: "light" | "dark"
+  leagueName: string
 }
 
 export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
@@ -41,7 +43,10 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
   onIterationsInputChange,
   onSimulate,
   resolvedTheme,
+  leagueName,
 }) => {
+  const { ref, save, isExporting } = useSaveAsImage(`probabilities-${leagueName.replace(/\s+/g, "-").toLowerCase()}`)
+
   const sortedByPlayoffs = React.useMemo(() => {
     return [...standings].sort((a, b) => {
       const pA = probabilities[a.id] ? Number(probabilities[a.id].totalPlayoffs) : 0
@@ -54,6 +59,7 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
   }, [standings, probabilities])
 
   return (
+    <div ref={ref}>
     <Card className="relative overflow-hidden shadow-xs">
       <CardHeader className="pb-3">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -63,7 +69,7 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
               Monte Carlo simulation · {iterations.toLocaleString()} iterations
             </CardDescription>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2" data-capture-hide>
             <input
               type="number"
               min="100"
@@ -79,11 +85,22 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
             <Button
               size="sm"
               onClick={onSimulate}
-              disabled={isSimulating}
+              disabled={isSimulating || isExporting}
               className="h-8 text-xs font-semibold"
             >
               {isSimulating ? "Simulating..." : "Simulate"}
             </Button>
+            {!isSimulating && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={save}
+                disabled={isExporting}
+                className="h-8 text-xs font-semibold"
+              >
+                {isExporting ? "Saving..." : "Save as Image"}
+              </Button>
+            )}
           </div>
         </div>
       </CardHeader>
@@ -155,6 +172,7 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
                                 src={logoUrl}
                                 alt={`Logo of ${team.name}`}
                                 className="max-h-5 max-w-6 object-contain"
+                                crossOrigin="anonymous"
                               />
                             ) : null}
                           </div>
@@ -201,5 +219,6 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
         )}
       </CardContent>
     </Card>
+    </div>
   )
 }

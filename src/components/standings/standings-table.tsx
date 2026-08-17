@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -17,12 +18,14 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card"
+import { useSaveAsImage } from "@/hooks/use-save-as-image"
 
 interface StandingsTableProps {
   standings: TeamRow[]
   teams: Team[]
   probabilities: Record<string, Probability>
   resolvedTheme: "light" | "dark"
+  leagueName: string
 }
 
 const getRankBadgeClass = (idx: number) => {
@@ -56,11 +59,27 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
   teams,
   probabilities,
   resolvedTheme,
+  leagueName,
 }) => {
+  const { ref, save, isExporting } = useSaveAsImage(`standings-${leagueName.replace(/\s+/g, "-").toLowerCase()}`)
+
   return (
+    <div ref={ref}>
     <Card className="shadow-xs">
       <CardHeader className="pb-3">
-        <CardTitle className="text-xl">Current Standings</CardTitle>
+        <div className="flex items-start justify-between gap-2">
+          <CardTitle className="text-xl">Current Standings</CardTitle>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={save}
+            disabled={isExporting}
+            className="h-7 shrink-0 text-xs font-semibold"
+            data-capture-hide
+          >
+            {isExporting ? "Saving..." : "Save as Image"}
+          </Button>
+        </div>
         <CardDescription>
           <span className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs">
             <span className="inline-flex items-center">
@@ -147,6 +166,7 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
                               alt={`Logo of ${team.name}`}
                               className="max-h-6 max-w-8 object-contain"
                               loading="lazy"
+                              crossOrigin="anonymous"
                             />
                           ) : (
                             <span className="font-mono text-xs font-semibold text-muted-foreground">
@@ -190,5 +210,6 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
         </div>
       </CardContent>
     </Card>
+    </div>
   )
 }

@@ -62,6 +62,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
               src={teamALogo}
               alt={match.teamA}
               className="max-h-5 max-w-6 object-contain"
+              crossOrigin="anonymous"
             />
           ) : null}
         </div>
@@ -103,6 +104,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
               src={teamBLogo}
               alt={match.teamB}
               className="max-h-5 max-w-6 object-contain"
+              crossOrigin="anonymous"
             />
           ) : null}
         </div>
