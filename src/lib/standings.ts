@@ -51,11 +51,6 @@ export const getTeamLogo = (
   return team.logo
 }
 
-export const getScheduleTeamName = (teamId: string): string => {
-  if (teamId === "RRQT") return "RRQ"
-  if (teamId === "ONPH") return "ONIC"
-  return teamId
-}
 
 export const formatProbability = (value: string | number): string => {
   const num = typeof value === "string" ? Number(value) : value

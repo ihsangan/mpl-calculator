@@ -1,6 +1,6 @@
 import React from "react"
 import type { Match, Team } from "@/types"
-import { isMatchPlayed, getScheduleTeamName, getTeamLogo } from "@/lib/standings"
+import { isMatchPlayed, getTeamLogo } from "@/lib/standings"
 import {
   Select,
   SelectContent,
@@ -54,7 +54,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
       {/* Team A */}
       <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
         <span className={`truncate text-xs sm:text-sm text-right ${teamAColor}`}>
-          {getScheduleTeamName(match.teamA)}
+          {match.teamA}
         </span>
         <div className="flex h-5 w-6 shrink-0 items-center justify-center">
           {teamALogo ? (
@@ -75,9 +75,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
           onValueChange={(v) => onScoreChange(match.id, v)}
         >
           <SelectTrigger
-            aria-label={`Score for ${getScheduleTeamName(
-              match.teamA
-            )} vs ${getScheduleTeamName(match.teamB)}`}
+            aria-label={`Score for ${match.teamA} vs ${match.teamB}`}
             className={`h-8 justify-center px-1 text-center font-mono text-xs font-bold transition-all ${
               played
                 ? "border-primary/30 bg-primary/5 text-primary shadow-2xs dark:bg-primary/10"
@@ -109,7 +107,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
           ) : null}
         </div>
         <span className={`truncate text-xs sm:text-sm text-left ${teamBColor}`}>
-          {getScheduleTeamName(match.teamB)}
+          {match.teamB}
         </span>
       </div>
     </div>
