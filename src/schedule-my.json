@@ -25,7 +25,7 @@
     },
     {
       "id": "w1d2m2",
-      "teamA": "RRQT",
+      "teamA": "RRQ",
       "teamB": "TR",
       "scoreA": 0,
       "scoreB": 2
@@ -40,7 +40,7 @@
     {
       "id": "w1d3m1",
       "teamA": "iG",
-      "teamB": "RRQT",
+      "teamB": "RRQ",
       "scoreA": 2,
       "scoreB": 0
     },
@@ -82,7 +82,7 @@
     {
       "id": "w2d2m3",
       "teamA": "BTRM",
-      "teamB": "RRQT",
+      "teamB": "RRQ",
       "scoreA": 0,
       "scoreB": 0
     },
@@ -110,7 +110,7 @@
     {
       "id": "w3d1m2",
       "teamA": "VMS",
-      "teamB": "RRQT",
+      "teamB": "RRQ",
       "scoreA": 0,
       "scoreB": 0
     },
@@ -144,7 +144,7 @@
     },
     {
       "id": "w3d3m2",
-      "teamA": "RRQT",
+      "teamA": "RRQ",
       "teamB": "AC",
       "scoreA": 0,
       "scoreB": 0
@@ -158,7 +158,7 @@
     },
     {
       "id": "w4d1m2",
-      "teamA": "RRQT",
+      "teamA": "RRQ",
       "teamB": "SRG",
       "scoreA": 0,
       "scoreB": 0
@@ -166,7 +166,7 @@
     {
       "id": "w4d2m1",
       "teamA": "FL",
-      "teamB": "RRQT",
+      "teamB": "RRQ",
       "scoreA": 0,
       "scoreB": 0
     },
@@ -229,7 +229,7 @@
     {
       "id": "w5d2m3",
       "teamA": "SRG",
-      "teamB": "RRQT",
+      "teamB": "RRQ",
       "scoreA": 0,
       "scoreB": 0
     },
@@ -242,7 +242,7 @@
     },
     {
       "id": "w5d3m2",
-      "teamA": "RRQT",
+      "teamA": "RRQ",
       "teamB": "FL",
       "scoreA": 0,
       "scoreB": 0
@@ -256,7 +256,7 @@
     },
     {
       "id": "w6d1m2",
-      "teamA": "RRQT",
+      "teamA": "RRQ",
       "teamB": "VMS",
       "scoreA": 0,
       "scoreB": 0
@@ -270,7 +270,7 @@
     },
     {
       "id": "w6d2m2",
-      "teamA": "RRQT",
+      "teamA": "RRQ",
       "teamB": "iG",
       "scoreA": 0,
       "scoreB": 0
@@ -320,7 +320,7 @@
     {
       "id": "w7d2m2",
       "teamA": "AC",
-      "teamB": "RRQT",
+      "teamB": "RRQ",
       "scoreA": 0,
       "scoreB": 0
     },
@@ -341,7 +341,7 @@
     {
       "id": "w7d3m3",
       "teamA": "TR",
-      "teamB": "RRQT",
+      "teamB": "RRQ",
       "scoreA": 0,
       "scoreB": 0
     },
@@ -389,7 +389,7 @@
     },
     {
       "id": "w8d3m2",
-      "teamA": "RRQT",
+      "teamA": "RRQ",
       "teamB": "BTRM",
       "scoreA": 0,
       "scoreB": 0

@@ -1,258 +1,114 @@
-import { useState, useMemo, useEffect, useRef } from "react"
-import { LEAGUES, LEAGUE_OPTIONS } from "./leagues"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Skeleton } from "@/components/ui/skeleton"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { useTheme } from "@/components/theme-provider"
+import { useState, useMemo, useEffect } from "react"
+import { LEAGUES } from "./leagues"
+import type { Match, Probability } from "./types"
+import { calculateStandings, isMatchPlayed } from "./lib/standings"
+import { runMonteCarloSimulation } from "./lib/simulation"
+import { useTheme } from "./components/theme-provider"
+import { Header } from "./components/header"
+import { StandingsTable } from "./components/standings/standings-table"
+import { ProbabilitiesCard } from "./components/probabilities/probabilities-card"
+import { ScheduleEditor } from "./components/schedule/schedule-editor"
 
-interface TeamRow {
-  id: string
-  name: string
-  matchW: number
-  matchL: number
-  gameW: number
-  gameL: number
-  diff: number
-  pts: number
-  winrate: string
+// Parse league ID from URL pathname (e.g. "/ph" → "PH")
+const getLeagueFromUrl = (): string | null => {
+  const slug = window.location.pathname.replace(/^\/+|\/+$/g, "").toUpperCase()
+  return slug && LEAGUES[slug] ? slug : null
 }
-
-interface Match {
-  id: string
-  teamA: string
-  teamB: string
-  scoreA: number
-  scoreB: number
-}
-
-// Extract week number from match ID (e.g., "w8m1" -> 8)
-const getWeekFromId = (id: string): number => {
-  const match = id.match(/w(\d+)/)
-  return match ? parseInt(match[1], 10) : 0
-}
-
-// Check if match has been played (any non-zero score)
-const isMatchPlayed = (match: Match): boolean => {
-  return match.scoreA !== 0 || match.scoreB !== 0
-}
-
-// Extract day number from match ID (e.g., "w1d2m1" -> 2)
-const getDayFromId = (id: string): number => {
-  const match = id.match(/d(\d+)/)
-  return match ? parseInt(match[1], 10) : 0
-}
-
-// Extract match number from match ID (e.g., "w1d2m1" -> 1)
-const getMatchNumberFromId = (id: string): number => {
-  const match = id.match(/m(\d+)/)
-  return match ? parseInt(match[1], 10) : 0
-}
-
-// Sort matches by ID (e.g., w1d1m1, w1d1m2, ..., w9d3m3)
-const sortMatchesById = (matches: Match[]): Match[] => {
-  return [...matches].sort((a, b) => {
-    const aWeek = getWeekFromId(a.id)
-    const bWeek = getWeekFromId(b.id)
-    if (aWeek !== bWeek) return aWeek - bWeek
-    const aDay = getDayFromId(a.id)
-    const bDay = getDayFromId(b.id)
-    if (aDay !== bDay) return aDay - bDay
-    const aMatch = getMatchNumberFromId(a.id)
-    const bMatch = getMatchNumberFromId(b.id)
-    return aMatch - bMatch
-  })
-}
-
-interface Probability {
-  top2: string
-  playoffs: string
-  eliminated: string
-}
-
-const getTeamLogo = (teamId: string, isDarkMode: boolean, teams: typeof LEAGUES.ID.teams): string => {
-  const team = teams.find((t) => t.id === teamId)
-  if (!team) return ""
-
-  // Use dark mode logo if available and dark mode is active
-  if (isDarkMode && team.logoDark) {
-    return team.logoDark
-  }
-
-  return team.logo
-}
-
-const getScheduleTeamName = (teamId: string): string => {
-  if (teamId === "RRQT") return "RRQ"
-  if (teamId === "ONPH") return "ONIC"
-  return teamId
-}
-
-const calculateStandings = (matches: Match[], teams: typeof LEAGUES.ID.teams): TeamRow[] => {
-  const table: Record<string, TeamRow> = {}
-
-  teams.forEach((t: { id: string; name: string }) => {
-    table[t.id] = {
-      id: t.id,
-      name: t.name,
-      matchW: 0,
-      matchL: 0,
-      gameW: 0,
-      gameL: 0,
-      diff: 0,
-      pts: 0,
-      winrate: "0",
-    }
-  })
-
-  // Build H2H record: h2h[teamA][teamB] = wins of teamA against teamB
-  const h2h: Record<string, Record<string, number>> = {}
-  teams.forEach((t: { id: string }) => {
-    h2h[t.id] = {}
-    teams.forEach((t2: { id: string }) => {
-      h2h[t.id][t2.id] = 0
-    })
-  })
-
-  matches.forEach((m: Match) => {
-    if (!isMatchPlayed(m)) return
-
-    table[m.teamA].gameW += m.scoreA
-    table[m.teamA].gameL += m.scoreB
-    table[m.teamB].gameW += m.scoreB
-    table[m.teamB].gameL += m.scoreA
-
-    if (m.scoreA > m.scoreB) {
-      table[m.teamA].matchW += 1
-      table[m.teamB].matchL += 1
-      table[m.teamA].pts += 1
-      h2h[m.teamA][m.teamB] += 1
-    } else if (m.scoreB > m.scoreA) {
-      table[m.teamB].matchW += 1
-      table[m.teamA].matchL += 1
-      table[m.teamB].pts += 1
-      h2h[m.teamB][m.teamA] += 1
-    }
-  })
-
-  Object.values(table).forEach((team) => {
-    team.diff = team.gameW - team.gameL
-    const totalGames = team.gameW + team.gameL
-    team.winrate =
-      totalGames > 0 ? ((team.gameW / totalGames) * 100).toFixed(0) : "0"
-  })
-
-  return Object.values(table).sort((a, b) => {
-    // 1. Match wins
-    if (b.matchW !== a.matchW) return b.matchW - a.matchW
-    // 2. Game difference
-    if (b.diff !== a.diff) return b.diff - a.diff
-    // 3. Head-to-head tiebreaker
-    const aWinsVsB = h2h[a.id][b.id]
-    const bWinsVsA = h2h[b.id][a.id]
-    if (aWinsVsB !== bWinsVsA) return bWinsVsA - aWinsVsB
-    // 4. Fallback: alphabetical
-    return a.name.localeCompare(b.name)
-  })
-}
-
-const getRankBadgeVariant = (idx: number) => {
-  if (idx < 2) return "default" as const
-  if (idx < 6) return "secondary" as const
-  return "outline" as const
-}
-
-const getRankBadgeClass = (idx: number) => {
-  if (idx < 2) return "bg-emerald-600 hover:bg-emerald-600 text-white border-0"
-  if (idx < 6) return "bg-blue-600 hover:bg-blue-600 text-white border-0"
-  return "text-muted-foreground"
-}
-
-const getWinrateClass = (winrate: string) => {
-  const v = Number(winrate)
-  if (v < 25) return "text-red-600 dark:text-red-400"
-  if (v < 50) return "text-amber-600 dark:text-yellow-400"
-  if (v < 75) return "text-blue-600  dark:text-blue-400"
-  return "text-emerald-600 dark:text-emerald-400"
-}
-
-const getDiffClass = (diff: number) => {
-  if (diff > 0) return "text-emerald-600 dark:text-emerald-400"
-  if (diff < 0) return "text-red-600 dark:text-red-400"
-  return "text-muted-foreground"
-}
-
-const formatProbability = (value: string): string => {
-  const num = Number(value)
-  return num === 100 ? "100" : value
-}
-
-const POSSIBLE_SCORES = [
-  { a: 2, b: 0 },
-  { a: 2, b: 1 },
-  { a: 1, b: 2 },
-  { a: 0, b: 2 },
-]
-
-// ─── Component ───────────────────────────────────────────────────────────────
 
 export default function App() {
-  const [selectedLeague, setSelectedLeague] = useState<string>("ID")
-  const currentLeague = LEAGUES[selectedLeague as keyof typeof LEAGUES]
-  
-  const [matches, setMatches] = useState<Match[]>(currentLeague.allMatches as Match[])
-  const [selectedWeek, setSelectedWeek] = useState<number>(currentLeague.currentWeek)
-  const [isSimulating, setIsSimulating] = useState(true)
-  const [probabilities, setProbabilities] = useState<
-    Record<string, Probability>
-  >({})
+  const [selectedLeague, setSelectedLeague] = useState<string>(() => {
+    const fromUrl = getLeagueFromUrl()
+    if (fromUrl) return fromUrl
+
+    // No valid league in URL — fall back to localStorage or default
+    const saved = localStorage.getItem("mpl-league")
+    return saved && LEAGUES[saved] ? saved : "ID"
+  })
+  const currentLeague = LEAGUES[selectedLeague] ?? LEAGUES.ID
+
+  const [matches, setMatches] = useState<Match[]>(() =>
+    JSON.parse(JSON.stringify(currentLeague.allMatches))
+  )
+  const [selectedWeek, setSelectedWeek] = useState<number | "ALL">(() => {
+    const savedLeague = localStorage.getItem("mpl-league")
+    // Only restore saved week if the URL league matches the localStorage league
+    if (savedLeague === selectedLeague) {
+      const savedWeek = localStorage.getItem("mpl-week")
+      if (savedWeek === "ALL") return "ALL"
+      const parsed = savedWeek ? parseInt(savedWeek, 10) : NaN
+      if (!isNaN(parsed) && parsed >= 1) return parsed
+    }
+    return currentLeague.currentWeek
+  })
+  const [isSimulating, setIsSimulating] = useState(false)
+  const [probabilities, setProbabilities] = useState<Record<string, Probability>>(() =>
+    runMonteCarloSimulation(currentLeague.allMatches, currentLeague.teams, 1000)
+  )
   const [iterations, setIterations] = useState(1000)
   const [iterationsInput, setIterationsInput] = useState("1000")
   const [simulateTrigger, setSimulateTrigger] = useState(0)
-  const iterationsRef = useRef(1000)
+
+  // Sync URL pathname on initial load (replace if missing or wrong)
+  useEffect(() => {
+    const expectedPath = `/${selectedLeague.toLowerCase()}`
+    if (window.location.pathname !== expectedPath) {
+      window.history.replaceState(null, "", expectedPath)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Handle browser back/forward navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      const fromUrl = getLeagueFromUrl()
+      if (fromUrl && fromUrl !== selectedLeague) {
+        const league = LEAGUES[fromUrl]
+        if (!league) return
+        setIsSimulating(true)
+        setSelectedLeague(fromUrl)
+        setMatches(JSON.parse(JSON.stringify(league.allMatches)))
+        setSelectedWeek(league.currentWeek)
+        setProbabilities({})
+        setSimulateTrigger((n) => n + 1)
+      }
+    }
+
+    window.addEventListener("popstate", handlePopState)
+    return () => window.removeEventListener("popstate", handlePopState)
+  }, [selectedLeague])
+
   const { theme } = useTheme()
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light")
-  const initialMatchesRef = useRef<Match[]>(
-    JSON.parse(JSON.stringify(currentLeague.allMatches))
+
+  // Calculate current standings
+  const standings = useMemo(
+    () => calculateStandings(matches, currentLeague.teams),
+    [matches, currentLeague.teams]
   )
 
-  const standings = useMemo(() => calculateStandings(matches, currentLeague.teams), [matches, currentLeague.teams])
-
-  // Check if there are score changes from initial state
+  // Check if scores differ from official league schedule baseline
   const hasScoreChanges = useMemo(() => {
+    const initial = currentLeague.allMatches
+    if (matches.length !== initial.length) return true
     return matches.some((m, idx) => {
-      const initial = initialMatchesRef.current[idx]
-      return m.scoreA !== initial.scoreA || m.scoreB !== initial.scoreB
+      const initMatch = initial[idx]
+      if (!initMatch) return true
+      return m.scoreA !== initMatch.scoreA || m.scoreB !== initMatch.scoreB
     })
-  }, [matches])
+  }, [matches, currentLeague.allMatches])
 
   // Check if all matches are unplayed
   const allMatchesUnplayed = useMemo(() => {
     return matches.every((m) => !isMatchPlayed(m))
   }, [matches])
+
+  // Persist selected league and week to localStorage
+  useEffect(() => {
+    localStorage.setItem("mpl-league", selectedLeague)
+  }, [selectedLeague])
+
+  useEffect(() => {
+    localStorage.setItem("mpl-week", String(selectedWeek))
+  }, [selectedWeek])
 
   // Detect dark mode from HTML class and theme setting
   useEffect(() => {
@@ -263,7 +119,6 @@ export default function App() {
 
     updateTheme()
 
-    // Watch for class changes
     const observer = new MutationObserver(updateTheme)
     observer.observe(document.documentElement, {
       attributes: true,
@@ -273,71 +128,52 @@ export default function App() {
     return () => observer.disconnect()
   }, [theme])
 
+  // Run simulation whenever matches or simulation trigger changes
   useEffect(() => {
-    const id = setTimeout(() => {
-      const ITERATIONS = iterationsRef.current
-      const stats: Record<
-        string,
-        { top2: number; playoffs: number; eliminated: number }
-      > = {}
-      currentLeague.teams.forEach((t: { id: string }) => {
-        stats[t.id] = { top2: 0, playoffs: 0, eliminated: 0 }
-      })
-
-      const played = matches.filter((m) => isMatchPlayed(m))
-      const unplayed = matches.filter((m) => !isMatchPlayed(m))
-
-      for (let i = 0; i < ITERATIONS; i++) {
-        const sim = unplayed.map((m) => {
-          const r =
-            POSSIBLE_SCORES[Math.floor(Math.random() * POSSIBLE_SCORES.length)]
-          return { ...m, scoreA: r.a, scoreB: r.b }
-        })
-        const simStandings = calculateStandings([...played, ...sim], currentLeague.teams)
-        simStandings.forEach((team, index) => {
-          const rank = index + 1
-          if (rank <= 2) stats[team.id].top2++
-          else if (rank <= 6) stats[team.id].playoffs++
-          else stats[team.id].eliminated++
-        })
+    let isCancelled = false
+    const timer = setTimeout(() => {
+      const results = runMonteCarloSimulation(
+        matches,
+        currentLeague.teams,
+        iterations
+      )
+      if (!isCancelled) {
+        setProbabilities(results)
+        setIsSimulating(false)
       }
+    }, 40)
 
-      const final: Record<string, Probability> = {}
-      Object.keys(stats).forEach((id) => {
-        final[id] = {
-          top2: ((stats[id].top2 / ITERATIONS) * 100).toFixed(2),
-          playoffs: ((stats[id].playoffs / ITERATIONS) * 100).toFixed(2),
-          eliminated: ((stats[id].eliminated / ITERATIONS) * 100).toFixed(2),
-        }
-      })
+    return () => {
+      isCancelled = true
+      clearTimeout(timer)
+    }
+  }, [matches, simulateTrigger, currentLeague, iterations])
 
-      setProbabilities(final)
-      setIsSimulating(false)
-    }, 50)
-
-    return () => clearTimeout(id)
-  }, [matches, simulateTrigger, currentLeague])
-
+  // Handle switching league
   const handleLeagueChange = (leagueId: string) => {
-    const league = LEAGUES[leagueId as keyof typeof LEAGUES]
+    const league = LEAGUES[leagueId]
+    if (!league) return
+    setIsSimulating(true)
     setSelectedLeague(leagueId)
-    setMatches(JSON.parse(JSON.stringify(league.allMatches)) as Match[])
+    setMatches(JSON.parse(JSON.stringify(league.allMatches)))
     setSelectedWeek(league.currentWeek)
     setProbabilities({})
-    setIsSimulating(true)
     setSimulateTrigger((n) => n + 1)
+    // Push new URL so browser history tracks league switches
+    window.history.pushState(null, "", `/${leagueId.toLowerCase()}`)
   }
 
+  // Handle manual trigger for simulation iterations
   const handleSimulate = () => {
     const parsed = parseInt(iterationsInput, 10)
-    const clamped = isNaN(parsed) || parsed < 1 ? 1 : Math.min(parsed, 100000)
-    iterationsRef.current = clamped
+    const clamped = isNaN(parsed) || parsed < 100 ? 100 : Math.min(parsed, 100000)
+    setIsSimulating(true)
     setIterations(clamped)
     setIterationsInput(String(clamped))
-    setIsSimulating(true)
     setSimulateTrigger((n) => n + 1)
   }
 
+  // Handle individual match score changes
   const handleScoreChange = (matchId: string, value: string) => {
     setIsSimulating(true)
     setMatches((prev) =>
@@ -350,12 +186,14 @@ export default function App() {
     )
   }
 
+  // Reset matches to league default fixtures
   const handleResetToDefault = () => {
     setIsSimulating(true)
-    setMatches(JSON.parse(JSON.stringify(initialMatchesRef.current)))
+    setMatches(JSON.parse(JSON.stringify(currentLeague.allMatches)))
     setSelectedWeek(currentLeague.currentWeek)
   }
 
+  // Reset all matches to unplayed (0-0)
   const handleResetAllMatches = () => {
     setIsSimulating(true)
     const resetMatches = matches.map((m) => ({
@@ -367,542 +205,66 @@ export default function App() {
     setSelectedWeek(1)
   }
 
-  const handleSaveAsJSON = () => {
-    const dataToSave = {
-      matches: sortMatchesById(matches),
-      selectedWeek,
-      timestamp: new Date().toISOString(),
+  // Handle imported matches safely
+  const handleLoadMatches = (importedMatches: Match[], week?: number | "ALL") => {
+    setIsSimulating(true)
+    setMatches(importedMatches)
+    if (week !== undefined) {
+      setSelectedWeek(week)
     }
-    const jsonString = JSON.stringify(dataToSave, null, 2)
-    const blob = new Blob([jsonString], { type: "application/json" })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.href = url
-    link.download = `mpl-matches-${new Date().getTime()}.json`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
   }
-
-  const handleLoadFromJSON = (file: File) => {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      try {
-        const content = e.target?.result as string
-        const data = JSON.parse(content)
-        if (data.matches && Array.isArray(data.matches)) {
-          setIsSimulating(true)
-          setMatches(sortMatchesById(data.matches))
-          if (data.selectedWeek) {
-            setSelectedWeek(data.selectedWeek)
-          }
-        } else {
-          alert("Invalid JSON format. Expected matches array.")
-        }
-      } catch (error) {
-        alert(
-          "Error loading JSON file: " +
-            (error instanceof Error ? error.message : String(error))
-        )
-      }
-    }
-    reader.readAsText(file)
-  }
-
-  const getMatchesByDay = (weekMatches: Match[]) => {
-    // Group matches by day extracted from their ID
-    const matchesByDay: Record<number, Match[]> = {}
-
-    weekMatches.forEach((match) => {
-      const day = getDayFromId(match.id)
-      if (!matchesByDay[day]) {
-        matchesByDay[day] = []
-      }
-      matchesByDay[day].push(match)
-    })
-
-    // Sort each day's matches and return as array with titles
-    return Object.entries(matchesByDay)
-      .sort(([dayA], [dayB]) => parseInt(dayA) - parseInt(dayB))
-      .map(([day, matches]) => ({
-        title: `Day ${day}`,
-        matches: matches.sort(
-          (a, b) => getMatchNumberFromId(a.id) - getMatchNumberFromId(b.id)
-        ),
-      }))
-  }
-
-  const weeks = useMemo(() => {
-    const weekSet = new Set(matches.map((m) => getWeekFromId(m.id)))
-    return Array.from(weekSet).sort((a, b) => a - b)
-  }, [matches])
 
   return (
-    <div className="min-h-screen bg-background p-4 text-foreground md:p-8">
-      <div className="mx-auto max-w-7xl space-y-8">
-        {/* ── Header ── */}
-        <div className="flex items-start justify-between gap-4 border-b pb-6">
-          <div className="min-w-0 flex-1 space-y-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
-                {currentLeague.leagueName}
-              </h1>
-              <p className="mt-2 text-muted-foreground">
-                Standings and playoff probabilities calculator.
-              </p>
-            </div>
-            <div
-              aria-label="Select league"
-              className="flex max-w-full gap-1 overflow-x-auto rounded-xl border bg-muted/40 p-1"
-              role="group"
-            >
-              {LEAGUE_OPTIONS.map((option) => {
-                const isActive = selectedLeague === option.value
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-200">
+      <div className="mx-auto max-w-7xl space-y-8 p-4 md:p-8">
+        {/* Header with League Switcher & Theme Toggle */}
+        <Header
+          leagueName={currentLeague.leagueName}
+          selectedLeague={selectedLeague}
+          onLeagueChange={handleLeagueChange}
+        />
 
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    aria-pressed={isActive}
-                    onClick={() => handleLeagueChange(option.value)}
-                    className={`flex min-w-max shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-                      isActive
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:bg-background/70 hover:text-foreground"
-                    }`}
-                  >
-                    <span className="font-mono text-xs font-semibold tracking-wide">
-                      {option.value}
-                    </span>
-                    <span>{option.label}</span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-          <ThemeToggle />
-        </div>
         <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
-          {/* ── LEFT: Standings + Probabilities ── */}
+          {/* Left Column: Standings & Probabilities */}
           <div className="space-y-8 xl:col-span-7">
-            {/* Standings */}
-            <main role="main">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle>Current Standings</CardTitle>
-                  <CardDescription>
-                    <span className="inline-flex items-center gap-3 text-xs">
-                      <span>
-                        <span className="mr-1 inline-block h-2.5 w-2.5 rounded-full bg-emerald-600" />
-                        Top 2 – Upper Bracket
-                      </span>
-                      <span>
-                        <span className="mr-1 inline-block h-2.5 w-2.5 rounded-full bg-blue-600" />
-                        Top 3–6 – Lower Bracket
-                      </span>
-                      <span>
-                        <span className="mr-1 inline-block h-2.5 w-2.5 rounded-full border bg-muted" />
-                        Eliminated
-                      </span>
-                    </span>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-14 text-center">Rank</TableHead>
-                        <TableHead>Team</TableHead>
-                        <TableHead className="text-center">
-                          Match (W-L)
-                        </TableHead>
-                        <TableHead className="text-center">
-                          Game (W-L)
-                        </TableHead>
-                        <TableHead className="text-center">Winrate</TableHead>
-                        <TableHead className="text-center">Diff</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {standings.map((team, idx) => {
-                        const prob = probabilities[team.id]
-                        const eliminated = prob ? Number(prob.eliminated) : null
-                        let rowBg = ""
-                        if (eliminated === 0) {
-                          // Qualified - 0% elimination probability
-                          rowBg = "bg-emerald-50 dark:bg-emerald-950/20"
-                        } else if (eliminated === 100) {
-                          // Eliminated - 100% elimination probability
-                          rowBg = "bg-red-50 dark:bg-red-950/20"
-                        }
-                        return (
-                          <TableRow key={team.id} className={rowBg}>
-                            <TableCell className="py-2.5 text-center">
-                              <Badge
-                                variant={getRankBadgeVariant(idx)}
-                                className={`flex h-6 w-6 items-center justify-center rounded-full p-0 text-xs ${getRankBadgeClass(idx)}`}
-                              >
-                                {idx + 1}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="py-2.5">
-                              <div className="flex items-center gap-3">
-                                <div className="flex w-8 shrink-0 justify-center">
-                                  <img
-                                    src={getTeamLogo(
-                                      team.id,
-                                      resolvedTheme === "dark",
-                                      currentLeague.teams
-                                    )}
-                                    alt={`Logo of ${team.name}`}
-                                    className="max-h-5 w-auto object-contain"
-                                  />
-                                </div>
-                                <span className="font-medium whitespace-nowrap">
-                                  {team.name}
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="py-2.5 text-center font-medium tabular-nums">
-                              {team.matchW}–{team.matchL}
-                            </TableCell>
-                            <TableCell className="py-2.5 text-center font-medium tabular-nums">
-                              {team.gameW}–{team.gameL}
-                            </TableCell>
-                            <TableCell
-                              className={`py-2.5 text-center font-medium tabular-nums ${getWinrateClass(team.winrate)}`}
-                            >
-                              {team.winrate}%
-                            </TableCell>
-                            <TableCell
-                              className={`py-2.5 text-center font-medium tabular-nums ${getDiffClass(team.diff)}`}
-                            >
-                              {team.diff > 0 ? `+${team.diff}` : team.diff}
-                            </TableCell>
-                          </TableRow>
-                        )
-                      })}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </main>
+            <StandingsTable
+              standings={standings}
+              teams={currentLeague.teams}
+              probabilities={probabilities}
+              resolvedTheme={resolvedTheme}
+              leagueName={currentLeague.leagueName}
+            />
 
-            {/* Probabilities */}
-            <Card className="relative overflow-hidden">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <CardTitle>Playoff Probabilities</CardTitle>
-                    <CardDescription>
-                      Monte Carlo simulation · {iterations.toLocaleString()}{" "}
-                      iterations
-                    </CardDescription>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-2">
-                    <input
-                      type="number"
-                      value={iterationsInput}
-                      onChange={(e) => setIterationsInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleSimulate()
-                      }}
-                      className="h-8 w-24 rounded-lg border border-input bg-transparent px-2.5 text-sm tabular-nums outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
-                      aria-label="Number of iterations"
-                    />
-                    <Button size="sm" onClick={handleSimulate} className="h-8">
-                      Simulate
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-0">
-                {isSimulating ? (
-                  <div className="space-y-3 p-4">
-                    {Array.from({ length: standings.length + 1 }).map(
-                      (_, i) => (
-                        <div
-                          key={i}
-                          className="flex items-center justify-between gap-4"
-                        >
-                          {/* Mobile: 4 columns */}
-                          <Skeleton className="h-6 w-20 md:hidden" />
-                          <Skeleton className="h-6 w-16 md:hidden" />
-                          <Skeleton className="h-6 w-16 md:hidden" />
-                          <Skeleton className="h-6 w-16 md:hidden" />
-
-                          {/* Desktop: 5 columns */}
-                          <Skeleton className="hidden h-6 w-20 md:block" />
-                          <Skeleton className="hidden h-6 w-16 md:block" />
-                          <Skeleton className="hidden h-6 w-16 md:block" />
-                          <Skeleton className="hidden h-6 w-16 md:block" />
-                          <Skeleton className="hidden h-6 w-16 md:block" />
-                        </div>
-                      )
-                    )}
-                  </div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Team</TableHead>
-                        <TableHead className="text-right text-emerald-700 dark:text-emerald-500">
-                          Top 1–2
-                          <br />
-                          (Upper)
-                        </TableHead>
-                        <TableHead className="text-right text-blue-700 dark:text-blue-500">
-                          Top 3–6
-                          <br />
-                          (Lower)
-                        </TableHead>
-                        <TableHead className="text-right text-purple-700 dark:text-purple-500">
-                          Playoffs
-                        </TableHead>
-                        <TableHead className="text-right text-red-700 dark:text-red-400">
-                          Eliminated
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {[...standings]
-                        .sort((a, b) => {
-                          const pA = probabilities[a.id]
-                            ? Number(probabilities[a.id].top2) +
-                              Number(probabilities[a.id].playoffs)
-                            : 0
-                          const pB = probabilities[b.id]
-                            ? Number(probabilities[b.id].top2) +
-                              Number(probabilities[b.id].playoffs)
-                            : 0
-                          return pB - pA
-                        })
-                        .map((team) => {
-                          const prob = probabilities[team.id] || {
-                            top2: "0.00",
-                            playoffs: "0.00",
-                            eliminated: "0.00",
-                          }
-                          return (
-                            <TableRow key={team.id}>
-                              {/* Team name only, no logo */}
-                              <TableCell className="py-2.5 font-medium">
-                                {team.id}
-                              </TableCell>
-                              <TableCell className="py-2.5 text-right font-semibold text-emerald-600 tabular-nums dark:text-emerald-400">
-                                {formatProbability(prob.top2)}%
-                              </TableCell>
-                              <TableCell className="py-2.5 text-right font-semibold text-blue-600 tabular-nums dark:text-blue-400">
-                                {formatProbability(prob.playoffs)}%
-                              </TableCell>
-                              <TableCell className="py-2.5 text-right font-semibold text-purple-600 tabular-nums dark:text-purple-400">
-                                {formatProbability(
-                                  (
-                                    Number(prob.top2) + Number(prob.playoffs)
-                                  ).toFixed(2)
-                                )}
-                                %
-                              </TableCell>
-                              <TableCell className="py-2.5 text-right font-semibold text-red-600 tabular-nums dark:text-red-400">
-                                {formatProbability(prob.eliminated)}%
-                              </TableCell>
-                            </TableRow>
-                          )
-                        })}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
+            <ProbabilitiesCard
+              standings={standings}
+              teams={currentLeague.teams}
+              probabilities={probabilities}
+              isSimulating={isSimulating}
+              iterations={iterations}
+              iterationsInput={iterationsInput}
+              onIterationsInputChange={setIterationsInput}
+              onSimulate={handleSimulate}
+              resolvedTheme={resolvedTheme}
+              leagueName={currentLeague.leagueName}
+            />
           </div>
 
-          {/* ── RIGHT: Schedule Editor ─�� */}
+          {/* Right Column: Interactive Schedule Editor */}
           <div className="xl:col-span-5">
-            <Card className="sticky top-8">
-              <CardHeader className="pb-3">
-                <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <CardTitle>Schedule</CardTitle>
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={handleSaveAsJSON}
-                      className="h-8 text-xs"
-                    >
-                      Save as JSON
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-8 text-xs"
-                      onClick={() => {
-                        const input = document.createElement("input")
-                        input.type = "file"
-                        input.accept = ".json"
-                        input.onchange = (e) => {
-                          const file = (e.target as HTMLInputElement).files?.[0]
-                          if (file) {
-                            handleLoadFromJSON(file)
-                          }
-                        }
-                        input.click()
-                      }}
-                    >
-                      Load from JSON
-                    </Button>
-                    {!allMatchesUnplayed && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={handleResetAllMatches}
-                        className="h-8 text-xs"
-                      >
-                        Reset All
-                      </Button>
-                    )}
-                    {hasScoreChanges && (
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={handleResetToDefault}
-                        className="h-8 text-xs"
-                      >
-                        Reset Schedule
-                      </Button>
-                    )}
-                  </div>
-                </div>
-                {/* Week selector */}
-                <div className="flex flex-wrap gap-1.5">
-                  {weeks.map((week) => {
-                    const weekMatches = matches.filter(
-                      (m) => getWeekFromId(m.id) === week
-                    )
-                    const isCompleted =
-                      weekMatches.length > 0 &&
-                      weekMatches.every((m) => isMatchPlayed(m))
-                    const isSelected = selectedWeek === week
-
-                    let variant: "default" | "secondary" | "outline" = "outline"
-                    let extra = ""
-                    if (isSelected) {
-                      variant = "default"
-                    } else if (isCompleted) {
-                      variant = "secondary"
-                      extra =
-                        "bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200 dark:bg-emerald-600/20 dark:text-emerald-400 dark:border-emerald-600/40 dark:hover:bg-emerald-600/30"
-                    }
-
-                    return (
-                      <Button
-                        key={week}
-                        variant={variant}
-                        size="sm"
-                        className={`h-7 px-3 text-xs font-semibold ${extra}`}
-                        onClick={() => setSelectedWeek(week)}
-                      >
-                        W{week}
-                      </Button>
-                    )
-                  })}
-                </div>
-              </CardHeader>
-
-              <Separator />
-
-              <CardContent className="max-h-[700px] space-y-6 overflow-y-auto p-4">
-                {getMatchesByDay(
-                  matches.filter((m) => getWeekFromId(m.id) === selectedWeek)
-                ).map((day) => (
-                  <div key={day.title}>
-                    {/* Day header */}
-                    <div className="mb-3 flex items-center gap-3">
-                      <Separator className="flex-1" />
-                      <span className="shrink-0 text-xs font-bold tracking-widest text-muted-foreground uppercase">
-                        {day.title}
-                      </span>
-                      <Separator className="flex-1" />
-                    </div>
-
-                    {/* Matches */}
-                    <div className="space-y-2">
-                      {day.matches.map((match) => {
-                        const played = isMatchPlayed(match)
-                        const currentValue = played
-                          ? `${match.scoreA}-${match.scoreB}`
-                          : "unplayed"
-                        const teamAColor = played
-                          ? match.scoreA > match.scoreB
-                            ? "text-green-600 dark:text-green-510"
-                            : "text-red-600 dark:text-red-500"
-                          : ""
-                        const teamBColor = played
-                          ? match.scoreB > match.scoreA
-                            ? "text-green-600 dark:text-green-510"
-                            : "text-red-600 dark:text-red-500"
-                          : ""
-
-                        return (
-                          <div
-                            key={match.id}
-                            className="flex items-center gap-2 rounded-lg border bg-muted/40 px-3 py-2.5"
-                          >
-                            {/* Team A – text only */}
-                            <div className="flex min-w-0 flex-1 justify-end">
-                              <span
-                                className={`truncate text-sm font-semibold ${teamAColor}`}
-                              >
-                                {getScheduleTeamName(match.teamA)}
-                              </span>
-                            </div>
-
-                            {/* Score selector */}
-                            <div className="w-17 shrink-0">
-                              <Select
-                                value={currentValue}
-                                onValueChange={(v) =>
-                                  handleScoreChange(match.id, v)
-                                }
-                              >
-                                <SelectTrigger
-                                  aria-label={`Score for ${getScheduleTeamName(match.teamA)} vs ${getScheduleTeamName(match.teamB)}`}
-                                  className={`h-8 justify-center gap-1 text-center text-xs font-bold ${
-                                    played
-                                      ? "border-blue-400 bg-blue-50 text-blue-700 dark:border-blue-600/50 dark:bg-blue-950/30 dark:text-blue-400"
-                                      : ""
-                                  }`}
-                                >
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="unplayed">
-                                    0 – 0
-                                  </SelectItem>
-                                  <SelectItem value="2-0">2 – 0</SelectItem>
-                                  <SelectItem value="2-1">2 – 1</SelectItem>
-                                  <SelectItem value="1-2">1 – 2</SelectItem>
-                                  <SelectItem value="0-2">0 – 2</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            {/* Team B – text only */}
-                            <div className="flex min-w-0 flex-1">
-                              <span
-                                className={`truncate text-sm font-semibold ${teamBColor}`}
-                              >
-                                {getScheduleTeamName(match.teamB)}
-                              </span>
-                            </div>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+            <ScheduleEditor
+              leagueId={selectedLeague}
+              matches={matches}
+              teams={currentLeague.teams}
+              selectedWeek={selectedWeek}
+              hasScoreChanges={hasScoreChanges}
+              allMatchesUnplayed={allMatchesUnplayed}
+              resolvedTheme={resolvedTheme}
+              onWeekChange={setSelectedWeek}
+              onScoreChange={handleScoreChange}
+              onResetToDefault={handleResetToDefault}
+              onResetAll={handleResetAllMatches}
+              onLoadMatches={handleLoadMatches}
+            />
           </div>
         </div>
       </div>
