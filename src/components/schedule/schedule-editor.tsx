@@ -23,15 +23,15 @@ interface ScheduleEditorProps {
   leagueId: string
   matches: Match[]
   teams: Team[]
-  selectedWeek: number
+  selectedWeek: number | "ALL"
   hasScoreChanges: boolean
   allMatchesUnplayed: boolean
   resolvedTheme: "light" | "dark"
-  onWeekChange: (week: number) => void
+  onWeekChange: (week: number | "ALL") => void
   onScoreChange: (matchId: string, value: string) => void
   onResetToDefault: () => void
   onResetAll: () => void
-  onLoadMatches: (importedMatches: Match[], week?: number) => void
+  onLoadMatches: (importedMatches: Match[], week?: number | "ALL") => void
 }
 
 export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
@@ -105,14 +105,51 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   }
 
   const filteredMatches = useMemo(() => {
-    let list = matches.filter((m) => getWeekFromId(m.id) === selectedWeek)
+    let list =
+      selectedWeek === "ALL"
+        ? matches
+        : matches.filter((m) => getWeekFromId(m.id) === selectedWeek)
+
     if (teamFilter !== "ALL") {
       list = list.filter((m) => m.teamA === teamFilter || m.teamB === teamFilter)
     }
     return list
   }, [matches, selectedWeek, teamFilter])
 
-  const daysWithMatches = useMemo(() => {
+  const groupedMatches = useMemo(() => {
+    if (selectedWeek === "ALL") {
+      // Group by Week and Day: "Week X Day Y"
+      const groups: Record<
+        string,
+        { week: number; day: number; matches: Match[] }
+      > = {}
+
+      filteredMatches.forEach((match) => {
+        const week = getWeekFromId(match.id)
+        const day = getDayFromId(match.id)
+        const groupKey = `${week}-${day}`
+
+        if (!groups[groupKey]) {
+          groups[groupKey] = { week, day, matches: [] }
+        }
+        groups[groupKey].matches.push(match)
+      })
+
+      return Object.values(groups)
+        .sort((a, b) => {
+          if (a.week !== b.week) return a.week - b.week
+          return a.day - b.day
+        })
+        .map((g) => ({
+          key: `w${g.week}d${g.day}`,
+          title: `Week ${g.week} Day ${g.day}`,
+          matches: g.matches.sort(
+            (a, b) => getMatchNumberFromId(a.id) - getMatchNumberFromId(b.id)
+          ),
+        }))
+    }
+
+    // Specific week selected: Group by Day ("Day Y")
     const matchesByDay: Record<number, Match[]> = {}
 
     filteredMatches.forEach((match) => {
@@ -126,12 +163,13 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     return Object.entries(matchesByDay)
       .sort(([dayA], [dayB]) => parseInt(dayA, 10) - parseInt(dayB, 10))
       .map(([day, dayMatches]) => ({
+        key: `d${day}`,
         title: `Day ${day}`,
         matches: dayMatches.sort(
           (a, b) => getMatchNumberFromId(a.id) - getMatchNumberFromId(b.id)
         ),
       }))
-  }, [filteredMatches])
+  }, [filteredMatches, selectedWeek])
 
   return (
     <Card className="sticky top-6 shadow-xs">
@@ -213,6 +251,15 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
         {/* Week Selector */}
         <div className="flex flex-wrap gap-1.5 pt-1">
+          <Button
+            variant={selectedWeek === "ALL" ? "default" : "outline"}
+            size="sm"
+            className="h-7 px-3 text-xs font-bold"
+            onClick={() => onWeekChange("ALL")}
+          >
+            Show All
+          </Button>
+
           {weeks.map((week) => {
             const weekMatches = matches.filter(
               (m) => getWeekFromId(m.id) === week
@@ -250,25 +297,25 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       <Separator />
 
       <CardContent className="max-h-[640px] space-y-5 overflow-y-auto p-4">
-        {daysWithMatches.length === 0 ? (
+        {groupedMatches.length === 0 ? (
           <div className="py-8 text-center text-sm text-muted-foreground">
-            No matches found for this week with selected filter.
+            No matches found with selected filter.
           </div>
         ) : (
-          daysWithMatches.map((day) => (
-            <div key={day.title} className="space-y-2.5">
-              {/* Day header */}
+          groupedMatches.map((group) => (
+            <div key={group.key} className="space-y-2.5">
+              {/* Day / Week-Day header */}
               <div className="flex items-center gap-3">
                 <Separator className="flex-1" />
                 <span className="shrink-0 font-mono text-[11px] font-bold tracking-widest text-muted-foreground uppercase">
-                  {day.title}
+                  {group.title}
                 </span>
                 <Separator className="flex-1" />
               </div>
 
               {/* Match Items */}
               <div className="space-y-2">
-                {day.matches.map((match) => (
+                {group.matches.map((match) => (
                   <MatchCard
                     key={match.id}
                     match={match}

@@ -29,11 +29,12 @@ export default function App() {
   const [matches, setMatches] = useState<Match[]>(() =>
     JSON.parse(JSON.stringify(currentLeague.allMatches))
   )
-  const [selectedWeek, setSelectedWeek] = useState<number>(() => {
+  const [selectedWeek, setSelectedWeek] = useState<number | "ALL">(() => {
     const savedLeague = localStorage.getItem("mpl-league")
     // Only restore saved week if the URL league matches the localStorage league
     if (savedLeague === selectedLeague) {
       const savedWeek = localStorage.getItem("mpl-week")
+      if (savedWeek === "ALL") return "ALL"
       const parsed = savedWeek ? parseInt(savedWeek, 10) : NaN
       if (!isNaN(parsed) && parsed >= 1) return parsed
     }
@@ -165,7 +166,7 @@ export default function App() {
   // Handle manual trigger for simulation iterations
   const handleSimulate = () => {
     const parsed = parseInt(iterationsInput, 10)
-    const clamped = isNaN(parsed) || parsed < 50 ? 50 : Math.min(parsed, 50000)
+    const clamped = isNaN(parsed) || parsed < 100 ? 100 : Math.min(parsed, 100000)
     setIsSimulating(true)
     setIterations(clamped)
     setIterationsInput(String(clamped))
@@ -205,10 +206,10 @@ export default function App() {
   }
 
   // Handle imported matches safely
-  const handleLoadMatches = (importedMatches: Match[], week?: number) => {
+  const handleLoadMatches = (importedMatches: Match[], week?: number | "ALL") => {
     setIsSimulating(true)
     setMatches(importedMatches)
-    if (week) {
+    if (week !== undefined) {
       setSelectedWeek(week)
     }
   }

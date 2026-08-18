@@ -5,7 +5,7 @@
     {
       "id": "w1d1m1",
       "teamA": "RORA",
-      "teamB": "ONPH",
+      "teamB": "ONIC",
       "scoreA": 0,
       "scoreB": 0
     },
@@ -39,7 +39,7 @@
     },
     {
       "id": "w1d3m1",
-      "teamA": "ONPH",
+      "teamA": "ONIC",
       "teamB": "APBR",
       "scoreA": 0,
       "scoreB": 0
@@ -61,7 +61,7 @@
     {
       "id": "w2d1m2",
       "teamA": "TWIS",
-      "teamB": "ONPH",
+      "teamB": "ONIC",
       "scoreA": 0,
       "scoreB": 0
     },
@@ -95,7 +95,7 @@
     },
     {
       "id": "w2d3m2",
-      "teamA": "ONPH",
+      "teamA": "ONIC",
       "teamB": "OMG",
       "scoreA": 0,
       "scoreB": 0
@@ -110,7 +110,7 @@
     {
       "id": "w3d1m2",
       "teamA": "TNC",
-      "teamB": "ONPH",
+      "teamB": "ONIC",
       "scoreA": 0,
       "scoreB": 0
     },
@@ -130,7 +130,7 @@
     },
     {
       "id": "w3d2m3",
-      "teamA": "ONPH",
+      "teamA": "ONIC",
       "teamB": "FLCN",
       "scoreA": 0,
       "scoreB": 0
@@ -179,7 +179,7 @@
     },
     {
       "id": "w4d2m3",
-      "teamA": "ONPH",
+      "teamA": "ONIC",
       "teamB": "TLPH",
       "scoreA": 0,
       "scoreB": 0
@@ -236,7 +236,7 @@
     {
       "id": "w5d3m1",
       "teamA": "APBR",
-      "teamB": "ONPH",
+      "teamB": "ONIC",
       "scoreA": 0,
       "scoreB": 0
     },
@@ -257,7 +257,7 @@
     {
       "id": "w6d1m2",
       "teamA": "OMG",
-      "teamB": "ONPH",
+      "teamB": "ONIC",
       "scoreA": 0,
       "scoreB": 0
     },
@@ -278,7 +278,7 @@
     {
       "id": "w6d2m3",
       "teamA": "FLCN",
-      "teamB": "ONPH",
+      "teamB": "ONIC",
       "scoreA": 0,
       "scoreB": 0
     },
@@ -298,7 +298,7 @@
     },
     {
       "id": "w7d1m1",
-      "teamA": "ONPH",
+      "teamA": "ONIC",
       "teamB": "TWIS",
       "scoreA": 0,
       "scoreB": 0
@@ -326,7 +326,7 @@
     },
     {
       "id": "w7d2m3",
-      "teamA": "ONPH",
+      "teamA": "ONIC",
       "teamB": "RORA",
       "scoreA": 0,
       "scoreB": 0
@@ -354,7 +354,7 @@
     },
     {
       "id": "w8d1m2",
-      "teamA": "ONPH",
+      "teamA": "ONIC",
       "teamB": "TNC",
       "scoreA": 0,
       "scoreB": 0
@@ -376,7 +376,7 @@
     {
       "id": "w8d2m3",
       "teamA": "TLPH",
-      "teamB": "ONPH",
+      "teamB": "ONIC",
       "scoreA": 0,
       "scoreB": 0
     },

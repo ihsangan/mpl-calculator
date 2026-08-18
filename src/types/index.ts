@@ -44,6 +44,6 @@ export interface LeagueConfig {
 export interface ExportData {
   leagueId: string
   matches: Match[]
-  selectedWeek: number
+  selectedWeek: number | "ALL"
   timestamp: string
 }

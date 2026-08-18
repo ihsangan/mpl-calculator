@@ -1,71 +1,6 @@
 import { useCallback, useRef, useState } from "react"
 import html2canvas from "html2canvas-pro"
 
-/**
- * Pre-converts all <img> elements inside a container to Base64 data URLs.
- * Returns a cleanup function that restores original src values.
- */
-async function convertImagesToBase64(el: HTMLElement): Promise<() => void> {
-  const images = Array.from(el.querySelectorAll<HTMLImageElement>("img"))
-  const originalSrcMap = new Map<HTMLImageElement, string>()
-
-  await Promise.all(
-    images.map(async (img) => {
-      const src = img.currentSrc || img.src
-      if (!src || src.startsWith("data:")) return
-
-      originalSrcMap.set(img, src)
-
-      try {
-        const res = await fetch(src, { mode: "cors" })
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const blob = await res.blob()
-        const dataUrl = await new Promise<string>((resolve) => {
-          const reader = new FileReader()
-          reader.onloadend = () => resolve(reader.result as string)
-          reader.readAsDataURL(blob)
-        })
-        img.src = dataUrl
-      } catch {
-        // Fallback: draw through an offscreen Image element
-        try {
-          const dataUrl = await new Promise<string>((resolve, reject) => {
-            const tempImg = new Image()
-            tempImg.crossOrigin = "anonymous"
-            tempImg.onload = () => {
-              try {
-                const canvas = document.createElement("canvas")
-                canvas.width = tempImg.naturalWidth || 60
-                canvas.height = tempImg.naturalHeight || 60
-                const ctx = canvas.getContext("2d")
-                if (ctx) {
-                  ctx.drawImage(tempImg, 0, 0)
-                  resolve(canvas.toDataURL("image/png"))
-                } else {
-                  reject(new Error("No 2d context"))
-                }
-              } catch (e) {
-                reject(e)
-              }
-            }
-            tempImg.onerror = reject
-            tempImg.src = src
-          })
-          img.src = dataUrl
-        } catch {
-          // Keep original src if both methods fail
-        }
-      }
-    })
-  )
-
-  return () => {
-    originalSrcMap.forEach((origSrc, img) => {
-      img.src = origSrc
-    })
-  }
-}
-
 export function useSaveAsImage(filename: string) {
   const ref = useRef<HTMLDivElement>(null)
   const [isExporting, setIsExporting] = useState(false)
@@ -76,10 +11,7 @@ export function useSaveAsImage(filename: string) {
 
     setIsExporting(true)
 
-    // 1. Convert all team logos to base64 data URLs
-    const restoreImages = await convertImagesToBase64(el)
-
-    // 2. Measure content dimensions to ensure full table capture
+    // Measure content dimensions to ensure full table capture
     const tableEl = el.querySelector("table")
     const tableWidth = tableEl ? tableEl.scrollWidth : 0
     const contentWidth = Math.max(el.scrollWidth, tableWidth, 720)
@@ -140,7 +72,6 @@ export function useSaveAsImage(filename: string) {
     } catch (err) {
       console.error("Failed to export image:", err)
     } finally {
-      restoreImages()
       setIsExporting(false)
     }
   }, [filename, isExporting])
