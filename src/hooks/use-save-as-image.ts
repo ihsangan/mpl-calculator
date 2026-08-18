@@ -1,5 +1,4 @@
 import { useCallback, useRef, useState } from "react"
-import html2canvas from "html2canvas-pro"
 
 export interface SaveAsImageOptions {
   /** Custom export width in pixels (e.g. 520, 560, 600). Defaults to compact auto-fit (~540px). */
@@ -31,6 +30,9 @@ export function useSaveAsImage(
     const isDark = document.documentElement.classList.contains("dark")
 
     try {
+      // Dynamically load html2canvas-pro only when user clicks Save as Image
+      const html2canvas = (await import("html2canvas-pro")).default
+
       const canvas = await html2canvas(el, {
         backgroundColor: isDark ? "#18181b" : "#ffffff",
         scale: targetScale,
