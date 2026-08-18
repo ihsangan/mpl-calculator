@@ -61,7 +61,10 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
   resolvedTheme,
   leagueName,
 }) => {
-  const { ref, save, isExporting } = useSaveAsImage(`standings-${leagueName.replace(/\s+/g, "-").toLowerCase()}`)
+  const { ref, save, isExporting } = useSaveAsImage(
+    `standings-${leagueName.replace(/\s+/g, "-").toLowerCase()}`,
+    { width: 540 }
+  )
 
   return (
     <div ref={ref}>

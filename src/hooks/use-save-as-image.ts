@@ -1,7 +1,17 @@
 import { useCallback, useRef, useState } from "react"
 import html2canvas from "html2canvas-pro"
 
-export function useSaveAsImage(filename: string) {
+export interface SaveAsImageOptions {
+  /** Custom export width in pixels (e.g. 520, 560, 600). Defaults to compact auto-fit (~540px). */
+  width?: number
+  /** Resolution scale multiplier (default: 2 for high-DPI output) */
+  scale?: number
+}
+
+export function useSaveAsImage(
+  filename: string,
+  options?: SaveAsImageOptions
+) {
   const ref = useRef<HTMLDivElement>(null)
   const [isExporting, setIsExporting] = useState(false)
 
@@ -11,23 +21,26 @@ export function useSaveAsImage(filename: string) {
 
     setIsExporting(true)
 
-    // Measure content dimensions to ensure full table capture
+    // Measure table and content width
     const tableEl = el.querySelector("table")
-    const tableWidth = tableEl ? tableEl.scrollWidth : 0
-    const contentWidth = Math.max(el.scrollWidth, tableWidth, 720)
+    const tableScrollWidth = tableEl ? tableEl.scrollWidth : 0
+
+    // Compact target width: user custom width, or tightly measured fit (default ~540px)
+    const targetWidth = options?.width ?? Math.max(tableScrollWidth + 32, 540)
+    const targetScale = options?.scale ?? 2
     const isDark = document.documentElement.classList.contains("dark")
 
     try {
       const canvas = await html2canvas(el, {
         backgroundColor: isDark ? "#18181b" : "#ffffff",
-        scale: 2,
+        scale: targetScale,
         useCORS: true,
         allowTaint: true,
         logging: false,
         scrollX: 0,
         scrollY: 0,
-        windowWidth: contentWidth + 100,
-        width: contentWidth,
+        windowWidth: targetWidth + 40,
+        width: targetWidth,
         onclone: (_clonedDoc, clonedEl) => {
           // A. Hide elements marked with data-capture-hide (buttons, iteration inputs)
           const hideNodes = clonedEl.querySelectorAll("[data-capture-hide]")
@@ -49,18 +62,20 @@ export function useSaveAsImage(filename: string) {
             hNode.style.width = "100%"
           })
 
-          // C. Set cloned element to full width
-          clonedEl.style.width = `${contentWidth}px`
-          clonedEl.style.minWidth = `${contentWidth}px`
-          clonedEl.style.maxWidth = "none"
+          // C. Set cloned element to precise target width
+          clonedEl.style.width = `${targetWidth}px`
+          clonedEl.style.minWidth = `${targetWidth}px`
+          clonedEl.style.maxWidth = `${targetWidth}px`
           clonedEl.style.overflow = "visible"
           clonedEl.style.boxSizing = "border-box"
+          clonedEl.style.margin = "0"
 
-          // D. Make table full width with ample column space
+          // D. Make table full width within the card
           const clonedTable = clonedEl.querySelector("table")
           if (clonedTable) {
             clonedTable.style.width = "100%"
             clonedTable.style.minWidth = "100%"
+            clonedTable.style.maxWidth = "100%"
           }
         },
       })
@@ -74,7 +89,7 @@ export function useSaveAsImage(filename: string) {
     } finally {
       setIsExporting(false)
     }
-  }, [filename, isExporting])
+  }, [filename, isExporting, options?.width, options?.scale])
 
   return { ref, save, isExporting }
 }

@@ -45,7 +45,10 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
   resolvedTheme,
   leagueName,
 }) => {
-  const { ref, save, isExporting } = useSaveAsImage(`probabilities-${leagueName.replace(/\s+/g, "-").toLowerCase()}`)
+  const { ref, save, isExporting } = useSaveAsImage(
+    `probabilities-${leagueName.replace(/\s+/g, "-").toLowerCase()}`,
+    { width: 580 }
+  )
 
   const sortedByPlayoffs = React.useMemo(() => {
     return [...standings].sort((a, b) => {
@@ -125,21 +128,29 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="font-semibold">Team</TableHead>
-                  <TableHead className="text-right font-semibold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
-                    Top 1–2 (Upper)
+                  <TableHead className="h-auto py-2.5 align-bottom font-semibold">
+                    <span>Team</span>
+                    <span className="block text-[11px] font-normal leading-tight opacity-0 select-none" aria-hidden="true">&nbsp;</span>
                   </TableHead>
-                  <TableHead className="text-right font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap">
-                    Top 3–6 (Lower)
+                  <TableHead className="h-auto py-2.5 text-right align-bottom font-semibold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
+                    <span>Top 1–2</span>
+                    <span className="block text-[11px] font-normal leading-tight opacity-80">(Upper)</span>
                   </TableHead>
-                  <TableHead className="text-right font-semibold text-foreground whitespace-nowrap">
-                    Playoffs (Total)
+                  <TableHead className="h-auto py-2.5 text-right align-bottom font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap">
+                    <span>Top 3–6</span>
+                    <span className="block text-[11px] font-normal leading-tight opacity-80">(Lower)</span>
                   </TableHead>
-                  <TableHead className="text-right font-semibold text-muted-foreground whitespace-nowrap">
-                    Eliminated
+                  <TableHead className="h-auto py-2.5 text-right align-bottom font-semibold text-foreground whitespace-nowrap">
+                    <span>Playoffs</span>
+                    <span className="block text-[11px] font-normal leading-tight text-muted-foreground opacity-80">(Total)</span>
                   </TableHead>
-                  <TableHead className="w-28 text-center font-semibold whitespace-nowrap">
-                    Odds Bar
+                  <TableHead className="h-auto py-2.5 text-right align-bottom font-semibold text-muted-foreground whitespace-nowrap">
+                    <span>Eliminated</span>
+                    <span className="block text-[11px] font-normal leading-tight opacity-0 select-none" aria-hidden="true">&nbsp;</span>
+                  </TableHead>
+                  <TableHead className="h-auto w-28 text-center align-bottom font-semibold whitespace-nowrap">
+                    <span>Odds Bar</span>
+                    <span className="block text-[11px] font-normal leading-tight opacity-0 select-none" aria-hidden="true">&nbsp;</span>
                   </TableHead>
                 </TableRow>
               </TableHeader>
