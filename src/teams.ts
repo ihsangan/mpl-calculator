@@ -1,5 +1,5 @@
 const imgPre =
-  "https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_75/teams/"
+  "https://mpl.isan.eu.org/cdn-cgi/image/f=webp/https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_75/teams/"
 
 export interface Team {
   id: string
@@ -56,7 +56,7 @@ export const ID_TEAMS: Team[] = [
   {
     id: "RRQ",
     name: "RRQ Hoshi",
-    logo: "https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_75,w_97,c_pad/teams/rrq",
+    logo: "https://mpl.isan.eu.org/cdn-cgi/image/f=webp/https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_75,w_97,c_pad/teams/rrq",
   },
 ]
 
@@ -97,7 +97,7 @@ export const PH_TEAMS: Team[] = [
   {
     id: "TWIS",
     name: "Twisted Minds PH",
-    logo: "https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_75,w_93,c_pad/teams/twisted",
+    logo: "https://mpl.isan.eu.org/cdn-cgi/image/f=webp/https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_75,w_93,c_pad/teams/twisted",
   },
   {
     id: "TNC",
@@ -123,7 +123,7 @@ export const MY_TEAMS: Team[] = [
     name: "Invictus Gaming",
     logo: `${imgPre}invictus`,
     logoDark:
-      "https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_75,e_negate/teams/invictus",
+      "https://mpl.isan.eu.org/cdn-cgi/image/f=webp/https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_75,e_negate/teams/invictus",
   },
   {
     id: "TR",
@@ -139,7 +139,7 @@ export const MY_TEAMS: Team[] = [
   {
     id: "RRQ",
     name: "RRQ Tora",
-    logo: "https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_75,w_97,c_pad/teams/rrq",
+    logo: "https://mpl.isan.eu.org/cdn-cgi/image/f=webp/https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_75,w_97,c_pad/teams/rrq",
   },
   {
     id: "SRG",

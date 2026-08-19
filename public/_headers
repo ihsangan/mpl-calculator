@@ -1,6 +1,6 @@
 /
-  Link: <https://res.cloudinary.com>; rel=preconnect; crossorigin
-  Link: </cf-fonts/v/geist/5.2.8/latin/wght/normal.woff2>; rel="preload"; as="font"; type="font/woff2"; crossorigin
+  #Link: <https://res.cloudinary.com>; rel=preconnect; crossorigin
+  Link: </cf-fonts/v/geist/5.3.0/latin/wght/normal.woff2>; rel="preload"; as="font"; type="font/woff2"; crossorigin
   !access-control-allow-origin
 /assets/*
   Cache-Control: public, max-age=2592000
