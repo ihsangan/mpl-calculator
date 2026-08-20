@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 API_BASE_URL = "https://liquipedia.net/mobilelegends/api.php"
-DEFAULT_USER_AGENT = "MPL-Sync-Script/1.0 (https://github.com/ihsangan/mpl-shadcn; contact: developer@example.com)"
+DEFAULT_USER_AGENT = "MPL-Sync-Script/1.0 (https://mpl.isan.eu.org/; me@isan.eu.org)"
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 

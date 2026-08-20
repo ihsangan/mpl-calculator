@@ -5,6 +5,7 @@ import { calculateStandings, isMatchPlayed } from "./lib/standings"
 import { runMonteCarloSimulation } from "./lib/simulation"
 import { useTheme } from "./components/theme-provider"
 import { Header } from "./components/header"
+import { Footer } from "./components/footer"
 import { StandingsTable } from "./components/standings/standings-table"
 import { ProbabilitiesCard } from "./components/probabilities/probabilities-card"
 import { ScheduleEditor } from "./components/schedule/schedule-editor"
@@ -267,6 +268,9 @@ export default function App() {
             />
           </div>
         </div>
+
+        {/* Attribution Footer */}
+        <Footer />
       </div>
     </div>
   )
