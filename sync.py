@@ -262,6 +262,11 @@ def parse_schedule_from_wikitext(wikitext: str) -> List[Dict[str, Any]]:
             score1 = valid_winners.count("1")
             score2 = valid_winners.count("2")
 
+            # Only accept decided Bo3 matches where one team has reached 2 wins.
+            # Incomplete/in-progress matches (e.g. 1-0, 0-1, 1-1) remain 0-0 (unplayed).
+            if max(score1, score2) < 2:
+                score1, score2 = 0, 0
+
             match_id = f"w{week_num}d{current_day}m{m_in_day}"
 
             all_matches.append(
