@@ -16,10 +16,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Set up Python
-        uses: actions/setup-python@v7
+      - name: Set up Node
+        uses: actions/setup-node@v7
         with:
-          python-version: '3.14'
+          node-version: 'lts/*'
 
       - name: Configure Git
         run: |
@@ -27,5 +27,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Run Sync Script
-        run: |
-          python sync.py --push
+        run: npm run sync -- --push
