@@ -1,7 +1,7 @@
 {
   "LEAGUE_NAME": "MPL Indonesia Season 18",
-  "CURRENT_WEEK": 2,
-  "LAST_UPDATED": "2026-08-23T13:27:14Z",
+  "CURRENT_WEEK": 3,
+  "LAST_UPDATED": "2026-08-23T14:18:10Z",
   "ALL_MATCHES": [
     {
       "id": "w1d1m1",
@@ -113,7 +113,7 @@
       "teamA": "GEEK",
       "teamB": "EVOS",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 2
     },
     {
       "id": "w3d1m1",
