@@ -27,4 +27,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Run Sync Script
-        run: npm run sync -- --push
+        env:
+          LIQUIPEDIA_API_KEY: ${{ secrets.LIQUIPEDIA_API_KEY }}
+        run: node liquipedia.ts --push

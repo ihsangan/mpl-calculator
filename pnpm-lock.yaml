@@ -20,9 +20,6 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      dotenv:
-        specifier: ^17.4.2
-        version: 17.4.2
       html2canvas-pro:
         specifier: ^2.3.9
         version: 2.3.9

@@ -26,7 +26,7 @@ Supports **MPL Indonesia**, **MPL Philippines**, and **MPL Malaysia**.
 | Styling      | Tailwind CSS 4                               |
 | UI           | shadcn/ui (Radix UI primitives)              |
 | Image Export | html2canvas-pro (lazy-loaded)                |
-| Data Sync    | Custom sync script (TypeScript / Python)     |
+| Data Sync    | Liquipedia OpenAPI v3 (`liquipedia.ts`)      |
 | CI/CD        | GitHub Actions (scheduled cron + manual)     |
 | Deployment   | Cloudflare Pages                             |
 
@@ -52,8 +52,7 @@ Supports **MPL Indonesia**, **MPL Philippines**, and **MPL Malaysia**.
 │   │   └── simulation.ts          # Monte Carlo simulation engine
 │   └── types/
 │       └── index.ts               # Shared TypeScript interfaces
-├── sync.ts                        # Liquipedia sync script (TypeScript)
-├── sync.py                        # Liquipedia sync script (Python)
+├── liquipedia.ts                  # Liquipedia OpenAPI sync script
 └── .github/workflows/sync.yml    # Scheduled GitHub Actions workflow
 ```
 
@@ -85,7 +84,15 @@ pnpm build
 
 ## Data Sync
 
-Match schedules and scores are sourced from [Liquipedia](https://liquipedia.net/mobilelegends/) and stored in `src/schedule-{id,ph,my}.json`. The sync script fetches all three leagues in a single batched API request, parses the MediaWiki wikitext, and updates the JSON files with the latest results.
+Match schedules and scores are sourced directly from the official [Liquipedia OpenAPI v3](https://api.liquipedia.net/) (JSON API) and stored in `src/schedule-{id,ph,my}.json`. The sync script fetches all three leagues concurrently in a single batch request using `OR` conditions, normalizes team names, and updates the JSON files with the latest results.
+
+### Environment Variable
+
+Set your Liquipedia API key in a `.env` file:
+
+```env
+LIQUIPEDIA_API_KEY=your_api_key_here
+```
 
 ### Manual Sync
 
@@ -101,6 +108,9 @@ pnpm sync --league my
 # Preview without writing files
 pnpm sync --dry-run
 
+# Sync from a local response JSON file
+pnpm sync --file match.json
+
 # Sync and auto commit + push
 pnpm sync --push
 ```
@@ -109,10 +119,12 @@ pnpm sync --push
 
 A [workflow](.github/workflows/sync.yml) runs on a cron schedule during match days (Fridays, Saturdays, and Sundays) and can also be triggered manually via `workflow_dispatch`.
 
+Make sure to add `LIQUIPEDIA_API_KEY` to your repository secrets (**Settings → Secrets and variables → Actions → Repository secrets**).
+
 ### Sync Rules
 
 - Only **completed Bo3 matches** (where one team has reached 2 wins) are recorded. In-progress matches (`1-0`, `0-1`, `1-1`) remain `0-0` until decided.
-- `LAST_UPDATED` is set to the Liquipedia page revision timestamp, not the sync execution time.
+- `LAST_UPDATED` is set to the latest match timestamp, or current UTC time.
 - `CURRENT_WEEK` is auto-detected as the first week containing unplayed matches.
 
 ## License

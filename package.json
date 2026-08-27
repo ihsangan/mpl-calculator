@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
-    "sync": "node sync.ts",
+    "sync": "node liquipedia.ts",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -17,7 +17,6 @@
     "@tailwindcss/vite": "^4.3.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "dotenv": "^17.4.2",
     "html2canvas-pro": "^2.3.9",
     "lucide-react": "^1.33.0",
     "radix-ui": "^1.6.7",

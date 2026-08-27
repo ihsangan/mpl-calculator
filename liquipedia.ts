@@ -5,12 +5,20 @@
  * and synchronizes schedule and scores for MPL Indonesia (ID), Philippines (PH), and Malaysia (MY).
  */
 
-import "dotenv/config"
 import fs from "node:fs"
 import path from "node:path"
 import { spawnSync } from "node:child_process"
 import { fileURLToPath } from "node:url"
 import { parseArgs } from "node:util"
+
+// Native Node.js .env loading without external dependencies
+try {
+  if (typeof process.loadEnvFile === "function") {
+    process.loadEnvFile()
+  }
+} catch {
+  // Ignored if .env file does not exist (e.g. in CI environments)
+}
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -257,18 +265,21 @@ export function extractDayNumber(
 }
 
 /**
- * Fetch matches for a league using Liquipedia OpenAPI v3.
+ * Fetch matches for one or multiple leagues in 1 single request using OR conditions.
  */
-export async function fetchLeagueMatches(
-  pageName: string,
+export async function fetchMatchesBatch(
+  pageNames: string[],
   apiKey: string,
   userAgent: string = DEFAULT_USER_AGENT
 ): Promise<ApiMatch[]> {
+  const conditions = pageNames.map((p) => `[[pagename::${p}]]`).join(" OR ")
+  const limit = Math.max(200, pageNames.length * 100)
+
   const params = new URLSearchParams({
     wiki: "mobilelegends",
-    conditions: `[[pagename::${pageName}]]`,
-    query: "match2bracketdata,match2opponents,match2games,date",
-    limit: "100",
+    conditions,
+    query: "pagename,match2bracketdata,match2opponents,match2games,date",
+    limit: String(limit),
   })
 
   const url = `${API_ENDPOINT}?${params.toString()}`
@@ -680,26 +691,49 @@ Options:
       process.exit(1)
     }
 
-    for (let i = 0; i < leaguesToSync.length; i++) {
-      const league = leaguesToSync[i]
-      const cfg = LEAGUES_CONFIG[league]
+    const validLeagues = leaguesToSync.filter((l) => {
+      const cfg = LEAGUES_CONFIG[l]
       if (!cfg) {
         console.error(
-          `Error: Unknown league '${league}'. Supported: ${Object.keys(LEAGUES_CONFIG).join(", ")}`
+          `Error: Unknown league '${l}'. Supported: ${Object.keys(LEAGUES_CONFIG).join(", ")}`
         )
-        continue
+        return false
       }
+      return true
+    })
 
-      if (i > 0) {
-        console.log("\nWaiting 1 second before next request...")
-        await sleep(1000)
+    if (validLeagues.length === 0) {
+      process.exit(1)
+    }
+
+    const pageNames = validLeagues.map((l) => LEAGUES_CONFIG[l].page)
+
+    console.log(
+      `Fetching matches for ${validLeagues.length} league(s) in 1 request via Liquipedia OpenAPI...`
+    )
+    const allMatches = await fetchMatchesBatch(
+      pageNames,
+      apiKey,
+      DEFAULT_USER_AGENT
+    )
+    console.log(`Successfully received ${allMatches.length} total matches`)
+
+    // Group matches by normalized pagename
+    const matchesByPage = new Map<string, ApiMatch[]>()
+    for (const m of allMatches) {
+      const pageKey = (m.pagename || "").replace(/ /g, "_").toLowerCase()
+      if (!matchesByPage.has(pageKey)) {
+        matchesByPage.set(pageKey, [])
       }
+      matchesByPage.get(pageKey)!.push(m)
+    }
+
+    for (const league of validLeagues) {
+      const cfg = LEAGUES_CONFIG[league]
+      const pageKey = cfg.page.replace(/ /g, "_").toLowerCase()
+      const apiMatches = matchesByPage.get(pageKey) || []
 
       try {
-        console.log(
-          `\n[${cfg.name.toUpperCase()}] Fetching matches for ${cfg.page} via Liquipedia OpenAPI...`
-        )
-        const apiMatches = await fetchLeagueMatches(cfg.page, apiKey, DEFAULT_USER_AGENT)
         const result = processLeagueMatches(
           league,
           apiMatches,
