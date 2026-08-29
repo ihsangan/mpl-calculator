@@ -1,7 +1,7 @@
 {
   "LEAGUE_NAME": "MPL Philippines Season 18",
   "CURRENT_WEEK": 2,
-  "LAST_UPDATED": "2026-08-29T06:30:00Z",
+  "LAST_UPDATED": "2026-08-29T09:00:00Z",
   "ALL_MATCHES": [
     {
       "id": "w1d1m1",
@@ -77,8 +77,8 @@
       "id": "w2d2m2",
       "teamA": "OMG",
       "teamB": "FLCN",
-      "scoreA": 0,
-      "scoreB": 0
+      "scoreA": 2,
+      "scoreB": 1
     },
     {
       "id": "w2d2m3",
