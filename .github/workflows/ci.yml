@@ -1,4 +1,4 @@
-name: Sync MPL Schedules & Scores
+name: Sync Liquipedia
 
 on:
   workflow_dispatch:
