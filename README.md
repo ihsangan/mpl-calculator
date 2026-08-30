@@ -105,6 +105,12 @@ pnpm sync --league id
 pnpm sync --league ph
 pnpm sync --league my
 
+# Sync with custom API key
+pnpm sync --apikey your_api_key_here
+
+# Run silently without console output
+pnpm sync --silent
+
 # Preview without writing files
 pnpm sync --dry-run
 

@@ -381,13 +381,18 @@ export function parseApiMatches(apiMatches: ApiMatch[]): MatchData[] {
 export function processLeagueMatches(
   leagueKey: string,
   apiMatches: ApiMatch[],
-  dryRun: boolean = false
+  dryRun: boolean = false,
+  silent: boolean = false
 ): {
   isModified: boolean
   filePath: string
   updatedCount: number
   totalMatches: number
 } {
+  const log = (...msgs: unknown[]) => {
+    if (!silent) console.log(...msgs)
+  }
+
   const config = LEAGUES_CONFIG[leagueKey.toLowerCase()]
   if (!config) {
     throw new Error(`Unknown league: ${leagueKey}`)
@@ -397,7 +402,7 @@ export function processLeagueMatches(
   const leagueName = config.name
 
   const parsedMatches = parseApiMatches(apiMatches)
-  console.log(`\n[${leagueName.toUpperCase()}] Parsed ${parsedMatches.length} matches`)
+  log(`\n[${leagueName.toUpperCase()}] Parsed ${parsedMatches.length} matches`)
 
   if (parsedMatches.length === 0) {
     throw new Error(`No matches could be parsed for ${leagueName}`)
@@ -426,11 +431,11 @@ export function processLeagueMatches(
   let playedCount = 0
   const finalMatches: MatchData[] = []
 
-  console.log("=".repeat(65))
-  console.log(
+  log("=".repeat(65))
+  log(
     `${"MATCH ID".padEnd(10)} ${"MATCHUP".padEnd(25)} ${"OLD".padEnd(10)} ${"NEW".padEnd(10)} STATUS`
   )
-  console.log("=".repeat(65))
+  log("=".repeat(65))
 
   for (const match of parsedMatches) {
     const mId = match.id
@@ -463,7 +468,7 @@ export function processLeagueMatches(
 
     if (matchupChanged || scoreChanged || isPlayed) {
       const matchup = `${match.teamA} vs ${match.teamB}`
-      console.log(
+      log(
         `${mId.padEnd(10)} ${matchup.padEnd(25)} ${oldScore.padEnd(10)} ${newScore.padEnd(10)} ${status}`
       )
     }
@@ -471,7 +476,7 @@ export function processLeagueMatches(
     finalMatches.push(match)
   }
 
-  console.log("=".repeat(65))
+  log("=".repeat(65))
 
   // Determine current week (first week with unplayed matches, or maximum week)
   let currentWeek = 1
@@ -526,16 +531,16 @@ export function processLeagueMatches(
       JSON.stringify(outputData, null, 2) + "\n",
       "utf-8"
     )
-    console.log(`[${leagueName.toUpperCase()}] Written to ${targetFile}`)
-    console.log(`[${leagueName.toUpperCase()}] Current Week: Week ${currentWeek}`)
-    console.log(`[${leagueName.toUpperCase()}] Last Updated: ${lastUpdated}`)
+    log(`[${leagueName.toUpperCase()}] Written to ${targetFile}`)
+    log(`[${leagueName.toUpperCase()}] Current Week: Week ${currentWeek}`)
+    log(`[${leagueName.toUpperCase()}] Last Updated: ${lastUpdated}`)
   } else {
-    console.log(
+    log(
       `[DRY RUN] [${leagueName.toUpperCase()}] No changes written to ${targetFile}`
     )
   }
 
-  console.log(
+  log(
     `[${leagueName.toUpperCase()}] Played: ${playedCount}/${finalMatches.length} | Updates: ${updatedCount + matchupChangedCount}`
   )
 
@@ -550,23 +555,30 @@ export function processLeagueMatches(
 /**
  * Stage modified JSON files, commit, and push to remote.
  */
-export function gitCommitAndPush(changedFiles: string[]): void {
+export function gitCommitAndPush(
+  changedFiles: string[],
+  silent: boolean = false
+): void {
+  const log = (...msgs: unknown[]) => {
+    if (!silent) console.log(...msgs)
+  }
+
   if (changedFiles.length === 0) {
-    console.log("\nNo files modified. Skipping git commit & push.")
+    log("\nNo files modified. Skipping git commit & push.")
     return
   }
 
-  console.log("\n" + "=".repeat(65))
-  console.log("GIT COMMIT & PUSH")
-  console.log("=".repeat(65))
+  log("\n" + "=".repeat(65))
+  log("GIT COMMIT & PUSH")
+  log("=".repeat(65))
 
   const relPaths = changedFiles.map((p) => path.relative(__dirname, p))
-  console.log(`Staging files: ${relPaths.join(", ")}`)
+  log(`Staging files: ${relPaths.join(", ")}`)
 
   try {
     const addRes = spawnSync("git", ["add", ...changedFiles], {
       cwd: __dirname,
-      stdio: "inherit",
+      stdio: silent ? "ignore" : "inherit",
     })
     if (addRes.status !== 0) {
       console.error("Git add failed")
@@ -574,7 +586,7 @@ export function gitCommitAndPush(changedFiles: string[]): void {
     }
 
     const commitMsg = `chore(data): sync league schedule and scores from Liquipedia OpenAPI\n\nUpdated: ${relPaths.join(", ")}`
-    console.log("Committing changes...")
+    log("Committing changes...")
     const commitRes = spawnSync("git", ["commit", "-m", commitMsg], {
       cwd: __dirname,
       encoding: "utf-8",
@@ -585,23 +597,23 @@ export function gitCommitAndPush(changedFiles: string[]): void {
         commitRes.stdout?.includes("nothing to commit") ||
         commitRes.stderr?.includes("nothing to commit")
       ) {
-        console.log("Working tree clean (no new changes to commit).")
+        log("Working tree clean (no new changes to commit).")
         return
       }
       console.error(`Commit error:\n${commitRes.stderr || commitRes.stdout}`)
       return
     }
 
-    console.log(commitRes.stdout?.trim())
+    log(commitRes.stdout?.trim())
 
-    console.log("Pushing to remote...")
+    log("Pushing to remote...")
     const pushRes = spawnSync("git", ["push"], {
       cwd: __dirname,
-      stdio: "inherit",
+      stdio: silent ? "ignore" : "inherit",
     })
 
     if (pushRes.status === 0) {
-      console.log("Git push successful! 🚀")
+      log("Git push successful! 🚀")
     } else {
       console.error("Git push failed!")
     }
@@ -623,6 +635,14 @@ export async function main() {
       file: {
         type: "string",
         short: "f",
+      },
+      apikey: {
+        type: "string",
+      },
+      silent: {
+        type: "boolean",
+        short: "s",
+        default: false,
       },
       push: {
         type: "boolean",
@@ -648,6 +668,8 @@ Usage: node liquipedia.ts [options]
 Options:
   -l, --league <id|ph|my|all>  League to sync (default: all)
   -f, --file <path>           Use local JSON response file (e.g. match.json) instead of API request
+  --apikey <key>              Custom Liquipedia API key (overrides LIQUIPEDIA_API_KEY env)
+  -s, --silent                Run silently without console output
   --push                      Automatically git commit and push modified JSON files
   --dry-run                   Fetch and parse without writing to files
   -h, --help                  Show help
@@ -655,17 +677,23 @@ Options:
     return
   }
 
+  const isSilent = Boolean(args.silent)
+  const log = (...msgs: unknown[]) => {
+    if (!isSilent) console.log(...msgs)
+  }
+
   const leagueArg = (args.league || "all").toLowerCase()
   const leaguesToSync =
     leagueArg === "all" ? ["id", "ph", "my"] : [leagueArg]
 
-  const apiKey = process.env.LIQUIPEDIA_API_KEY || ""
+  const apiKey =
+    (args.apikey as string) || process.env.LIQUIPEDIA_API_KEY || ""
   const changedFiles: string[] = []
 
   // Check if a local file was provided (e.g. match.json)
   if (args.file) {
     const filePath = path.resolve(args.file)
-    console.log(`Reading match data from local file: ${filePath}`)
+    log(`Reading match data from local file: ${filePath}`)
     const fileContent = fs.readFileSync(filePath, "utf-8")
     const data = JSON.parse(fileContent) as ApiResponse
     const matches = data.result || []
@@ -674,7 +702,8 @@ Options:
     const result = processLeagueMatches(
       targetLeague,
       matches,
-      Boolean(args["dry-run"])
+      Boolean(args["dry-run"]),
+      isSilent
     )
     if (result.isModified && !args["dry-run"]) {
       changedFiles.push(result.filePath)
@@ -682,12 +711,14 @@ Options:
   } else {
     if (!apiKey) {
       console.error(
-        "Error: LIQUIPEDIA_API_KEY environment variable is required."
+        "Error: LIQUIPEDIA_API_KEY environment variable or --apikey flag is required."
       )
       console.error(
-        "Please set LIQUIPEDIA_API_KEY in your .env file or environment."
+        "Please set LIQUIPEDIA_API_KEY in your .env file, or pass --apikey <key>."
       )
-      console.error("Tip: To test with a local response file, use: node liquipedia.ts --file match.json")
+      console.error(
+        "Tip: To test with a local response file, use: node liquipedia.ts --file match.json"
+      )
       process.exit(1)
     }
 
@@ -708,7 +739,7 @@ Options:
 
     const pageNames = validLeagues.map((l) => LEAGUES_CONFIG[l].page)
 
-    console.log(
+    log(
       `Fetching matches for ${validLeagues.length} league(s) in 1 request via Liquipedia OpenAPI...`
     )
     const allMatches = await fetchMatchesBatch(
@@ -716,7 +747,7 @@ Options:
       apiKey,
       DEFAULT_USER_AGENT
     )
-    console.log(`Successfully received ${allMatches.length} total matches`)
+    log(`Successfully received ${allMatches.length} total matches`)
 
     // Group matches by normalized pagename
     const matchesByPage = new Map<string, ApiMatch[]>()
@@ -737,7 +768,8 @@ Options:
         const result = processLeagueMatches(
           league,
           apiMatches,
-          Boolean(args["dry-run"])
+          Boolean(args["dry-run"]),
+          isSilent
         )
         if (result.isModified && !args["dry-run"]) {
           changedFiles.push(result.filePath)
@@ -749,7 +781,7 @@ Options:
   }
 
   if (args.push && !args["dry-run"]) {
-    gitCommitAndPush(changedFiles)
+    gitCommitAndPush(changedFiles, isSilent)
   }
 }
 
