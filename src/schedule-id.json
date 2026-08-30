@@ -1,7 +1,7 @@
 {
   "LEAGUE_NAME": "MPL Indonesia Season 18",
-  "CURRENT_WEEK": 3,
-  "LAST_UPDATED": "2026-08-30T10:00:00Z",
+  "CURRENT_WEEK": 4,
+  "LAST_UPDATED": "2026-08-30T13:00:00Z",
   "ALL_MATCHES": [
     {
       "id": "w1d1m1",
@@ -168,8 +168,8 @@
       "id": "w3d3m3",
       "teamA": "TLID",
       "teamB": "AE",
-      "scoreA": 0,
-      "scoreB": 0
+      "scoreA": 2,
+      "scoreB": 1
     },
     {
       "id": "w4d1m1",
