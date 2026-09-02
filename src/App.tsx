@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect } from "react"
 import { LEAGUES } from "./leagues"
-import type { Match, Probability } from "./types"
+import type { Match } from "./types"
 import { calculateStandings, isMatchPlayed } from "./lib/standings"
-import { runMonteCarloSimulation } from "./lib/simulation"
+import { useSimulation } from "./hooks/use-simulation"
 import { useTheme } from "./components/theme-provider"
 import { Header } from "./components/header"
 import { Footer } from "./components/footer"
@@ -41,13 +41,16 @@ export default function App() {
     }
     return currentLeague.currentWeek
   })
-  const [isSimulating, setIsSimulating] = useState(false)
-  const [probabilities, setProbabilities] = useState<Record<string, Probability>>(() =>
-    runMonteCarloSimulation(currentLeague.allMatches, currentLeague.teams, 1000)
-  )
+
   const [iterations, setIterations] = useState(1000)
   const [iterationsInput, setIterationsInput] = useState("1000")
-  const [simulateTrigger, setSimulateTrigger] = useState(0)
+
+  // Web Worker-powered Monte Carlo simulation with debouncing and cancellation
+  const { probabilities, isSimulating, triggerSimulation } = useSimulation({
+    matches,
+    teams: currentLeague.teams,
+    iterations,
+  })
 
   // Sync URL pathname on initial load (replace if missing or wrong)
   useEffect(() => {
@@ -64,12 +67,9 @@ export default function App() {
       if (fromUrl && fromUrl !== selectedLeague) {
         const league = LEAGUES[fromUrl]
         if (!league) return
-        setIsSimulating(true)
         setSelectedLeague(fromUrl)
         setMatches(JSON.parse(JSON.stringify(league.allMatches)))
         setSelectedWeek(league.currentWeek)
-        setProbabilities({})
-        setSimulateTrigger((n) => n + 1)
       }
     }
 
@@ -129,37 +129,13 @@ export default function App() {
     return () => observer.disconnect()
   }, [theme])
 
-  // Run simulation whenever matches or simulation trigger changes
-  useEffect(() => {
-    let isCancelled = false
-    const timer = setTimeout(() => {
-      const results = runMonteCarloSimulation(
-        matches,
-        currentLeague.teams,
-        iterations
-      )
-      if (!isCancelled) {
-        setProbabilities(results)
-        setIsSimulating(false)
-      }
-    }, 40)
-
-    return () => {
-      isCancelled = true
-      clearTimeout(timer)
-    }
-  }, [matches, simulateTrigger, currentLeague, iterations])
-
   // Handle switching league
   const handleLeagueChange = (leagueId: string) => {
     const league = LEAGUES[leagueId]
     if (!league) return
-    setIsSimulating(true)
     setSelectedLeague(leagueId)
     setMatches(JSON.parse(JSON.stringify(league.allMatches)))
     setSelectedWeek(league.currentWeek)
-    setProbabilities({})
-    setSimulateTrigger((n) => n + 1)
     // Push new URL so browser history tracks league switches
     window.history.pushState(null, "", `/${leagueId.toLowerCase()}`)
   }
@@ -167,16 +143,15 @@ export default function App() {
   // Handle manual trigger for simulation iterations
   const handleSimulate = () => {
     const parsed = parseInt(iterationsInput, 10)
-    const clamped = isNaN(parsed) || parsed < 100 ? 100 : Math.min(parsed, 100000)
-    setIsSimulating(true)
+    const clamped =
+      isNaN(parsed) || parsed < 100 ? 100 : Math.min(parsed, 100000)
     setIterations(clamped)
     setIterationsInput(String(clamped))
-    setSimulateTrigger((n) => n + 1)
+    triggerSimulation()
   }
 
   // Handle individual match score changes
   const handleScoreChange = (matchId: string, value: string) => {
-    setIsSimulating(true)
     setMatches((prev) =>
       prev.map((m) => {
         if (m.id !== matchId) return m
@@ -189,14 +164,12 @@ export default function App() {
 
   // Reset matches to league default fixtures
   const handleResetToDefault = () => {
-    setIsSimulating(true)
     setMatches(JSON.parse(JSON.stringify(currentLeague.allMatches)))
     setSelectedWeek(currentLeague.currentWeek)
   }
 
   // Reset all matches to unplayed (0-0)
   const handleResetAllMatches = () => {
-    setIsSimulating(true)
     const resetMatches = matches.map((m) => ({
       ...m,
       scoreA: 0,
@@ -207,8 +180,10 @@ export default function App() {
   }
 
   // Handle imported matches safely
-  const handleLoadMatches = (importedMatches: Match[], week?: number | "ALL") => {
-    setIsSimulating(true)
+  const handleLoadMatches = (
+    importedMatches: Match[],
+    week?: number | "ALL"
+  ) => {
     setMatches(importedMatches)
     if (week !== undefined) {
       setSelectedWeek(week)

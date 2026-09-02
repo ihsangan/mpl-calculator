@@ -76,7 +76,7 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
             <input
               type="number"
               min="100"
-              max="50000"
+              max="100000"
               value={iterationsInput}
               onChange={(e) => onIterationsInputChange(e.target.value)}
               onKeyDown={(e) => {
