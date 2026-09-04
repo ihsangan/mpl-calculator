@@ -2,13 +2,16 @@ import { useState, useMemo, useEffect } from "react"
 import { LEAGUES } from "./leagues"
 import type { Match } from "./types"
 import { calculateStandings, isMatchPlayed } from "./lib/standings"
+import { calculateTeamElos } from "./lib/elo"
 import { useSimulation } from "./hooks/use-simulation"
+import type { SimulationMode } from "./lib/simulation"
 import { useTheme } from "./components/theme-provider"
 import { Header } from "./components/header"
 import { Footer } from "./components/footer"
 import { StandingsTable } from "./components/standings/standings-table"
 import { ProbabilitiesCard } from "./components/probabilities/probabilities-card"
 import { ScheduleEditor } from "./components/schedule/schedule-editor"
+import { NextMatchCard } from "./components/schedule/next-match-card"
 
 // Parse league ID from URL pathname (e.g. "/ph" → "PH")
 const getLeagueFromUrl = (): string | null => {
@@ -44,12 +47,20 @@ export default function App() {
 
   const [iterations, setIterations] = useState(1000)
   const [iterationsInput, setIterationsInput] = useState("1000")
+  const [simulationMode, setSimulationMode] = useState<SimulationMode>("uniform")
+
+  // Calculate dynamic ELO ratings for all teams
+  const teamElos = useMemo(
+    () => calculateTeamElos(matches, currentLeague.teams),
+    [matches, currentLeague.teams]
+  )
 
   // Web Worker-powered Monte Carlo simulation with debouncing and cancellation
   const { probabilities, isSimulating, triggerSimulation } = useSimulation({
     matches,
     teams: currentLeague.teams,
     iterations,
+    mode: simulationMode,
   })
 
   // Sync URL pathname on initial load (replace if missing or wrong)
@@ -218,6 +229,9 @@ export default function App() {
               isSimulating={isSimulating}
               iterations={iterations}
               iterationsInput={iterationsInput}
+              simulationMode={simulationMode}
+              teamElos={teamElos}
+              onSimulationModeChange={setSimulationMode}
               onIterationsInputChange={setIterationsInput}
               onSimulate={handleSimulate}
               resolvedTheme={resolvedTheme}
@@ -225,8 +239,14 @@ export default function App() {
             />
           </div>
 
-          {/* Right Column: Interactive Schedule Editor */}
-          <div className="xl:col-span-5">
+          {/* Right Column: Next Match Countdown & Interactive Schedule Editor */}
+          <div className="space-y-6 xl:col-span-5">
+            <NextMatchCard
+              matches={matches}
+              teams={currentLeague.teams}
+              resolvedTheme={resolvedTheme}
+            />
+
             <ScheduleEditor
               leagueId={selectedLeague}
               matches={matches}

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import type { Match, Team, Probability } from "../types"
-import { runMonteCarloSimulation } from "../lib/simulation"
+import { runMonteCarloSimulation, type SimulationMode } from "../lib/simulation"
 import type {
   SimulationWorkerRequest,
   SimulationWorkerResponse,
@@ -10,6 +10,7 @@ interface UseSimulationOptions {
   matches: Match[]
   teams: Team[]
   iterations: number
+  mode?: SimulationMode
   trigger?: number
   debounceMs?: number
 }
@@ -24,13 +25,14 @@ export function useSimulation({
   matches,
   teams,
   iterations,
+  mode = "uniform",
   trigger = 0,
   debounceMs = 40,
 }: UseSimulationOptions): UseSimulationReturn {
-  // Initial synchronous calculation for fast initial render
+  // Initial calculation for fast initial render
   const [probabilities, setProbabilities] = useState<
     Record<string, Probability>
-  >(() => runMonteCarloSimulation(matches, teams, iterations))
+  >(() => runMonteCarloSimulation(matches, teams, iterations, mode))
 
   const [isSimulating, setIsSimulating] = useState(false)
   const [manualTrigger, setManualTrigger] = useState(0)
@@ -99,11 +101,12 @@ export function useSimulation({
           matches,
           teams,
           iterations,
+          mode,
         }
         workerRef.current.postMessage(payload)
       } else {
         // Fallback execution on main thread
-        const results = runMonteCarloSimulation(matches, teams, iterations)
+        const results = runMonteCarloSimulation(matches, teams, iterations, mode)
         if (isMountedRef.current && currentId === requestIdRef.current) {
           setProbabilities(results)
           setIsSimulating(false)
@@ -114,7 +117,7 @@ export function useSimulation({
     return () => {
       clearTimeout(timer)
     }
-  }, [matches, teams, iterations, trigger, manualTrigger, debounceMs])
+  }, [matches, teams, iterations, mode, trigger, manualTrigger, debounceMs])
 
   const triggerSimulation = useCallback(() => {
     setIsSimulating(true)

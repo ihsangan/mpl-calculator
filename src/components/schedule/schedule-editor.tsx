@@ -302,31 +302,42 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             No matches found with selected filter.
           </div>
         ) : (
-          groupedMatches.map((group) => (
-            <div key={group.key} className="space-y-2.5">
-              {/* Day / Week-Day header */}
-              <div className="flex items-center gap-3">
-                <Separator className="flex-1" />
-                <span className="shrink-0 font-mono text-[11px] font-bold tracking-widest text-muted-foreground uppercase">
-                  {group.title}
-                </span>
-                <Separator className="flex-1" />
-              </div>
+          groupedMatches.map((group) => {
+            const firstDate = group.matches[0]?.date
+            const dateLabel = firstDate
+              ? new Date(firstDate).toLocaleDateString(undefined, {
+                  weekday: "short",
+                  day: "numeric",
+                  month: "short",
+                })
+              : null
 
-              {/* Match Items */}
-              <div className="space-y-2">
-                {group.matches.map((match) => (
-                  <MatchCard
-                    key={match.id}
-                    match={match}
-                    teams={teams}
-                    resolvedTheme={resolvedTheme}
-                    onScoreChange={onScoreChange}
-                  />
-                ))}
+            return (
+              <div key={group.key} className="space-y-2.5">
+                {/* Day / Week-Day header with Date */}
+                <div className="flex items-center gap-3">
+                  <Separator className="flex-1" />
+                  <span className="shrink-0 font-mono text-[11px] font-bold tracking-widest text-muted-foreground uppercase">
+                    {group.title} {dateLabel ? `• ${dateLabel}` : ""}
+                  </span>
+                  <Separator className="flex-1" />
+                </div>
+
+                {/* Match Items */}
+                <div className="space-y-2">
+                  {group.matches.map((match) => (
+                    <MatchCard
+                      key={match.id}
+                      match={match}
+                      teams={teams}
+                      resolvedTheme={resolvedTheme}
+                      onScoreChange={onScoreChange}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          ))
+            )
+          })
         )}
       </CardContent>
     </Card>

@@ -8,392 +8,448 @@
       "teamA": "AC",
       "teamB": "BTRM",
       "scoreA": 1,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-14T09:00:00.000Z"
     },
     {
       "id": "w1d1m2",
       "teamA": "VMS",
       "teamB": "FL",
       "scoreA": 2,
-      "scoreB": 1
+      "scoreB": 1,
+      "date": "2026-08-14T12:15:00.000Z"
     },
     {
       "id": "w1d2m1",
       "teamA": "FL",
       "teamB": "BTRM",
       "scoreA": 1,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-15T06:30:00.000Z"
     },
     {
       "id": "w1d2m2",
       "teamA": "RRQ",
       "teamB": "TR",
       "scoreA": 0,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-15T09:00:00.000Z"
     },
     {
       "id": "w1d2m3",
       "teamA": "SRG",
       "teamB": "iG",
       "scoreA": 2,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-08-15T12:15:00.000Z"
     },
     {
       "id": "w1d3m1",
       "teamA": "iG",
       "teamB": "RRQ",
       "scoreA": 2,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-08-16T06:30:00.000Z"
     },
     {
       "id": "w1d3m2",
       "teamA": "TR",
       "teamB": "SRG",
       "scoreA": 0,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-16T09:00:00.000Z"
     },
     {
       "id": "w2d1m1",
       "teamA": "iG",
       "teamB": "VMS",
       "scoreA": 2,
-      "scoreB": 1
+      "scoreB": 1,
+      "date": "2026-08-21T09:00:00.000Z"
     },
     {
       "id": "w2d1m2",
       "teamA": "BTRM",
       "teamB": "SRG",
       "scoreA": 1,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-21T12:15:00.000Z"
     },
     {
       "id": "w2d2m1",
       "teamA": "TR",
       "teamB": "VMS",
       "scoreA": 1,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-22T06:30:00.000Z"
     },
     {
       "id": "w2d2m2",
       "teamA": "AC",
       "teamB": "iG",
       "scoreA": 0,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-22T09:00:00.000Z"
     },
     {
       "id": "w2d2m3",
       "teamA": "BTRM",
       "teamB": "RRQ",
       "scoreA": 2,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-08-22T12:15:00.000Z"
     },
     {
       "id": "w2d3m1",
       "teamA": "TR",
       "teamB": "AC",
       "scoreA": 2,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-08-23T06:30:00.000Z"
     },
     {
       "id": "w2d3m2",
       "teamA": "FL",
       "teamB": "SRG",
       "scoreA": 0,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-23T09:00:00.000Z"
     },
     {
       "id": "w3d1m1",
       "teamA": "BTRM",
       "teamB": "TR",
       "scoreA": 1,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-28T09:00:00.000Z"
     },
     {
       "id": "w3d1m2",
       "teamA": "VMS",
       "teamB": "RRQ",
       "scoreA": 2,
-      "scoreB": 1
+      "scoreB": 1,
+      "date": "2026-08-28T12:15:00.000Z"
     },
     {
       "id": "w3d2m1",
       "teamA": "FL",
       "teamB": "TR",
       "scoreA": 0,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-29T06:30:00.000Z"
     },
     {
       "id": "w3d2m2",
       "teamA": "BTRM",
       "teamB": "VMS",
       "scoreA": 1,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-29T09:00:00.000Z"
     },
     {
       "id": "w3d2m3",
       "teamA": "SRG",
       "teamB": "AC",
       "scoreA": 2,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-08-29T12:15:00.000Z"
     },
     {
       "id": "w3d3m1",
       "teamA": "iG",
       "teamB": "FL",
       "scoreA": 0,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-30T06:30:00.000Z"
     },
     {
       "id": "w3d3m2",
       "teamA": "RRQ",
       "teamB": "AC",
       "scoreA": 1,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-30T09:00:00.000Z"
     },
     {
       "id": "w4d1m1",
       "teamA": "AC",
       "teamB": "FL",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-04T09:00:00.000Z"
     },
     {
       "id": "w4d1m2",
       "teamA": "RRQ",
       "teamB": "SRG",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-04T12:15:00.000Z"
     },
     {
       "id": "w4d2m1",
       "teamA": "FL",
       "teamB": "RRQ",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-05T06:30:00.000Z"
     },
     {
       "id": "w4d2m2",
       "teamA": "TR",
       "teamB": "iG",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-05T09:00:00.000Z"
     },
     {
       "id": "w4d2m3",
       "teamA": "SRG",
       "teamB": "VMS",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-05T12:15:00.000Z"
     },
     {
       "id": "w4d3m1",
       "teamA": "iG",
       "teamB": "BTRM",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-06T06:30:00.000Z"
     },
     {
       "id": "w4d3m2",
       "teamA": "VMS",
       "teamB": "AC",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-06T09:00:00.000Z"
     },
     {
       "id": "w5d1m1",
       "teamA": "iG",
       "teamB": "TR",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-11T09:00:00.000Z"
     },
     {
       "id": "w5d1m2",
       "teamA": "SRG",
       "teamB": "BTRM",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-11T12:15:00.000Z"
     },
     {
       "id": "w5d2m1",
       "teamA": "FL",
       "teamB": "AC",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-12T06:30:00.000Z"
     },
     {
       "id": "w5d2m2",
       "teamA": "VMS",
       "teamB": "TR",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-12T09:00:00.000Z"
     },
     {
       "id": "w5d2m3",
       "teamA": "SRG",
       "teamB": "RRQ",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-12T12:15:00.000Z"
     },
     {
       "id": "w5d3m1",
       "teamA": "BTRM",
       "teamB": "AC",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-13T06:30:00.000Z"
     },
     {
       "id": "w5d3m2",
       "teamA": "RRQ",
       "teamB": "FL",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-13T09:00:00.000Z"
     },
     {
       "id": "w6d1m1",
       "teamA": "TR",
       "teamB": "FL",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-18T09:00:00.000Z"
     },
     {
       "id": "w6d1m2",
       "teamA": "RRQ",
       "teamB": "VMS",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-18T12:15:00.000Z"
     },
     {
       "id": "w6d2m1",
       "teamA": "VMS",
       "teamB": "BTRM",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-19T06:30:00.000Z"
     },
     {
       "id": "w6d2m2",
       "teamA": "RRQ",
       "teamB": "iG",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-19T09:00:00.000Z"
     },
     {
       "id": "w6d2m3",
       "teamA": "AC",
       "teamB": "SRG",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-19T12:15:00.000Z"
     },
     {
       "id": "w6d3m1",
       "teamA": "BTRM",
       "teamB": "iG",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-20T06:30:00.000Z"
     },
     {
       "id": "w6d3m2",
       "teamA": "SRG",
       "teamB": "TR",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-20T09:00:00.000Z"
     },
     {
       "id": "w7d1m1",
       "teamA": "TR",
       "teamB": "BTRM",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-08T09:00:00.000Z"
     },
     {
       "id": "w7d1m2",
       "teamA": "SRG",
       "teamB": "FL",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-08T12:15:00.000Z"
     },
     {
       "id": "w7d2m1",
       "teamA": "VMS",
       "teamB": "iG",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-09T09:00:00.000Z"
     },
     {
       "id": "w7d2m2",
       "teamA": "AC",
       "teamB": "RRQ",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-09T12:15:00.000Z"
     },
     {
       "id": "w7d2m3",
       "teamA": "FL",
       "teamB": "VMS",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-11T06:30:00.000Z"
     },
     {
       "id": "w7d3m1",
       "teamA": "iG",
       "teamB": "AC",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-11T09:00:00.000Z"
     },
     {
       "id": "w7d3m2",
       "teamA": "TR",
       "teamB": "RRQ",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-11T12:15:00.000Z"
     },
     {
       "id": "w8d1m1",
       "teamA": "FL",
       "teamB": "iG",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-16T09:00:00.000Z"
     },
     {
       "id": "w8d1m2",
       "teamA": "VMS",
       "teamB": "SRG",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-16T12:15:00.000Z"
     },
     {
       "id": "w8d2m1",
       "teamA": "BTRM",
       "teamB": "FL",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-17T06:30:00.000Z"
     },
     {
       "id": "w8d2m2",
       "teamA": "AC",
       "teamB": "TR",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-17T09:00:00.000Z"
     },
     {
       "id": "w8d2m3",
       "teamA": "iG",
       "teamB": "SRG",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-17T12:15:00.000Z"
     },
     {
       "id": "w8d3m1",
       "teamA": "AC",
       "teamB": "VMS",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-18T06:30:00.000Z"
     },
     {
       "id": "w8d3m2",
       "teamA": "RRQ",
       "teamB": "BTRM",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-18T09:00:00.000Z"
     }
   ]
 }

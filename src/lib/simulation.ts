@@ -1,5 +1,8 @@
 import type { Match, Team, Probability } from "../types"
 import { calculateStandings, isMatchPlayed } from "./standings"
+import { calculateTeamElos, simulateBo3Match } from "./elo"
+
+export type SimulationMode = "uniform" | "elo"
 
 const POSSIBLE_SCORES = [
   { a: 2, b: 0 },
@@ -11,7 +14,8 @@ const POSSIBLE_SCORES = [
 export const runMonteCarloSimulation = (
   matches: Match[],
   teams: Team[],
-  iterations: number
+  iterations: number,
+  mode: SimulationMode = "uniform"
 ): Record<string, Probability> => {
   const stats: Record<
     string,
@@ -44,19 +48,38 @@ export const runMonteCarloSimulation = (
     return result
   }
 
+  // Pre-calculate team ELOs if ELO mode is active
+  const teamElos =
+    mode === "elo" ? calculateTeamElos(played, teams) : null
+
   const unplayedLen = unplayed.length
   const possibleLen = POSSIBLE_SCORES.length
 
   for (let i = 0; i < iterations; i++) {
     const simMatches: Match[] = new Array(unplayedLen)
     for (let j = 0; j < unplayedLen; j++) {
-      const score = POSSIBLE_SCORES[Math.floor(Math.random() * possibleLen)]
+      const uMatch = unplayed[j]
+      let scoreA = 0
+      let scoreB = 0
+
+      if (mode === "elo" && teamElos) {
+        const eloA = teamElos[uMatch.teamA] ?? 1500
+        const eloB = teamElos[uMatch.teamB] ?? 1500
+        const simRes = simulateBo3Match(eloA, eloB)
+        scoreA = simRes.scoreA
+        scoreB = simRes.scoreB
+      } else {
+        const score = POSSIBLE_SCORES[Math.floor(Math.random() * possibleLen)]
+        scoreA = score.a
+        scoreB = score.b
+      }
+
       simMatches[j] = {
-        id: unplayed[j].id,
-        teamA: unplayed[j].teamA,
-        teamB: unplayed[j].teamB,
-        scoreA: score.a,
-        scoreB: score.b,
+        id: uMatch.id,
+        teamA: uMatch.teamA,
+        teamB: uMatch.teamB,
+        scoreA,
+        scoreB,
       }
     }
 

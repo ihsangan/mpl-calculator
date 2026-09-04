@@ -11,6 +11,7 @@ export interface Match {
   teamB: string
   scoreA: number
   scoreB: number
+  date?: string
 }
 
 export interface TeamRow {

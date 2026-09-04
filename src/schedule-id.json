@@ -8,504 +8,576 @@
       "teamA": "EVOS",
       "teamB": "RRQ",
       "scoreA": 2,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-08-14T08:00:00.000Z"
     },
     {
       "id": "w1d1m2",
       "teamA": "NAVI",
       "teamB": "AE",
       "scoreA": 0,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-14T11:00:00.000Z"
     },
     {
       "id": "w1d2m1",
       "teamA": "TLID",
       "teamB": "GEEK",
       "scoreA": 2,
-      "scoreB": 1
+      "scoreB": 1,
+      "date": "2026-08-15T07:00:00.000Z"
     },
     {
       "id": "w1d2m2",
       "teamA": "DEWA",
       "teamB": "RRQ",
       "scoreA": 1,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-15T10:00:00.000Z"
     },
     {
       "id": "w1d2m3",
       "teamA": "EVOS",
       "teamB": "NAVI",
       "scoreA": 1,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-15T13:00:00.000Z"
     },
     {
       "id": "w1d3m1",
       "teamA": "TLID",
       "teamB": "DEWA",
       "scoreA": 2,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-08-16T07:00:00.000Z"
     },
     {
       "id": "w1d3m2",
       "teamA": "BTR",
       "teamB": "GEEK",
       "scoreA": 2,
-      "scoreB": 1
+      "scoreB": 1,
+      "date": "2026-08-16T10:00:00.000Z"
     },
     {
       "id": "w1d3m3",
       "teamA": "AE",
       "teamB": "ONIC",
       "scoreA": 0,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-16T13:00:00.000Z"
     },
     {
       "id": "w2d1m1",
       "teamA": "TLID",
       "teamB": "NAVI",
       "scoreA": 0,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-21T08:00:00.000Z"
     },
     {
       "id": "w2d1m2",
       "teamA": "BTR",
       "teamB": "DEWA",
       "scoreA": 2,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-08-21T11:00:00.000Z"
     },
     {
       "id": "w2d2m1",
       "teamA": "TLID",
       "teamB": "EVOS",
       "scoreA": 2,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-08-22T07:00:00.000Z"
     },
     {
       "id": "w2d2m2",
       "teamA": "NAVI",
       "teamB": "GEEK",
       "scoreA": 2,
-      "scoreB": 1
+      "scoreB": 1,
+      "date": "2026-08-22T10:00:00.000Z"
     },
     {
       "id": "w2d2m3",
       "teamA": "ONIC",
       "teamB": "RRQ",
       "scoreA": 2,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-08-22T13:00:00.000Z"
     },
     {
       "id": "w2d3m1",
       "teamA": "DEWA",
       "teamB": "AE",
       "scoreA": 0,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-23T07:00:00.000Z"
     },
     {
       "id": "w2d3m2",
       "teamA": "ONIC",
       "teamB": "BTR",
       "scoreA": 1,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-23T10:00:00.000Z"
     },
     {
       "id": "w2d3m3",
       "teamA": "GEEK",
       "teamB": "EVOS",
       "scoreA": 0,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-23T13:00:00.000Z"
     },
     {
       "id": "w3d1m1",
       "teamA": "BTR",
       "teamB": "NAVI",
       "scoreA": 2,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-08-28T08:00:00.000Z"
     },
     {
       "id": "w3d1m2",
       "teamA": "DEWA",
       "teamB": "GEEK",
       "scoreA": 2,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-08-28T11:00:00.000Z"
     },
     {
       "id": "w3d2m1",
       "teamA": "TLID",
       "teamB": "ONIC",
       "scoreA": 2,
-      "scoreB": 1
+      "scoreB": 1,
+      "date": "2026-08-29T07:00:00.000Z"
     },
     {
       "id": "w3d2m2",
       "teamA": "AE",
       "teamB": "EVOS",
       "scoreA": 2,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-08-29T10:00:00.000Z"
     },
     {
       "id": "w3d2m3",
       "teamA": "RRQ",
       "teamB": "BTR",
       "scoreA": 1,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-29T13:00:00.000Z"
     },
     {
       "id": "w3d3m1",
       "teamA": "NAVI",
       "teamB": "ONIC",
       "scoreA": 2,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-08-30T07:00:00.000Z"
     },
     {
       "id": "w3d3m2",
       "teamA": "GEEK",
       "teamB": "RRQ",
       "scoreA": 0,
-      "scoreB": 2
+      "scoreB": 2,
+      "date": "2026-08-30T10:00:00.000Z"
     },
     {
       "id": "w3d3m3",
       "teamA": "TLID",
       "teamB": "AE",
       "scoreA": 2,
-      "scoreB": 1
+      "scoreB": 1,
+      "date": "2026-08-30T13:00:00.000Z"
     },
     {
       "id": "w4d1m1",
       "teamA": "NAVI",
       "teamB": "DEWA",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-04T08:00:00.000Z"
     },
     {
       "id": "w4d1m2",
       "teamA": "TLID",
       "teamB": "RRQ",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-04T11:00:00.000Z"
     },
     {
       "id": "w4d2m1",
       "teamA": "DEWA",
       "teamB": "ONIC",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-05T07:00:00.000Z"
     },
     {
       "id": "w4d2m2",
       "teamA": "EVOS",
       "teamB": "BTR",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-05T10:00:00.000Z"
     },
     {
       "id": "w4d2m3",
       "teamA": "AE",
       "teamB": "GEEK",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-05T13:00:00.000Z"
     },
     {
       "id": "w4d3m1",
       "teamA": "RRQ",
       "teamB": "NAVI",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-06T07:00:00.000Z"
     },
     {
       "id": "w4d3m2",
       "teamA": "ONIC",
       "teamB": "EVOS",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-06T10:00:00.000Z"
     },
     {
       "id": "w4d3m3",
       "teamA": "BTR",
       "teamB": "AE",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-06T13:00:00.000Z"
     },
     {
       "id": "w5d1m1",
       "teamA": "EVOS",
       "teamB": "DEWA",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-11T08:00:00.000Z"
     },
     {
       "id": "w5d1m2",
       "teamA": "GEEK",
       "teamB": "ONIC",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-11T11:00:00.000Z"
     },
     {
       "id": "w5d2m1",
       "teamA": "TLID",
       "teamB": "BTR",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-12T07:00:00.000Z"
     },
     {
       "id": "w5d2m2",
       "teamA": "AE",
       "teamB": "RRQ",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-12T10:00:00.000Z"
     },
     {
       "id": "w5d2m3",
       "teamA": "NAVI",
       "teamB": "EVOS",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-12T13:00:00.000Z"
     },
     {
       "id": "w5d3m1",
       "teamA": "GEEK",
       "teamB": "TLID",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-13T07:00:00.000Z"
     },
     {
       "id": "w5d3m2",
       "teamA": "ONIC",
       "teamB": "AE",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-13T10:00:00.000Z"
     },
     {
       "id": "w5d3m3",
       "teamA": "RRQ",
       "teamB": "DEWA",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-13T13:00:00.000Z"
     },
     {
       "id": "w6d1m1",
       "teamA": "ONIC",
       "teamB": "GEEK",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-18T08:00:00.000Z"
     },
     {
       "id": "w6d1m2",
       "teamA": "DEWA",
       "teamB": "EVOS",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-18T11:00:00.000Z"
     },
     {
       "id": "w6d2m1",
       "teamA": "GEEK",
       "teamB": "NAVI",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-19T07:00:00.000Z"
     },
     {
       "id": "w6d2m2",
       "teamA": "RRQ",
       "teamB": "AE",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-19T10:00:00.000Z"
     },
     {
       "id": "w6d2m3",
       "teamA": "BTR",
       "teamB": "TLID",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-19T13:00:00.000Z"
     },
     {
       "id": "w6d3m1",
       "teamA": "AE",
       "teamB": "DEWA",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-20T07:00:00.000Z"
     },
     {
       "id": "w6d3m2",
       "teamA": "BTR",
       "teamB": "ONIC",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-20T10:00:00.000Z"
     },
     {
       "id": "w6d3m3",
       "teamA": "EVOS",
       "teamB": "TLID",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-09-20T13:00:00.000Z"
     },
     {
       "id": "w7d1m1",
       "teamA": "GEEK",
       "teamB": "BTR",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-02T08:00:00.000Z"
     },
     {
       "id": "w7d1m2",
       "teamA": "DEWA",
       "teamB": "TLID",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-02T11:00:00.000Z"
     },
     {
       "id": "w7d2m1",
       "teamA": "AE",
       "teamB": "NAVI",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-03T07:00:00.000Z"
     },
     {
       "id": "w7d2m2",
       "teamA": "BTR",
       "teamB": "RRQ",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-03T10:00:00.000Z"
     },
     {
       "id": "w7d2m3",
       "teamA": "GEEK",
       "teamB": "DEWA",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-03T13:00:00.000Z"
     },
     {
       "id": "w7d3m1",
       "teamA": "AE",
       "teamB": "TLID",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-04T07:00:00.000Z"
     },
     {
       "id": "w7d3m2",
       "teamA": "RRQ",
       "teamB": "EVOS",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-04T10:00:00.000Z"
     },
     {
       "id": "w7d3m3",
       "teamA": "ONIC",
       "teamB": "NAVI",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-04T13:00:00.000Z"
     },
     {
       "id": "w8d1m1",
       "teamA": "AE",
       "teamB": "BTR",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-08T08:00:00.000Z"
     },
     {
       "id": "w8d1m2",
       "teamA": "NAVI",
       "teamB": "TLID",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-08T11:00:00.000Z"
     },
     {
       "id": "w8d2m1",
       "teamA": "EVOS",
       "teamB": "ONIC",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-09T07:00:00.000Z"
     },
     {
       "id": "w8d2m2",
       "teamA": "RRQ",
       "teamB": "TLID",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-09T10:00:00.000Z"
     },
     {
       "id": "w8d2m3",
       "teamA": "DEWA",
       "teamB": "NAVI",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-09T13:00:00.000Z"
     },
     {
       "id": "w8d3m1",
       "teamA": "EVOS",
       "teamB": "GEEK",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-11T07:00:00.000Z"
     },
     {
       "id": "w8d3m2",
       "teamA": "RRQ",
       "teamB": "ONIC",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-11T10:00:00.000Z"
     },
     {
       "id": "w8d3m3",
       "teamA": "DEWA",
       "teamB": "BTR",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-11T13:00:00.000Z"
     },
     {
       "id": "w9d1m1",
       "teamA": "NAVI",
       "teamB": "RRQ",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-16T08:00:00.000Z"
     },
     {
       "id": "w9d1m2",
       "teamA": "GEEK",
       "teamB": "AE",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-16T11:00:00.000Z"
     },
     {
       "id": "w9d2m1",
       "teamA": "ONIC",
       "teamB": "DEWA",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-17T07:00:00.000Z"
     },
     {
       "id": "w9d2m2",
       "teamA": "BTR",
       "teamB": "EVOS",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-17T10:00:00.000Z"
     },
     {
       "id": "w9d2m3",
       "teamA": "RRQ",
       "teamB": "GEEK",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-17T13:00:00.000Z"
     },
     {
       "id": "w9d3m1",
       "teamA": "EVOS",
       "teamB": "AE",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-18T07:00:00.000Z"
     },
     {
       "id": "w9d3m2",
       "teamA": "NAVI",
       "teamB": "BTR",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-18T10:00:00.000Z"
     },
     {
       "id": "w9d3m3",
       "teamA": "ONIC",
       "teamB": "TLID",
       "scoreA": 0,
-      "scoreB": 0
+      "scoreB": 0,
+      "date": "2026-10-18T13:00:00.000Z"
     }
   ]
 }

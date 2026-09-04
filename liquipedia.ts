@@ -40,6 +40,7 @@ export interface MatchData {
   teamB: string
   scoreA: number
   scoreB: number
+  date?: string
 }
 
 export interface ScheduleJson {
@@ -53,6 +54,7 @@ export interface ScheduleJson {
 export interface ApiMatch {
   match2id?: string
   match2bracketid?: string
+  date?: string
   match2bracketdata?: {
     header?: string
     inheritedheader?: string
@@ -355,10 +357,28 @@ export function parseApiMatches(apiMatches: ApiMatch[]): MatchData[] {
     }
 
     // Only accept decided Bo3 matches where one team has reached 2 wins.
-    // Incomplete/in-progress matches (e.g. 1-0, 0-1, 1-1) remain 0-0 (unplayed).
-    if (Math.max(scoreA, scoreB) < 2) {
+    // Incomplete/in-progress/unplayed matches (e.g. 1-0, 0-1, 1-1, -1) remain 0-0 (unplayed).
+    if (Math.max(scoreA, scoreB) < 2 || scoreA < 0 || scoreB < 0) {
       scoreA = 0
       scoreB = 0
+    }
+
+    // Extract match date in ISO UTC string
+    let matchDate: string | undefined
+    if (m.date) {
+      const parsed = new Date(m.date.replace(" ", "T") + "Z")
+      if (!isNaN(parsed.getTime())) {
+        matchDate = parsed.toISOString()
+      }
+    } else if (m.match2games?.[0]?.date) {
+      const parsed = new Date(m.match2games[0].date.replace(" ", "T") + "Z")
+      if (!isNaN(parsed.getTime())) {
+        matchDate = parsed.toISOString()
+      }
+    } else if (m.match2games?.[0]?.extradata?.timestamp) {
+      matchDate = new Date(
+        m.match2games[0].extradata.timestamp * 1000
+      ).toISOString()
     }
 
     const matchId = `w${weekNum}d${dayNum}m${mInDay}`
@@ -369,6 +389,7 @@ export function parseApiMatches(apiMatches: ApiMatch[]): MatchData[] {
       teamB,
       scoreA,
       scoreB,
+      ...(matchDate ? { date: matchDate } : {}),
     })
   }
 
@@ -454,7 +475,8 @@ export function processLeagueMatches(
     const scoreChanged = Boolean(
       !oldMatch ||
         oldMatch.scoreA !== match.scoreA ||
-        oldMatch.scoreB !== match.scoreB
+        oldMatch.scoreB !== match.scoreB ||
+        oldMatch.date !== match.date
     )
 
     let status = "UNCHANGED"
