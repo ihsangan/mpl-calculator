@@ -1,7 +1,7 @@
 {
   "LEAGUE_NAME": "MPL Malaysia Season 18",
-  "CURRENT_WEEK": 4,
-  "LAST_UPDATED": "2026-09-05T12:15:00Z",
+  "CURRENT_WEEK": 5,
+  "LAST_UPDATED": "2026-09-06T09:00:00Z",
   "ALL_MATCHES": [
     {
       "id": "w1d1m1",
@@ -215,15 +215,15 @@
       "id": "w4d3m1",
       "teamA": "iG",
       "teamB": "BTRM",
-      "scoreA": 0,
-      "scoreB": 0,
+      "scoreA": 2,
+      "scoreB": 1,
       "date": "2026-09-06T06:30:00.000Z"
     },
     {
       "id": "w4d3m2",
       "teamA": "VMS",
       "teamB": "AC",
-      "scoreA": 0,
+      "scoreA": 2,
       "scoreB": 0,
       "date": "2026-09-06T09:00:00.000Z"
     },
