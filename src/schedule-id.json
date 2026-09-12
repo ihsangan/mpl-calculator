@@ -1,7 +1,7 @@
 {
   "LEAGUE_NAME": "MPL Indonesia Season 18",
   "CURRENT_WEEK": 5,
-  "LAST_UPDATED": "2026-09-11T10:00:00Z",
+  "LAST_UPDATED": "2026-09-12T10:00:00Z",
   "ALL_MATCHES": [
     {
       "id": "w1d1m1",
@@ -265,7 +265,7 @@
       "teamB": "DEWA",
       "scoreA": 0,
       "scoreB": 0,
-      "date": "2026-11-01T00:00:00.000Z",
+      "date": "2026-11-08T00:00:00.000Z",
       "postponed": true
     },
     {
@@ -280,7 +280,7 @@
       "id": "w5d2m1",
       "teamA": "TLID",
       "teamB": "BTR",
-      "scoreA": 0,
+      "scoreA": 2,
       "scoreB": 0,
       "date": "2026-09-12T07:00:00.000Z"
     },
@@ -288,7 +288,7 @@
       "id": "w5d2m2",
       "teamA": "AE",
       "teamB": "RRQ",
-      "scoreA": 0,
+      "scoreA": 2,
       "scoreB": 0,
       "date": "2026-09-12T10:00:00.000Z"
     },
