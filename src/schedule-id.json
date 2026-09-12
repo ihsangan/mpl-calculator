@@ -265,7 +265,8 @@
       "teamB": "DEWA",
       "scoreA": 0,
       "scoreB": 0,
-      "date": "2026-11-01T00:00:00.000Z"
+      "date": "2026-11-01T00:00:00.000Z",
+      "postponed": true
     },
     {
       "id": "w5d1m2",

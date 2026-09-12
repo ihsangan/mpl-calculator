@@ -27,3 +27,7 @@ dist-ssr
 # Skills
 .agents
 skills-lock.json
+
+# Agent instructions
+AGENTS.md
+QWEN.md

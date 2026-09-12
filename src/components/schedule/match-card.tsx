@@ -15,6 +15,7 @@ interface MatchCardProps {
   teams: Team[]
   resolvedTheme: "light" | "dark"
   onScoreChange: (matchId: string, value: string) => void
+  allMatches?: Match[]
 }
 
 export const MatchCard: React.FC<MatchCardProps> = ({
@@ -22,10 +23,11 @@ export const MatchCard: React.FC<MatchCardProps> = ({
   teams,
   resolvedTheme,
   onScoreChange,
+  allMatches,
 }) => {
   const played = isMatchPlayed(match)
   const currentValue = played ? `${match.scoreA}-${match.scoreB}` : "unplayed"
-  const status = getMatchStatus(match)
+  const status = getMatchStatus(match, allMatches)
   const formattedTime = formatMatchTime(match.date)
 
   const teamALogo = getTeamLogo(match.teamA, resolvedTheme === "dark", teams)
@@ -117,9 +119,15 @@ export const MatchCard: React.FC<MatchCardProps> = ({
       </div>
 
       {/* Match Scheduled Time & Status */}
-      {(formattedTime || (!played && (status === "LIVE" || status === "TODAY"))) && (
+      {(status === "POSTPONED" ||
+        formattedTime ||
+        (!played && (status === "LIVE" || status === "TODAY"))) && (
         <div className="flex items-center justify-center gap-1.5 text-3xs text-muted-foreground pt-0.5">
-          {status === "LIVE" ? (
+          {status === "POSTPONED" ? (
+            <span className="font-semibold text-amber-600 dark:text-amber-400">
+              POSTPONED • TBD
+            </span>
+          ) : status === "LIVE" ? (
             <span className="flex items-center gap-1 font-bold text-rose-500 animate-pulse">
               <span className="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
               LIVE

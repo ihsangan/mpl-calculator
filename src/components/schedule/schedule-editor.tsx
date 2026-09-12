@@ -7,6 +7,7 @@ import {
   isMatchPlayed,
   sortMatchesById,
 } from "@/lib/standings"
+import { getGroupDateLabel } from "@/lib/date-utils"
 import { MatchCard } from "./match-card"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -303,14 +304,7 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
           </div>
         ) : (
           groupedMatches.map((group) => {
-            const firstDate = group.matches[0]?.date
-            const dateLabel = firstDate
-              ? new Date(firstDate).toLocaleDateString(undefined, {
-                  weekday: "short",
-                  day: "numeric",
-                  month: "short",
-                })
-              : null
+            const dateLabel = getGroupDateLabel(group.matches, matches)
 
             return (
               <div key={group.key} className="space-y-2.5">
@@ -332,6 +326,7 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                       teams={teams}
                       resolvedTheme={resolvedTheme}
                       onScoreChange={onScoreChange}
+                      allMatches={matches}
                     />
                   ))}
                 </div>

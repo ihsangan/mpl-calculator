@@ -61,7 +61,7 @@ export const NextMatchCard: React.FC<NextMatchCardProps> = ({
   const weekNum = getWeekFromId(nextMatch.id)
   const dayNum = getDayFromId(nextMatch.id)
   const formattedDate = formatMatchDate(nextMatch.date)
-  const status = getMatchStatus(nextMatch)
+  const status = getMatchStatus(nextMatch, matches)
 
   return (
     <Card className="relative overflow-hidden border-primary/20 bg-linear-to-br from-primary/5 via-card to-background shadow-xs">
@@ -79,6 +79,11 @@ export const NextMatchCard: React.FC<NextMatchCardProps> = ({
                 <Clock className="h-3 w-3" />
                 TODAY
               </Badge>
+            ) : status === "POSTPONED" ? (
+              <Badge variant="outline" className="gap-1.5 px-2 py-0.5 text-2xs font-bold border-amber-500/50 text-amber-600 dark:text-amber-400 bg-amber-500/10">
+                <Clock className="h-3 w-3" />
+                RESCHEDULED
+              </Badge>
             ) : (
               <Badge variant="secondary" className="gap-1.5 px-2 py-0.5 text-2xs font-semibold">
                 <Clock className="h-3 w-3 text-muted-foreground" />
@@ -91,12 +96,17 @@ export const NextMatchCard: React.FC<NextMatchCardProps> = ({
             </span>
           </div>
 
-          {formattedDate && (
+          {status === "POSTPONED" ? (
+            <div className="flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 font-medium">
+              <Calendar className="h-3 w-3" />
+              <span>Date & Time TBD</span>
+            </div>
+          ) : formattedDate ? (
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <Calendar className="h-3 w-3" />
               <span>{formattedDate}</span>
             </div>
-          )}
+          ) : null}
         </div>
 
         {/* Matchup & Live Countdown */}
@@ -125,7 +135,16 @@ export const NextMatchCard: React.FC<NextMatchCardProps> = ({
 
           {/* Countdown Display */}
           <div className="flex flex-col items-center justify-center">
-            {status === "LIVE" ? (
+            {status === "POSTPONED" ? (
+              <div className="text-center">
+                <p className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                  Postponed (TBD)
+                </p>
+                <p className="mt-1 font-mono text-xs text-muted-foreground">
+                  Schedule to be announced
+                </p>
+              </div>
+            ) : status === "LIVE" ? (
               <div className="text-center">
                 <p className="text-xs font-bold uppercase tracking-wider text-rose-500 animate-pulse">
                   Match in Progress

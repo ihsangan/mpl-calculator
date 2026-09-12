@@ -41,6 +41,7 @@ export interface MatchData {
   scoreA: number
   scoreB: number
   date?: string
+  postponed?: boolean
 }
 
 export interface ScheduleJson {
@@ -462,11 +463,16 @@ export function processLeagueMatches(
     const mId = match.id
     const oldMatch = existingMatches.get(mId)
 
+    const isPlayed = match.scoreA > 0 || match.scoreB > 0
+    if (isPlayed) {
+      delete match.postponed
+      playedCount++
+    } else if (oldMatch?.postponed) {
+      match.postponed = true
+    }
+
     const oldScore = oldMatch ? `${oldMatch.scoreA}-${oldMatch.scoreB}` : "N/A"
     const newScore = `${match.scoreA}-${match.scoreB}`
-
-    const isPlayed = match.scoreA > 0 || match.scoreB > 0
-    if (isPlayed) playedCount++
 
     const matchupChanged = Boolean(
       oldMatch &&
@@ -476,7 +482,8 @@ export function processLeagueMatches(
       !oldMatch ||
         oldMatch.scoreA !== match.scoreA ||
         oldMatch.scoreB !== match.scoreB ||
-        oldMatch.date !== match.date
+        oldMatch.date !== match.date ||
+        oldMatch.postponed !== match.postponed
     )
 
     let status = "UNCHANGED"
@@ -500,13 +507,56 @@ export function processLeagueMatches(
 
   log("=".repeat(65))
 
-  // Determine current week (first week with unplayed matches, or maximum week)
-  let currentWeek = 1
+  // Detect postponed matches (unplayed and scheduled >7 days after other matches in the same week)
   for (const m of finalMatches) {
-    if (m.scoreA === 0 && m.scoreB === 0) {
-      const weekPart = m.id.split("d")[0].substring(1)
-      currentWeek = parseInt(weekPart, 10)
-      break
+    if (m.scoreA > 0 || m.scoreB > 0 || !m.date) continue
+    const weekNum = parseInt(m.id.match(/w(\d+)/)?.[1] || "1", 10)
+    const weekOthers = finalMatches.filter(
+      (x) =>
+        parseInt(x.id.match(/w(\d+)/)?.[1] || "1", 10) === weekNum &&
+        x.id !== m.id &&
+        x.date
+    )
+    if (weekOthers.length > 0) {
+      const mTime = new Date(m.date).getTime()
+      const otherTimes = weekOthers.map((x) => new Date(x.date!).getTime())
+      const minDiffDays =
+        Math.min(...otherTimes.map((t) => Math.abs(mTime - t))) /
+        (1000 * 60 * 60 * 24)
+      if (minDiffDays > 7) {
+        if (!m.postponed) {
+          m.postponed = true
+          updatedCount++
+        }
+      }
+    }
+  }
+
+  // Determine current week: find first unplayed regular match (ignoring postponed matches), or chronological fallback
+  const unplayedRegular = finalMatches.filter(
+    (m) => m.scoreA === 0 && m.scoreB === 0 && !m.postponed
+  )
+
+  let currentWeek = 1
+  if (unplayedRegular.length > 0) {
+    const withDates = unplayedRegular
+      .filter((m) => m.date && !isNaN(new Date(m.date).getTime()))
+      .sort(
+        (a, b) =>
+          new Date(a.date!).getTime() - new Date(b.date!).getTime()
+      )
+
+    const targetMatch = withDates[0] || unplayedRegular[0]
+    const weekPart = targetMatch.id.split("d")[0].substring(1)
+    currentWeek = parseInt(weekPart, 10)
+  } else {
+    // Fallback: first unplayed match in schedule order
+    for (const m of finalMatches) {
+      if (m.scoreA === 0 && m.scoreB === 0) {
+        const weekPart = m.id.split("d")[0].substring(1)
+        currentWeek = parseInt(weekPart, 10)
+        break
+      }
     }
   }
 

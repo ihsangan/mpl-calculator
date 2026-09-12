@@ -12,6 +12,7 @@ export interface Match {
   scoreA: number
   scoreB: number
   date?: string
+  postponed?: boolean
 }
 
 export interface TeamRow {

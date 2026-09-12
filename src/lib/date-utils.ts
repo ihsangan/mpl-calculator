@@ -1,7 +1,13 @@
 import type { Match } from "../types"
-import { isMatchPlayed } from "./standings"
+import { isMatchPlayed, getWeekFromId } from "./standings"
 
-export type MatchStatus = "PLAYED" | "LIVE" | "TODAY" | "UPCOMING" | "UNKNOWN"
+export type MatchStatus =
+  | "PLAYED"
+  | "LIVE"
+  | "TODAY"
+  | "UPCOMING"
+  | "POSTPONED"
+  | "UNKNOWN"
 
 export interface TimeRemaining {
   totalMs: number
@@ -10,6 +16,71 @@ export interface TimeRemaining {
   minutes: number
   seconds: number
   isPast: boolean
+}
+
+/**
+ * Check if a match has been postponed / rescheduled without confirmed schedule.
+ */
+export function isMatchPostponed(match: Match, allMatches?: Match[]): boolean {
+  if (isMatchPlayed(match)) {
+    return false
+  }
+  if (match.postponed) {
+    return true
+  }
+  if (!match.date) {
+    return false
+  }
+
+  // Detect outlier dates in the same week (> 7 days from other matches)
+  if (allMatches && allMatches.length > 0) {
+    const week = getWeekFromId(match.id)
+    const weekOthers = allMatches.filter(
+      (m) => getWeekFromId(m.id) === week && m.id !== match.id && m.date
+    )
+    if (weekOthers.length > 0) {
+      const matchTime = new Date(match.date).getTime()
+      const otherTimes = weekOthers.map((m) => new Date(m.date!).getTime())
+      const minDiffDays =
+        Math.min(...otherTimes.map((t) => Math.abs(matchTime - t))) /
+        (1000 * 60 * 60 * 24)
+      if (minDiffDays > 7) {
+        return true
+      }
+    }
+  }
+
+  return false
+}
+
+/**
+ * Pick date string for a day group header, skipping postponed matches
+ */
+export function getGroupDateLabel(
+  groupMatches: Match[],
+  allMatches?: Match[]
+): string | null {
+  if (!groupMatches || groupMatches.length === 0) return null
+
+  const regularMatches = groupMatches.filter(
+    (m) =>
+      !isMatchPostponed(m, allMatches) &&
+      m.date &&
+      !isNaN(new Date(m.date).getTime())
+  )
+
+  const targetMatch =
+    regularMatches[0] ||
+    groupMatches.find((m) => m.date && !isNaN(new Date(m.date).getTime()))
+
+  if (!targetMatch?.date) return null
+
+  const date = new Date(targetMatch.date)
+  return date.toLocaleDateString(undefined, {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  })
 }
 
 /**
@@ -48,11 +119,18 @@ export function formatMatchTime(dateStr?: string): string {
 }
 
 /**
- * Calculate match status: PLAYED, LIVE, TODAY, UPCOMING
+ * Calculate match status: PLAYED, LIVE, TODAY, UPCOMING, POSTPONED
  */
-export function getMatchStatus(match: Match): MatchStatus {
+export function getMatchStatus(
+  match: Match,
+  allMatches?: Match[]
+): MatchStatus {
   if (isMatchPlayed(match)) {
     return "PLAYED"
+  }
+
+  if (isMatchPostponed(match, allMatches)) {
+    return "POSTPONED"
   }
 
   if (!match.date) {
@@ -106,13 +184,23 @@ export function getNextUpcomingMatch(matches: Match[]): Match | null {
         new Date(a.date!).getTime() - new Date(b.date!).getTime()
     )
 
-  // Prioritize match currently LIVE or in the future
+  // Prioritize non-postponed match currently LIVE or in the future
   const nextFuture = withValidDates.find(
-    (m) => new Date(m.date!).getTime() + 2.5 * 60 * 60 * 1000 > now
+    (m) =>
+      !isMatchPostponed(m, matches) &&
+      new Date(m.date!).getTime() + 2.5 * 60 * 60 * 1000 > now
   )
 
   if (nextFuture) {
     return nextFuture
+  }
+
+  // Fallback: any future match (even if postponed)
+  const anyFuture = withValidDates.find(
+    (m) => new Date(m.date!).getTime() + 2.5 * 60 * 60 * 1000 > now
+  )
+  if (anyFuture) {
+    return anyFuture
   }
 
   // Fallback to the first unplayed match in schedule order
