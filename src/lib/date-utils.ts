@@ -32,19 +32,20 @@ export function isMatchPostponed(match: Match, allMatches?: Match[]): boolean {
     return false
   }
 
-  // Detect outlier dates in the same week (> 7 days from other matches)
+  // Detect outlier dates in the same week (> 7 days from median date of that week)
   if (allMatches && allMatches.length > 0) {
     const week = getWeekFromId(match.id)
-    const weekOthers = allMatches.filter(
-      (m) => getWeekFromId(m.id) === week && m.id !== match.id && m.date
+    const weekMatches = allMatches.filter(
+      (m) => getWeekFromId(m.id) === week && m.date
     )
-    if (weekOthers.length > 0) {
+    if (weekMatches.length > 0) {
+      const sortedTimes = weekMatches
+        .map((m) => new Date(m.date!).getTime())
+        .sort((a, b) => a - b)
+      const medianTime = sortedTimes[Math.floor(sortedTimes.length / 2)]
       const matchTime = new Date(match.date).getTime()
-      const otherTimes = weekOthers.map((m) => new Date(m.date!).getTime())
-      const minDiffDays =
-        Math.min(...otherTimes.map((t) => Math.abs(matchTime - t))) /
-        (1000 * 60 * 60 * 24)
-      if (minDiffDays > 7) {
+      const diffDays = Math.abs(matchTime - medianTime) / (1000 * 60 * 60 * 24)
+      if (diffDays > 7) {
         return true
       }
     }

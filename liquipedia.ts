@@ -507,23 +507,26 @@ export function processLeagueMatches(
 
   log("=".repeat(65))
 
-  // Detect postponed matches (unplayed and scheduled >7 days after other matches in the same week)
+  // Detect postponed matches (unplayed and scheduled >7 days from week's median date)
+  const matchesByWeek: Record<number, MatchData[]> = {}
   for (const m of finalMatches) {
-    if (m.scoreA > 0 || m.scoreB > 0 || !m.date) continue
     const weekNum = parseInt(m.id.match(/w(\d+)/)?.[1] || "1", 10)
-    const weekOthers = finalMatches.filter(
-      (x) =>
-        parseInt(x.id.match(/w(\d+)/)?.[1] || "1", 10) === weekNum &&
-        x.id !== m.id &&
-        x.date
-    )
-    if (weekOthers.length > 0) {
+    if (!matchesByWeek[weekNum]) matchesByWeek[weekNum] = []
+    if (m.date) matchesByWeek[weekNum].push(m)
+  }
+
+  for (const [, wMatches] of Object.entries(matchesByWeek)) {
+    if (wMatches.length === 0) continue
+    const sortedTimes = wMatches
+      .map((m) => new Date(m.date!).getTime())
+      .sort((a, b) => a - b)
+    const medianTime = sortedTimes[Math.floor(sortedTimes.length / 2)]
+
+    for (const m of wMatches) {
+      if (m.scoreA > 0 || m.scoreB > 0 || !m.date) continue
       const mTime = new Date(m.date).getTime()
-      const otherTimes = weekOthers.map((x) => new Date(x.date!).getTime())
-      const minDiffDays =
-        Math.min(...otherTimes.map((t) => Math.abs(mTime - t))) /
-        (1000 * 60 * 60 * 24)
-      if (minDiffDays > 7) {
+      const diffDays = Math.abs(mTime - medianTime) / (1000 * 60 * 60 * 24)
+      if (diffDays > 7) {
         if (!m.postponed) {
           m.postponed = true
           updatedCount++
