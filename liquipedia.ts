@@ -117,92 +117,42 @@ export const LEAGUES_CONFIG: Record<string, LeagueConfig> = {
   },
 }
 
-// Map Liquipedia team names to project team IDs across ID, PH, and MY
+// Map Liquipedia team names / shortnames to project team IDs across ID, PH, and MY
 export const TEAM_MAP: Record<string, string> = {
   // --- INDONESIA (ID) ---
   "team liquid id": "TLID",
-  tlid: "TLID",
-  "liquid id": "TLID",
-  liquid: "TLID",
-  onic: "ONIC",
-  "onic esports": "ONIC",
-  "fnatic onic": "ONIC",
   "dewa united esports": "DEWA",
-  "dewa united": "DEWA",
-  dewa: "DEWA",
   "alter ego": "AE",
-  "alter ego esports": "AE",
-  ae: "AE",
   "bigetron by vitality": "BTR",
-  "bigetron vitality": "BTR",
-  "bigetron esports": "BTR",
-  bigetron: "BTR",
-  btr: "BTR",
-  evos: "EVOS",
-  "evos esports": "EVOS",
-  "evos glory": "EVOS",
   "natus vincere": "NAVI",
-  navi: "NAVI",
   "geek fam id": "GEEK",
-  "geek fam": "GEEK",
-  geek: "GEEK",
   "rrq hoshi": "RRQ",
-  rrq: "RRQ",
 
   // --- PHILIPPINES (PH) ---
   "ap.bren": "APBR",
-  apbren: "APBR",
-  bren: "APBR",
   "aurora gaming ph": "RORA",
-  "aurora gaming": "RORA",
-  "aurora ph": "RORA",
-  aurora: "RORA",
-  rora: "RORA",
   "team falcons ph": "FLCN",
-  "falcons ph": "FLCN",
-  falcons: "FLCN",
-  flcn: "FLCN",
+  flcp: "FLCN",
   "onic philippines": "ONIC",
-  "onic ph": "ONIC",
-  "fnatic onic ph": "ONIC",
   onph: "ONIC",
   "omega esports": "OMG",
-  "smart omega": "OMG",
-  omega: "OMG",
-  omg: "OMG",
   "team liquid ph": "TLPH",
-  "liquid ph": "TLPH",
-  tlph: "TLPH",
   "twisted minds ph": "TWIS",
-  "twisted minds": "TWIS",
-  twisted: "TWIS",
-  twis: "TWIS",
+  twph: "TWIS",
   "tnc pro team": "TNC",
-  tnc: "TNC",
 
   // --- MALAYSIA (MY) ---
   "ac esports": "AC",
-  ac: "AC",
   "bigetron my by vit": "BTRM",
-  "bigetron my": "BTRM",
-  btrm: "BTRM",
   "invictus gaming": "iG",
-  invictus: "iG",
   ig: "iG",
   "team rey": "TR",
   rey: "TR",
-  tr: "TR",
   "team vamos": "VMS",
-  vamos: "VMS",
-  vms: "VMS",
   "rrq tora": "RRQ",
   rrqt: "RRQ",
   "selangor red giants": "SRG",
-  "selangor red giant": "SRG",
-  srg: "SRG",
   "team flash": "FL",
-  flash: "FL",
-  fl: "FL",
 }
 
 /**
@@ -861,7 +811,9 @@ Options:
 }
 
 // Execute main if run directly
-main().catch((err) => {
-  console.error(`\nFatal Error: ${err.message || err}`)
-  process.exit(1)
-})
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  main().catch((err) => {
+    console.error(`\nFatal Error: ${err.message || err}`)
+    process.exit(1)
+  })
+}
