@@ -4,6 +4,7 @@ import type { Match } from "./types"
 import { calculateStandings, isMatchPlayed } from "./lib/standings"
 import { calculateTeamElos } from "./lib/elo"
 import { useSimulation } from "./hooks/use-simulation"
+import { useLiquipediaSync } from "./hooks/use-liquipedia-sync"
 import type { SimulationMode } from "./lib/simulation"
 import { useTheme } from "./components/theme-provider"
 import { Header } from "./components/header"
@@ -108,6 +109,25 @@ export default function App() {
     })
   }, [matches, currentLeague.allMatches])
 
+  // Liquipedia MediaWiki live sync & auto-refresh
+  const {
+    isSyncing,
+    syncStatus,
+    lastSyncTime,
+    syncMessage,
+    autoSyncInterval,
+    pendingUpdate,
+    syncNow,
+    setAutoSyncInterval,
+    applyPendingUpdate,
+    dismissPendingUpdate,
+  } = useLiquipediaSync({
+    leagueId: selectedLeague,
+    matches,
+    hasScoreChanges,
+    onUpdateMatches: setMatches,
+  })
+
   // Check if all matches are unplayed
   const allMatchesUnplayed = useMemo(() => {
     return matches.every((m) => !isMatchPlayed(m))
@@ -209,6 +229,10 @@ export default function App() {
           leagueName={currentLeague.leagueName}
           selectedLeague={selectedLeague}
           onLeagueChange={handleLeagueChange}
+          isSyncing={isSyncing}
+          autoSyncInterval={autoSyncInterval}
+          lastSyncTime={lastSyncTime}
+          onSyncNow={() => syncNow(hasScoreChanges)}
         />
 
         <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
@@ -255,11 +279,21 @@ export default function App() {
               hasScoreChanges={hasScoreChanges}
               allMatchesUnplayed={allMatchesUnplayed}
               resolvedTheme={resolvedTheme}
+              isSyncing={isSyncing}
+              syncStatus={syncStatus}
+              syncMessage={syncMessage}
+              lastSyncTime={lastSyncTime}
+              autoSyncInterval={autoSyncInterval}
+              pendingUpdate={pendingUpdate}
               onWeekChange={setSelectedWeek}
               onScoreChange={handleScoreChange}
               onResetToDefault={handleResetToDefault}
               onResetAll={handleResetAllMatches}
               onLoadMatches={handleLoadMatches}
+              onSyncNow={syncNow}
+              onAutoSyncIntervalChange={setAutoSyncInterval}
+              onApplyPendingUpdate={applyPendingUpdate}
+              onDismissPendingUpdate={dismissPendingUpdate}
             />
           </div>
         </div>

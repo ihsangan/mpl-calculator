@@ -1,5 +1,8 @@
 import React, { useState, useMemo } from "react"
+import { RefreshCw, Check, AlertCircle } from "lucide-react"
 import type { Match, Team, ExportData } from "@/types"
+import type { MergeResult } from "@/lib/mediawiki"
+import { cn } from "@/lib/utils"
 import {
   getDayFromId,
   getMatchNumberFromId,
@@ -28,11 +31,21 @@ interface ScheduleEditorProps {
   hasScoreChanges: boolean
   allMatchesUnplayed: boolean
   resolvedTheme: "light" | "dark"
+  isSyncing?: boolean
+  syncStatus?: "idle" | "syncing" | "success" | "error"
+  syncMessage?: string | null
+  lastSyncTime?: Date | null
+  autoSyncInterval?: number
+  pendingUpdate?: MergeResult | null
   onWeekChange: (week: number | "ALL") => void
   onScoreChange: (matchId: string, value: string) => void
   onResetToDefault: () => void
   onResetAll: () => void
   onLoadMatches: (importedMatches: Match[], week?: number | "ALL") => void
+  onSyncNow?: (forceOverwrite?: boolean) => void
+  onAutoSyncIntervalChange?: (interval: number) => void
+  onApplyPendingUpdate?: () => void
+  onDismissPendingUpdate?: () => void
 }
 
 export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
@@ -43,11 +56,21 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   hasScoreChanges,
   allMatchesUnplayed,
   resolvedTheme,
+  isSyncing = false,
+  syncStatus = "idle",
+  syncMessage = null,
+  lastSyncTime = null,
+  autoSyncInterval = 0,
+  pendingUpdate = null,
   onWeekChange,
   onScoreChange,
   onResetToDefault,
   onResetAll,
   onLoadMatches,
+  onSyncNow,
+  onAutoSyncIntervalChange,
+  onApplyPendingUpdate,
+  onDismissPendingUpdate,
 }) => {
   const [teamFilter, setTeamFilter] = useState<string>("ALL")
 
@@ -172,12 +195,46 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       }))
   }, [filteredMatches, selectedWeek])
 
+  const handleSyncClick = () => {
+    if (!onSyncNow) return
+    if (
+      hasScoreChanges &&
+      !window.confirm(
+        "You have custom score modifications in your scenario. Do you want to overwrite them with live scores from Liquipedia?"
+      )
+    ) {
+      return
+    }
+    onSyncNow(hasScoreChanges)
+  }
+
   return (
     <Card className="sticky top-6 shadow-xs">
       <CardHeader className="space-y-3 pb-3">
         <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle className="text-xl">Schedule Editor</CardTitle>
           <div className="flex flex-wrap items-center gap-1.5">
+            {onSyncNow && (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={isSyncing}
+                onClick={handleSyncClick}
+                className="h-7 gap-1.5 text-xs font-semibold text-primary hover:bg-primary/10"
+                title={
+                  lastSyncTime
+                    ? `Last synced: ${lastSyncTime.toLocaleTimeString()}`
+                    : "Sync scores with Liquipedia MediaWiki"
+                }
+              >
+                <RefreshCw
+                  className={cn("size-3", isSyncing && "animate-spin")}
+                  aria-hidden="true"
+                />
+                <span>{isSyncing ? "Syncing..." : "Sync Liquipedia"}</span>
+              </Button>
+            )}
             <Button
               size="sm"
               variant="outline"
@@ -228,26 +285,113 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
           </div>
         </div>
 
-        {/* Team Filter & Quick Controls */}
-        <div className="flex items-center justify-between gap-2 pt-1">
-          <span className="text-xs font-medium text-muted-foreground">
-            Filter Team:
-          </span>
-          <div className="w-40">
-            <Select value={teamFilter} onValueChange={setTeamFilter}>
-              <SelectTrigger className="h-7 text-xs">
-                <SelectValue placeholder="All Teams" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL">All Teams</SelectItem>
-                {teams.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>
-                    {t.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        {/* Pending Update from Liquipedia Conflict Banner */}
+        {pendingUpdate && (
+          <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-2.5 text-xs text-amber-900 dark:text-amber-200">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-semibold">
+                  Liquipedia has {pendingUpdate.updatedCount} new match update(s)
+                </p>
+                <p className="text-[11px] text-amber-800/80 dark:text-amber-300/80">
+                  Your current scenario has custom score changes.
+                </p>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <Button
+                  size="sm"
+                  className="h-6 px-2.5 text-[11px] font-semibold bg-amber-600 text-white hover:bg-amber-700 dark:bg-amber-500 dark:text-black dark:hover:bg-amber-400"
+                  onClick={onApplyPendingUpdate}
+                >
+                  Apply Updates
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-6 px-2.5 text-[11px] font-semibold border-amber-500/40 text-amber-900 hover:bg-amber-500/20 dark:text-amber-200"
+                  onClick={onDismissPendingUpdate}
+                >
+                  Keep Scenario
+                </Button>
+              </div>
+            </div>
           </div>
+        )}
+
+        {/* Sync Status Banner */}
+        {syncMessage && !pendingUpdate && (
+          <div
+            className={cn(
+              "flex items-center justify-between rounded-md px-2.5 py-1 text-[11px]",
+              syncStatus === "error"
+                ? "bg-destructive/10 text-destructive border border-destructive/20"
+                : "bg-muted/40 text-muted-foreground border border-border/40"
+            )}
+          >
+            <div className="flex items-center gap-1.5 truncate">
+              {syncStatus === "error" ? (
+                <AlertCircle className="size-3 shrink-0" />
+              ) : (
+                <Check className="size-3 shrink-0 text-emerald-500" />
+              )}
+              <span className="truncate">{syncMessage}</span>
+            </div>
+            {lastSyncTime && (
+              <span className="shrink-0 font-mono text-[10px] opacity-75">
+                {lastSyncTime.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Team Filter & Auto-Sync Controls */}
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-muted-foreground">
+              Filter Team:
+            </span>
+            <div className="w-36">
+              <Select value={teamFilter} onValueChange={setTeamFilter}>
+                <SelectTrigger className="h-7 text-xs">
+                  <SelectValue placeholder="All Teams" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">All Teams</SelectItem>
+                  {teams.map((t) => (
+                    <SelectItem key={t.id} value={t.id}>
+                      {t.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {onAutoSyncIntervalChange && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-medium text-muted-foreground">
+                Auto-Sync:
+              </span>
+              <div className="w-28">
+                <Select
+                  value={String(autoSyncInterval)}
+                  onValueChange={(val) => onAutoSyncIntervalChange(parseInt(val, 10))}
+                >
+                  <SelectTrigger className="h-7 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">Off</SelectItem>
+                    <SelectItem value="60">Every 1m</SelectItem>
+                    <SelectItem value="300">Every 5m</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Week Selector */}
