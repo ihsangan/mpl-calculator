@@ -131,9 +131,11 @@ export const TEAM_MAP: Record<string, string> = {
   // --- PHILIPPINES (PH) ---
   "ap.bren": "APBR",
   "aurora gaming ph": "RORA",
+  "aurora ph": "RORA",
   "team falcons ph": "FLCN",
   flcp: "FLCN",
   "onic philippines": "ONIC",
+  "onic ph": "ONIC",
   onph: "ONIC",
   "omega esports": "OMG",
   "team liquid ph": "TLPH",
