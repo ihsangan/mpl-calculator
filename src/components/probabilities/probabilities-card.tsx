@@ -56,7 +56,7 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
 }) => {
   const { ref, save, isExporting } = useSaveAsImage(
     `probabilities-${leagueName.replace(/\s+/g, "-").toLowerCase()}`,
-    { width: 580 }
+    { width: 540 }
   )
 
   const sortedByPlayoffs = React.useMemo(() => {
