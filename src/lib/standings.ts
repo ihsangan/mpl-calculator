@@ -51,7 +51,6 @@ export const getTeamLogo = (
   return team.logo
 }
 
-
 export const formatProbability = (value: string | number): string => {
   const num = typeof value === "string" ? Number(value) : value
   if (num === 100) return "100"

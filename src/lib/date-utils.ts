@@ -2,12 +2,7 @@ import type { Match } from "../types"
 import { isMatchPlayed, getWeekFromId } from "./standings"
 
 export type MatchStatus =
-  | "PLAYED"
-  | "LIVE"
-  | "TODAY"
-  | "UPCOMING"
-  | "POSTPONED"
-  | "UNKNOWN"
+  "PLAYED" | "LIVE" | "TODAY" | "UPCOMING" | "POSTPONED" | "UNKNOWN"
 
 export interface TimeRemaining {
   totalMs: number
@@ -180,10 +175,7 @@ export function getNextUpcomingMatch(matches: Match[]): Match | null {
   // Find unplayed matches with future or active live dates
   const withValidDates = unplayed
     .filter((m) => m.date && !isNaN(new Date(m.date).getTime()))
-    .sort(
-      (a, b) =>
-        new Date(a.date!).getTime() - new Date(b.date!).getTime()
-    )
+    .sort((a, b) => new Date(a.date!).getTime() - new Date(b.date!).getTime())
 
   // Prioritize non-postponed match currently LIVE or in the future
   const nextFuture = withValidDates.find(
@@ -212,43 +204,24 @@ export function getNextUpcomingMatch(matches: Match[]): Match | null {
  * Calculate time remaining from now until target date
  */
 export function getTimeRemaining(targetDateStr?: string): TimeRemaining {
-  if (!targetDateStr) {
-    return {
-      totalMs: 0,
-      days: 0,
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-      isPast: true,
-    }
+  const PAST: TimeRemaining = {
+    totalMs: 0,
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    isPast: true,
   }
 
+  if (!targetDateStr) return PAST
+
   const targetDate = new Date(targetDateStr)
-  if (isNaN(targetDate.getTime())) {
-    return {
-      totalMs: 0,
-      days: 0,
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-      isPast: true,
-    }
-  }
+  if (isNaN(targetDate.getTime())) return PAST
 
   const now = new Date().getTime()
   const totalMs = targetDate.getTime() - now
-  const isPast = totalMs <= 0
 
-  if (isPast) {
-    return {
-      totalMs: 0,
-      days: 0,
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-      isPast: true,
-    }
-  }
+  if (totalMs <= 0) return PAST
 
   const seconds = Math.floor((totalMs / 1000) % 60)
   const minutes = Math.floor((totalMs / (1000 * 60)) % 60)

@@ -1,12 +1,7 @@
+import type { Team } from "./types"
+
 const imgPre =
   "https://mpl.isan.eu.org/cdn-cgi/image/f=webp/https://res.cloudinary.com/isans/image/upload/q_auto:eco,f_webp,h_75/teams/"
-
-export interface Team {
-  id: string
-  name: string
-  logo: string
-  logoDark?: string
-}
 
 export const ID_TEAMS: Team[] = [
   {
@@ -24,7 +19,7 @@ export const ID_TEAMS: Team[] = [
   {
     id: "DEWA",
     name: "Dewa United Esports",
-    logo: `${imgPre}dewa`
+    logo: `${imgPre}dewa`,
   },
   {
     id: "AE",
