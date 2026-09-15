@@ -7,10 +7,7 @@ export interface SaveAsImageOptions {
   scale?: number
 }
 
-export function useSaveAsImage(
-  filename: string,
-  options?: SaveAsImageOptions
-) {
+export function useSaveAsImage(filename: string, options?: SaveAsImageOptions) {
   const ref = useRef<HTMLDivElement>(null)
   const [isExporting, setIsExporting] = useState(false)
 

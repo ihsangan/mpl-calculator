@@ -105,7 +105,9 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         const content = e.target?.result as string
         const data = JSON.parse(content)
         if (!data || !Array.isArray(data.matches)) {
-          alert("Invalid JSON format. Expected an object with a 'matches' array.")
+          alert(
+            "Invalid JSON format. Expected an object with a 'matches' array."
+          )
           return
         }
 
@@ -135,7 +137,9 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         : matches.filter((m) => getWeekFromId(m.id) === selectedWeek)
 
     if (teamFilter !== "ALL") {
-      list = list.filter((m) => m.teamA === teamFilter || m.teamB === teamFilter)
+      list = list.filter(
+        (m) => m.teamA === teamFilter || m.teamB === teamFilter
+      )
     }
     return list
   }, [matches, selectedWeek, teamFilter])
@@ -291,16 +295,17 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="font-semibold">
-                  Liquipedia has {pendingUpdate.updatedCount} new match update(s)
+                  Liquipedia has {pendingUpdate.updatedCount} new match
+                  update(s)
                 </p>
                 <p className="text-[11px] text-amber-800/80 dark:text-amber-300/80">
                   Your current scenario has custom score changes.
                 </p>
               </div>
-              <div className="flex items-center gap-1.5 shrink-0">
+              <div className="flex shrink-0 items-center gap-1.5">
                 <Button
                   size="sm"
-                  className="h-6 px-2.5 text-[11px] font-semibold bg-amber-600 text-white hover:bg-amber-700 dark:bg-amber-500 dark:text-black dark:hover:bg-amber-400"
+                  className="h-6 bg-amber-600 px-2.5 text-[11px] font-semibold text-white hover:bg-amber-700 dark:bg-amber-500 dark:text-black dark:hover:bg-amber-400"
                   onClick={onApplyPendingUpdate}
                 >
                   Apply Updates
@@ -308,7 +313,7 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-6 px-2.5 text-[11px] font-semibold border-amber-500/40 text-amber-900 hover:bg-amber-500/20 dark:text-amber-200"
+                  className="h-6 border-amber-500/40 px-2.5 text-[11px] font-semibold text-amber-900 hover:bg-amber-500/20 dark:text-amber-200"
                   onClick={onDismissPendingUpdate}
                 >
                   Keep Scenario
@@ -324,8 +329,8 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             className={cn(
               "flex items-center justify-between rounded-md px-2.5 py-1 text-[11px]",
               syncStatus === "error"
-                ? "bg-destructive/10 text-destructive border border-destructive/20"
-                : "bg-muted/40 text-muted-foreground border border-border/40"
+                ? "border border-destructive/20 bg-destructive/10 text-destructive"
+                : "border border-border/40 bg-muted/40 text-muted-foreground"
             )}
           >
             <div className="flex items-center gap-1.5 truncate">
@@ -378,7 +383,9 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
               <div className="w-28">
                 <Select
                   value={String(autoSyncInterval)}
-                  onValueChange={(val) => onAutoSyncIntervalChange(parseInt(val, 10))}
+                  onValueChange={(val) =>
+                    onAutoSyncIntervalChange(parseInt(val, 10))
+                  }
                 >
                   <SelectTrigger className="h-7 text-xs">
                     <SelectValue />

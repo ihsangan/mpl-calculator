@@ -428,14 +428,14 @@ export function processLeagueMatches(
 
     const matchupChanged = Boolean(
       oldMatch &&
-        (oldMatch.teamA !== match.teamA || oldMatch.teamB !== match.teamB)
+      (oldMatch.teamA !== match.teamA || oldMatch.teamB !== match.teamB)
     )
     const scoreChanged = Boolean(
       !oldMatch ||
-        oldMatch.scoreA !== match.scoreA ||
-        oldMatch.scoreB !== match.scoreB ||
-        oldMatch.date !== match.date ||
-        oldMatch.postponed !== match.postponed
+      oldMatch.scoreA !== match.scoreA ||
+      oldMatch.scoreB !== match.scoreB ||
+      oldMatch.date !== match.date ||
+      oldMatch.postponed !== match.postponed
     )
 
     let status = "UNCHANGED"
@@ -496,10 +496,7 @@ export function processLeagueMatches(
   if (unplayedRegular.length > 0) {
     const withDates = unplayedRegular
       .filter((m) => m.date && !isNaN(new Date(m.date).getTime()))
-      .sort(
-        (a, b) =>
-          new Date(a.date!).getTime() - new Date(b.date!).getTime()
-      )
+      .sort((a, b) => new Date(a.date!).getTime() - new Date(b.date!).getTime())
 
     const targetMatch = withDates[0] || unplayedRegular[0]
     const weekPart = targetMatch.id.split("d")[0].substring(1)
@@ -710,11 +707,9 @@ Options:
   }
 
   const leagueArg = (args.league || "all").toLowerCase()
-  const leaguesToSync =
-    leagueArg === "all" ? ["id", "ph", "my"] : [leagueArg]
+  const leaguesToSync = leagueArg === "all" ? ["id", "ph", "my"] : [leagueArg]
 
-  const apiKey =
-    (args.apikey as string) || process.env.LIQUIPEDIA_API_KEY || ""
+  const apiKey = (args.apikey as string) || process.env.LIQUIPEDIA_API_KEY || ""
   const changedFiles: string[] = []
 
   // Check if a local file was provided (e.g. match.json)

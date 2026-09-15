@@ -26,7 +26,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="relative border-b pb-6">
       {/* Action controls pinned top-right */}
-      <div className="absolute right-0 top-0 flex items-center gap-1.5 sm:gap-2">
+      <div className="absolute top-0 right-0 flex items-center gap-1.5 sm:gap-2">
         {onSyncNow && (
           <Button
             type="button"
@@ -73,7 +73,8 @@ export const Header: React.FC<HeaderProps> = ({
             {leagueName}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Interactive standings, scenario analyzer, and Monte Carlo playoff probability calculator.
+            Interactive standings, scenario analyzer, and Monte Carlo playoff
+            probability calculator.
           </p>
         </div>
 
@@ -92,9 +93,9 @@ export const Header: React.FC<HeaderProps> = ({
                 type="button"
                 aria-pressed={isActive}
                 onClick={() => onLeagueChange(option.value)}
-                className={`flex min-w-max shrink-0 items-center gap-2 rounded-lg px-3.5 py-1.5 text-left text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                className={`flex min-w-max shrink-0 items-center gap-2 rounded-lg px-3.5 py-1.5 text-left text-sm font-medium transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none ${
                   isActive
-                    ? "bg-background text-foreground shadow-xs font-semibold"
+                    ? "bg-background font-semibold text-foreground shadow-xs"
                     : "text-muted-foreground hover:bg-background/60 hover:text-foreground"
                 }`}
               >

@@ -52,9 +52,7 @@ export function useSimulation({
           { type: "module" }
         )
 
-        worker.onmessage = (
-          event: MessageEvent<SimulationWorkerResponse>
-        ) => {
+        worker.onmessage = (event: MessageEvent<SimulationWorkerResponse>) => {
           if (!isMountedRef.current) return
           const { id, results } = event.data
 
@@ -106,7 +104,12 @@ export function useSimulation({
         workerRef.current.postMessage(payload)
       } else {
         // Fallback execution on main thread
-        const results = runMonteCarloSimulation(matches, teams, iterations, mode)
+        const results = runMonteCarloSimulation(
+          matches,
+          teams,
+          iterations,
+          mode
+        )
         if (isMountedRef.current && currentId === requestIdRef.current) {
           setProbabilities(results)
           setIsSimulating(false)

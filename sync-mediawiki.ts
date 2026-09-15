@@ -164,9 +164,7 @@ export async function fetchPagesBatch(
   })
 
   if (!response.ok) {
-    throw new Error(
-      `HTTP Error ${response.status}: ${response.statusText}`
-    )
+    throw new Error(`HTTP Error ${response.status}: ${response.statusText}`)
   }
 
   const data = (await response.json()) as {
@@ -321,7 +319,9 @@ export function processLeagueData(
   const leagueName = config.name
 
   const parsedMatches = parseScheduleFromWikitext(wikitext)
-  console.log(`\n[${leagueName.toUpperCase()}] Parsed ${parsedMatches.length} matches`)
+  console.log(
+    `\n[${leagueName.toUpperCase()}] Parsed ${parsedMatches.length} matches`
+  )
 
   if (parsedMatches.length === 0) {
     throw new Error(`No matches could be parsed for ${leagueName}`)
@@ -368,12 +368,12 @@ export function processLeagueData(
 
     const matchupChanged = Boolean(
       oldMatch &&
-        (oldMatch.teamA !== match.teamA || oldMatch.teamB !== match.teamB)
+      (oldMatch.teamA !== match.teamA || oldMatch.teamB !== match.teamB)
     )
     const scoreChanged = Boolean(
       !oldMatch ||
-        oldMatch.scoreA !== match.scoreA ||
-        oldMatch.scoreB !== match.scoreB
+      oldMatch.scoreA !== match.scoreA ||
+      oldMatch.scoreB !== match.scoreB
     )
 
     let status = "UNCHANGED"
@@ -433,7 +433,9 @@ export function processLeagueData(
       "utf-8"
     )
     console.log(`[${leagueName.toUpperCase()}] Written to ${targetFile}`)
-    console.log(`[${leagueName.toUpperCase()}] Current Week: Week ${currentWeek}`)
+    console.log(
+      `[${leagueName.toUpperCase()}] Current Week: Week ${currentWeek}`
+    )
     console.log(`[${leagueName.toUpperCase()}] Last Updated: ${lastUpdated}`)
   } else {
     console.log(
@@ -557,8 +559,7 @@ Options:
   }
 
   const leagueArg = (args.league || "all").toLowerCase()
-  const leaguesToSync =
-    leagueArg === "all" ? ["id", "ph", "my"] : [leagueArg]
+  const leaguesToSync = leagueArg === "all" ? ["id", "ph", "my"] : [leagueArg]
 
   // Collect page titles to fetch in a single batch request
   const titles = leaguesToSync.map((k) => {

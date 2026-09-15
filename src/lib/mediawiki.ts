@@ -268,7 +268,9 @@ export async function fetchMediaWikiLeague(
 
   const matches = parseScheduleFromWikitext(wikitext)
   if (matches.length === 0) {
-    throw new Error(`Failed to parse any matches from Liquipedia for ${config.name}`)
+    throw new Error(
+      `Failed to parse any matches from Liquipedia for ${config.name}`
+    )
   }
 
   return {

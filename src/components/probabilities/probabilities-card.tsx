@@ -61,8 +61,12 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
 
   const sortedByPlayoffs = React.useMemo(() => {
     return [...standings].sort((a, b) => {
-      const pA = probabilities[a.id] ? Number(probabilities[a.id].totalPlayoffs) : 0
-      const pB = probabilities[b.id] ? Number(probabilities[b.id].totalPlayoffs) : 0
+      const pA = probabilities[a.id]
+        ? Number(probabilities[a.id].totalPlayoffs)
+        : 0
+      const pB = probabilities[b.id]
+        ? Number(probabilities[b.id].totalPlayoffs)
+        : 0
       if (pB !== pA) return pB - pA
       const top2A = probabilities[a.id] ? Number(probabilities[a.id].top2) : 0
       const top2B = probabilities[b.id] ? Number(probabilities[b.id].top2) : 0
@@ -78,7 +82,8 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
             <div>
               <CardTitle className="text-xl">Playoff Probabilities</CardTitle>
               <CardDescription>
-                Monte Carlo simulation · {iterations.toLocaleString()} iterations ·{" "}
+                Monte Carlo simulation · {iterations.toLocaleString()}{" "}
+                iterations ·{" "}
                 {simulationMode === "elo" ? "ELO Weighted" : "Standard (50:50)"}
               </CardDescription>
             </div>
@@ -92,7 +97,7 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
                 onKeyDown={(e) => {
                   if (e.key === "Enter") onSimulate()
                 }}
-                className="h-8 w-24 rounded-lg border border-input bg-transparent px-2.5 text-xs font-semibold tabular-nums outline-none transition-colors focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 dark:bg-input/30"
+                className="h-8 w-24 rounded-lg border border-input bg-transparent px-2.5 text-xs font-semibold tabular-nums transition-colors outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 dark:bg-input/30"
                 aria-label="Number of simulation iterations"
               />
               <Button
@@ -125,7 +130,7 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
                 onClick={() => onSimulationModeChange("uniform")}
                 className={`rounded-md px-3 py-1 font-semibold transition-all ${
                   simulationMode === "uniform"
-                    ? "bg-card text-foreground shadow-2xs font-bold"
+                    ? "bg-card font-bold text-foreground shadow-2xs"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -136,13 +141,16 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
                 onClick={() => onSimulationModeChange("elo")}
                 className={`flex items-center gap-1.5 rounded-md px-3 py-1 font-semibold transition-all ${
                   simulationMode === "elo"
-                    ? "bg-card text-foreground shadow-2xs font-bold"
+                    ? "bg-card font-bold text-foreground shadow-2xs"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <span>ELO Weighted</span>
                 {simulationMode === "elo" && (
-                  <Badge variant="secondary" className="px-1 py-0 text-3xs font-mono">
+                  <Badge
+                    variant="secondary"
+                    className="text-3xs px-1 py-0 font-mono"
+                  >
                     Dynamic
                   </Badge>
                 )}
@@ -151,11 +159,13 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
 
             {simulationMode === "elo" && (
               <div
-                className="flex items-center gap-1 text-2xs text-muted-foreground cursor-help"
+                className="text-2xs flex cursor-help items-center gap-1 text-muted-foreground"
                 title="ELO rating updates dynamically based on played matches, clean sweeps (2-0 vs 2-1), and opponent ratings."
               >
                 <Info className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="hidden sm:inline">Elo-based Bo3 Bernoulli model</span>
+                <span className="hidden sm:inline">
+                  Elo-based Bo3 Bernoulli model
+                </span>
               </div>
             )}
           </div>
@@ -184,27 +194,48 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
                   <TableRow>
                     <TableHead className="h-auto py-2.5 align-bottom font-semibold">
                       <span>Team</span>
-                      <span className="block text-[11px] font-normal leading-tight opacity-0 select-none" aria-hidden="true">&nbsp;</span>
+                      <span
+                        className="block text-[11px] leading-tight font-normal opacity-0 select-none"
+                        aria-hidden="true"
+                      >
+                        &nbsp;
+                      </span>
                     </TableHead>
-                    <TableHead className="h-auto py-2.5 text-right align-bottom font-semibold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
+                    <TableHead className="h-auto py-2.5 text-right align-bottom font-semibold whitespace-nowrap text-emerald-600 dark:text-emerald-400">
                       <span>Top 1–2</span>
-                      <span className="block text-[11px] font-normal leading-tight opacity-80">(Upper)</span>
+                      <span className="block text-[11px] leading-tight font-normal opacity-80">
+                        (Upper)
+                      </span>
                     </TableHead>
-                    <TableHead className="h-auto py-2.5 text-right align-bottom font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap">
+                    <TableHead className="h-auto py-2.5 text-right align-bottom font-semibold whitespace-nowrap text-blue-600 dark:text-blue-400">
                       <span>Top 3–6</span>
-                      <span className="block text-[11px] font-normal leading-tight opacity-80">(Lower)</span>
+                      <span className="block text-[11px] leading-tight font-normal opacity-80">
+                        (Lower)
+                      </span>
                     </TableHead>
-                    <TableHead className="h-auto py-2.5 text-right align-bottom font-semibold text-foreground whitespace-nowrap">
+                    <TableHead className="h-auto py-2.5 text-right align-bottom font-semibold whitespace-nowrap text-foreground">
                       <span>Playoffs</span>
-                      <span className="block text-[11px] font-normal leading-tight text-muted-foreground opacity-80">(Total)</span>
+                      <span className="block text-[11px] leading-tight font-normal text-muted-foreground opacity-80">
+                        (Total)
+                      </span>
                     </TableHead>
-                    <TableHead className="h-auto py-2.5 text-right align-bottom font-semibold text-muted-foreground whitespace-nowrap">
+                    <TableHead className="h-auto py-2.5 text-right align-bottom font-semibold whitespace-nowrap text-muted-foreground">
                       <span>Eliminated</span>
-                      <span className="block text-[11px] font-normal leading-tight opacity-0 select-none" aria-hidden="true">&nbsp;</span>
+                      <span
+                        className="block text-[11px] leading-tight font-normal opacity-0 select-none"
+                        aria-hidden="true"
+                      >
+                        &nbsp;
+                      </span>
                     </TableHead>
                     <TableHead className="h-auto w-28 text-center align-bottom font-semibold whitespace-nowrap">
                       <span>Odds Bar</span>
-                      <span className="block text-[11px] font-normal leading-tight opacity-0 select-none" aria-hidden="true">&nbsp;</span>
+                      <span
+                        className="block text-[11px] leading-tight font-normal opacity-0 select-none"
+                        aria-hidden="true"
+                      >
+                        &nbsp;
+                      </span>
                     </TableHead>
                   </TableRow>
                 </TableHeader>
@@ -243,11 +274,11 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
                                 />
                               ) : null}
                             </div>
-                            <span className="font-bold text-sm">{team.id}</span>
+                            <span className="text-sm font-bold">{team.id}</span>
                             {simulationMode === "elo" && (
                               <Badge
                                 variant="outline"
-                                className="px-1.5 py-0 text-3xs font-mono font-semibold text-muted-foreground cursor-help"
+                                className="text-3xs cursor-help px-1.5 py-0 font-mono font-semibold text-muted-foreground"
                                 title={`ELO Rating: ${teamElo} · Calculated dynamically from season match results, sweeps, and opponent strength.`}
                               >
                                 {teamElo}
@@ -255,16 +286,16 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
                             )}
                           </div>
                         </TableCell>
-                        <TableCell className="py-2.5 text-right font-semibold text-emerald-600 tabular-nums dark:text-emerald-400 text-sm">
+                        <TableCell className="py-2.5 text-right text-sm font-semibold text-emerald-600 tabular-nums dark:text-emerald-400">
                           {formatProbability(prob.top2)}%
                         </TableCell>
-                        <TableCell className="py-2.5 text-right font-semibold text-blue-600 tabular-nums dark:text-blue-400 text-sm">
+                        <TableCell className="py-2.5 text-right text-sm font-semibold text-blue-600 tabular-nums dark:text-blue-400">
                           {formatProbability(prob.playoffs)}%
                         </TableCell>
-                        <TableCell className="py-2.5 text-right font-bold text-foreground tabular-nums text-sm">
+                        <TableCell className="py-2.5 text-right text-sm font-bold text-foreground tabular-nums">
                           {formatProbability(prob.totalPlayoffs)}%
                         </TableCell>
-                        <TableCell className="py-2.5 text-right font-medium text-muted-foreground tabular-nums text-sm">
+                        <TableCell className="py-2.5 text-right text-sm font-medium text-muted-foreground tabular-nums">
                           {formatProbability(prob.eliminated)}%
                         </TableCell>
                         <TableCell className="py-2.5">

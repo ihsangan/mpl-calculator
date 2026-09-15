@@ -49,8 +49,7 @@ export const runMonteCarloSimulation = (
   }
 
   // Pre-calculate team ELOs if ELO mode is active
-  const teamElos =
-    mode === "elo" ? calculateTeamElos(played, teams) : null
+  const teamElos = mode === "elo" ? calculateTeamElos(played, teams) : null
 
   const unplayedLen = unplayed.length
   const possibleLen = POSSIBLE_SCORES.length

@@ -95,9 +95,8 @@ export function useLiquipediaSync({
 
       try {
         // LAZY-LOADED: Only import mediawiki parser and fetcher when triggered
-        const { fetchMediaWikiLeague, mergeMatchesWithLive } = await import(
-          "@/lib/mediawiki"
-        )
+        const { fetchMediaWikiLeague, mergeMatchesWithLive } =
+          await import("@/lib/mediawiki")
 
         const targetLeague = leagueIdRef.current
         const remoteData = await fetchMediaWikiLeague(

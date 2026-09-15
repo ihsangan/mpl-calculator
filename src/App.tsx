@@ -48,7 +48,8 @@ export default function App() {
 
   const [iterations, setIterations] = useState(1000)
   const [iterationsInput, setIterationsInput] = useState("1000")
-  const [simulationMode, setSimulationMode] = useState<SimulationMode>("uniform")
+  const [simulationMode, setSimulationMode] =
+    useState<SimulationMode>("uniform")
 
   // Calculate dynamic ELO ratings for all teams
   const teamElos = useMemo(

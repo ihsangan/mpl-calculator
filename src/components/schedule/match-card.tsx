@@ -50,16 +50,18 @@ export const MatchCard: React.FC<MatchCardProps> = ({
 
   return (
     <div
-      className={`flex flex-col gap-1 rounded-xl border p-2 sm:px-3 sm:py-2.5 transition-colors ${
+      className={`flex flex-col gap-1 rounded-xl border p-2 transition-colors sm:px-3 sm:py-2.5 ${
         played
-          ? "bg-card/80 border-border/80 shadow-2xs"
-          : "bg-muted/30 border-dashed border-border/60 hover:bg-muted/50"
+          ? "border-border/80 bg-card/80 shadow-2xs"
+          : "border-dashed border-border/60 bg-muted/30 hover:bg-muted/50"
       }`}
     >
       <div className="flex items-center gap-2">
         {/* Team A */}
         <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
-          <span className={`truncate text-xs sm:text-sm text-right ${teamAColor}`}>
+          <span
+            className={`truncate text-right text-xs sm:text-sm ${teamAColor}`}
+          >
             {match.teamA}
           </span>
           <div className="flex h-5 w-6 shrink-0 items-center justify-center">
@@ -112,7 +114,9 @@ export const MatchCard: React.FC<MatchCardProps> = ({
               />
             ) : null}
           </div>
-          <span className={`truncate text-xs sm:text-sm text-left ${teamBColor}`}>
+          <span
+            className={`truncate text-left text-xs sm:text-sm ${teamBColor}`}
+          >
             {match.teamB}
           </span>
         </div>
@@ -122,13 +126,13 @@ export const MatchCard: React.FC<MatchCardProps> = ({
       {(status === "POSTPONED" ||
         formattedTime ||
         (!played && (status === "LIVE" || status === "TODAY"))) && (
-        <div className="flex items-center justify-center gap-1.5 text-3xs text-muted-foreground pt-0.5">
+        <div className="text-3xs flex items-center justify-center gap-1.5 pt-0.5 text-muted-foreground">
           {status === "POSTPONED" ? (
             <span className="font-semibold text-amber-600 dark:text-amber-400">
               POSTPONED • TBD
             </span>
           ) : status === "LIVE" ? (
-            <span className="flex items-center gap-1 font-bold text-rose-500 animate-pulse">
+            <span className="flex animate-pulse items-center gap-1 font-bold text-rose-500">
               <span className="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
               LIVE
             </span>
