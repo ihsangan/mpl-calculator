@@ -48,4 +48,5 @@ export interface ExportData {
   matches: Match[]
   selectedWeek: number | "ALL"
   timestamp: string
+  iterations?: number
 }

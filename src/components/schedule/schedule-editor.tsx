@@ -37,11 +37,13 @@ interface ScheduleEditorProps {
   lastSyncTime?: Date | null
   autoSyncInterval?: number
   pendingUpdate?: MergeResult | null
+  iterations: number
   onWeekChange: (week: number | "ALL") => void
   onScoreChange: (matchId: string, value: string) => void
   onResetToDefault: () => void
   onResetAll: () => void
   onLoadMatches: (importedMatches: Match[], week?: number | "ALL") => void
+  onLoadIterations?: (iterations: number) => void
   onSyncNow?: (forceOverwrite?: boolean) => void
   onAutoSyncIntervalChange?: (interval: number) => void
   onApplyPendingUpdate?: () => void
@@ -62,11 +64,13 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   lastSyncTime = null,
   autoSyncInterval = 0,
   pendingUpdate = null,
+  iterations,
   onWeekChange,
   onScoreChange,
   onResetToDefault,
   onResetAll,
   onLoadMatches,
+  onLoadIterations,
   onSyncNow,
   onAutoSyncIntervalChange,
   onApplyPendingUpdate,
@@ -85,6 +89,7 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       matches: sortMatchesById(matches),
       selectedWeek,
       timestamp: new Date().toISOString(),
+      iterations,
     }
     const jsonString = JSON.stringify(dataToSave, null, 2)
     const blob = new Blob([jsonString], { type: "application/json" })
@@ -120,6 +125,9 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         }
 
         onLoadMatches(sortMatchesById(data.matches), data.selectedWeek)
+        if (data.iterations && onLoadIterations) {
+          onLoadIterations(data.iterations)
+        }
       } catch (error) {
         alert(
           "Error loading JSON file: " +

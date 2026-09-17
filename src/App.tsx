@@ -46,8 +46,16 @@ export default function App() {
     return currentLeague.currentWeek
   })
 
-  const [iterations, setIterations] = useState(1000)
-  const [iterationsInput, setIterationsInput] = useState("1000")
+  const [iterations, setIterations] = useState(() => {
+    const params = new URLSearchParams(window.location.search)
+    const urlIter = params.get("iteration") || params.get("i")
+    if (urlIter) {
+      const parsed = parseInt(urlIter, 10)
+      if (!isNaN(parsed) && parsed > 0) return parsed
+    }
+    return 1000
+  })
+  const [iterationsInput, setIterationsInput] = useState(iterations.toString())
   const [simulationMode, setSimulationMode] =
     useState<SimulationMode>("uniform")
 
@@ -286,11 +294,16 @@ export default function App() {
               lastSyncTime={lastSyncTime}
               autoSyncInterval={autoSyncInterval}
               pendingUpdate={pendingUpdate}
+              iterations={iterations}
               onWeekChange={setSelectedWeek}
               onScoreChange={handleScoreChange}
               onResetToDefault={handleResetToDefault}
               onResetAll={handleResetAllMatches}
               onLoadMatches={handleLoadMatches}
+              onLoadIterations={(val) => {
+                setIterations(val)
+                setIterationsInput(val.toString())
+              }}
               onSyncNow={syncNow}
               onAutoSyncIntervalChange={setAutoSyncInterval}
               onApplyPendingUpdate={applyPendingUpdate}
