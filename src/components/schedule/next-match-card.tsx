@@ -131,18 +131,10 @@ export const NextMatchCard: React.FC<NextMatchCardProps> = ({
           ) : null}
         </div>
 
-        {/* Matchup & Live Countdown */}
-        <div className="mt-4 grid grid-cols-1 items-center gap-4 sm:grid-cols-3">
+        {/* Matchup Teams Row */}
+        <div className="mt-4 flex items-center justify-between gap-3">
           {/* Team A */}
-          <div className="flex items-center justify-center gap-3 sm:justify-end">
-            <div className="text-center sm:text-right">
-              <p className="text-sm font-bold text-foreground sm:text-base">
-                {nextMatch.teamA}
-              </p>
-              <p className="hidden max-w-[120px] truncate text-xs text-muted-foreground sm:block">
-                {teamAName}
-              </p>
-            </div>
+          <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-card p-1.5 shadow-2xs sm:h-12 sm:w-12">
               {teamALogo ? (
                 <img
@@ -153,78 +145,33 @@ export const NextMatchCard: React.FC<NextMatchCardProps> = ({
                 />
               ) : null}
             </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-bold text-foreground sm:text-base">
+                {nextMatch.teamA}
+              </p>
+              <p className="truncate text-xs text-muted-foreground">
+                {teamAName}
+              </p>
+            </div>
           </div>
 
-          {/* Countdown Display */}
-          <div className="flex flex-col items-center justify-center">
-            {status === "POSTPONED" ? (
-              <div className="text-center">
-                <p className="text-xs font-bold tracking-wider text-amber-600 uppercase dark:text-amber-400">
-                  Postponed (TBD)
-                </p>
-                <p className="mt-1 font-mono text-xs text-muted-foreground">
-                  Schedule to be announced
-                </p>
-              </div>
-            ) : status === "LIVE" ? (
-              <div className="text-center">
-                <p className="animate-pulse text-xs font-bold tracking-wider text-rose-500 uppercase">
-                  Match in Progress
-                </p>
-                <p className="mt-1 font-mono text-sm font-bold text-muted-foreground">
-                  Bo3 Series
-                </p>
-              </div>
-            ) : !timeRemaining.isPast ? (
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                {timeRemaining.days > 0 && (
-                  <div className="flex flex-col items-center">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card font-mono text-sm font-bold text-foreground shadow-2xs sm:h-10 sm:w-10 sm:text-base">
-                      {timeRemaining.days}
-                    </div>
-                    <span className="text-3xs mt-1 font-semibold text-muted-foreground uppercase">
-                      Days
-                    </span>
-                  </div>
-                )}
-                <div className="flex flex-col items-center">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card font-mono text-sm font-bold text-foreground shadow-2xs sm:h-10 sm:w-10 sm:text-base">
-                    {String(timeRemaining.hours).padStart(2, "0")}
-                  </div>
-                  <span className="text-3xs mt-1 font-semibold text-muted-foreground uppercase">
-                    Hours
-                  </span>
-                </div>
-                <span className="pb-4 font-bold text-muted-foreground">:</span>
-                <div className="flex flex-col items-center">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card font-mono text-sm font-bold text-foreground shadow-2xs sm:h-10 sm:w-10 sm:text-base">
-                    {String(timeRemaining.minutes).padStart(2, "0")}
-                  </div>
-                  <span className="text-3xs mt-1 font-semibold text-muted-foreground uppercase">
-                    Mins
-                  </span>
-                </div>
-                <span className="pb-4 font-bold text-muted-foreground">:</span>
-                <div className="flex flex-col items-center">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card font-mono text-sm font-bold text-primary shadow-2xs sm:h-10 sm:w-10 sm:text-base">
-                    {String(timeRemaining.seconds).padStart(2, "0")}
-                  </div>
-                  <span className="text-3xs mt-1 font-semibold text-muted-foreground uppercase">
-                    Secs
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center">
-                <span className="text-xs font-semibold text-muted-foreground">
-                  Starting Soon
-                </span>
-              </div>
-            )}
+          {/* VS Divider */}
+          <div className="flex shrink-0 items-center justify-center">
+            <span className="text-2xs rounded-full border border-border/60 bg-muted/50 px-2 py-0.5 font-mono font-bold text-muted-foreground uppercase">
+              VS
+            </span>
           </div>
 
           {/* Team B */}
-          <div className="flex items-center justify-center gap-3 sm:justify-start">
+          <div className="flex min-w-0 flex-1 items-center justify-end gap-2 text-right sm:gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-bold text-foreground sm:text-base">
+                {nextMatch.teamB}
+              </p>
+              <p className="truncate text-xs text-muted-foreground">
+                {teamBName}
+              </p>
+            </div>
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-card p-1.5 shadow-2xs sm:h-12 sm:w-12">
               {teamBLogo ? (
                 <img
@@ -235,15 +182,75 @@ export const NextMatchCard: React.FC<NextMatchCardProps> = ({
                 />
               ) : null}
             </div>
-            <div className="text-center sm:text-left">
-              <p className="text-sm font-bold text-foreground sm:text-base">
-                {nextMatch.teamB}
+          </div>
+        </div>
+
+        {/* Status / Countdown Row */}
+        <div className="mt-4 flex flex-col items-center justify-center rounded-xl border border-border/40 bg-muted/20 px-3 py-2.5">
+          {status === "POSTPONED" ? (
+            <div className="text-center">
+              <p className="text-xs font-bold tracking-wider text-amber-600 uppercase dark:text-amber-400">
+                Postponed (TBD)
               </p>
-              <p className="hidden max-w-[120px] truncate text-xs text-muted-foreground sm:block">
-                {teamBName}
+              <p className="mt-0.5 font-mono text-xs text-muted-foreground">
+                Schedule to be announced
               </p>
             </div>
-          </div>
+          ) : status === "LIVE" ? (
+            <div className="text-center">
+              <p className="animate-pulse text-xs font-bold tracking-wider text-rose-500 uppercase">
+                Match in Progress
+              </p>
+              <p className="mt-0.5 font-mono text-xs font-bold text-muted-foreground">
+                Bo3 Series
+              </p>
+            </div>
+          ) : !timeRemaining.isPast ? (
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {timeRemaining.days > 0 && (
+                <div className="flex flex-col items-center">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card font-mono text-sm font-bold text-foreground shadow-2xs sm:h-10 sm:w-10 sm:text-base">
+                    {timeRemaining.days}
+                  </div>
+                  <span className="text-3xs mt-1 font-semibold text-muted-foreground uppercase">
+                    Days
+                  </span>
+                </div>
+              )}
+              <div className="flex flex-col items-center">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card font-mono text-sm font-bold text-foreground shadow-2xs sm:h-10 sm:w-10 sm:text-base">
+                  {String(timeRemaining.hours).padStart(2, "0")}
+                </div>
+                <span className="text-3xs mt-1 font-semibold text-muted-foreground uppercase">
+                  Hours
+                </span>
+              </div>
+              <span className="pb-4 font-bold text-muted-foreground">:</span>
+              <div className="flex flex-col items-center">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card font-mono text-sm font-bold text-foreground shadow-2xs sm:h-10 sm:w-10 sm:text-base">
+                  {String(timeRemaining.minutes).padStart(2, "0")}
+                </div>
+                <span className="text-3xs mt-1 font-semibold text-muted-foreground uppercase">
+                  Mins
+                </span>
+              </div>
+              <span className="pb-4 font-bold text-muted-foreground">:</span>
+              <div className="flex flex-col items-center">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card font-mono text-sm font-bold text-primary shadow-2xs sm:h-10 sm:w-10 sm:text-base">
+                  {String(timeRemaining.seconds).padStart(2, "0")}
+                </div>
+                <span className="text-3xs mt-1 font-semibold text-muted-foreground uppercase">
+                  Secs
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center">
+              <span className="text-xs font-semibold text-muted-foreground">
+                Starting Soon
+              </span>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
