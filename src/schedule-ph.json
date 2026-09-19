@@ -1,7 +1,7 @@
 {
   "LEAGUE_NAME": "MPL Philippines Season 18",
   "CURRENT_WEEK": 5,
-  "LAST_UPDATED": "2026-09-19T09:00:00Z",
+  "LAST_UPDATED": "2026-09-19T11:30:00Z",
   "ALL_MATCHES": [
     {
       "id": "w1d1m1",
@@ -263,7 +263,7 @@
       "id": "w5d2m3",
       "teamA": "RORA",
       "teamB": "TLPH",
-      "scoreA": 0,
+      "scoreA": 2,
       "scoreB": 0,
       "date": "2026-09-19T11:30:00.000Z"
     },
