@@ -42,6 +42,7 @@ interface ScheduleEditorProps {
   onScoreChange: (matchId: string, value: string) => void
   onResetToDefault: () => void
   onResetAll: () => void
+  onResetWeek: () => void
   onLoadMatches: (importedMatches: Match[], week?: number | "ALL") => void
   onLoadIterations?: (iterations: number) => void
   onSyncNow?: (forceOverwrite?: boolean) => void
@@ -69,6 +70,7 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   onScoreChange,
   onResetToDefault,
   onResetAll,
+  onResetWeek,
   onLoadMatches,
   onLoadIterations,
   onSyncNow,
@@ -82,6 +84,13 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     const weekSet = new Set(matches.map((m) => getWeekFromId(m.id)))
     return Array.from(weekSet).sort((a, b) => a - b)
   }, [matches])
+
+  const canResetSelectedWeek =
+    selectedWeek !== "ALL" &&
+    matches.some(
+      (match) =>
+        getWeekFromId(match.id) === selectedWeek && isMatchPlayed(match)
+    )
 
   const handleSaveAsJSON = () => {
     const dataToSave: ExportData = {
@@ -282,6 +291,16 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                 className="h-7 text-xs font-semibold text-destructive hover:bg-destructive/10"
               >
                 Reset All
+              </Button>
+            )}
+            {canResetSelectedWeek && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={onResetWeek}
+                className="h-7 text-xs font-semibold text-destructive hover:bg-destructive/10"
+              >
+                Reset W{selectedWeek}
               </Button>
             )}
             {hasScoreChanges && (

@@ -1,7 +1,11 @@
 import { useState, useMemo, useEffect } from "react"
 import { LEAGUES } from "./leagues"
 import type { Match } from "./types"
-import { calculateStandings, isMatchPlayed } from "./lib/standings"
+import {
+  calculateStandings,
+  getWeekFromId,
+  isMatchPlayed,
+} from "./lib/standings"
 import { calculateTeamElos } from "./lib/elo"
 import { useSimulation } from "./hooks/use-simulation"
 import { useLiquipediaSync } from "./hooks/use-liquipedia-sync"
@@ -219,6 +223,19 @@ export default function App() {
     setSelectedWeek(1)
   }
 
+  // Reset only the scores belonging to the currently selected week.
+  const handleResetSelectedWeek = () => {
+    if (selectedWeek === "ALL") return
+
+    setMatches((prev) =>
+      prev.map((match) =>
+        getWeekFromId(match.id) === selectedWeek
+          ? { ...match, scoreA: 0, scoreB: 0 }
+          : match
+      )
+    )
+  }
+
   // Handle imported matches safely
   const handleLoadMatches = (
     importedMatches: Match[],
@@ -299,6 +316,7 @@ export default function App() {
               onScoreChange={handleScoreChange}
               onResetToDefault={handleResetToDefault}
               onResetAll={handleResetAllMatches}
+              onResetWeek={handleResetSelectedWeek}
               onLoadMatches={handleLoadMatches}
               onLoadIterations={(val) => {
                 setIterations(val)
