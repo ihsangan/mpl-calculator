@@ -62,6 +62,8 @@ export interface ApiMatch {
     title?: string
     matchIndex?: number
     type?: string
+    bracketindex?: number
+    next?: string
   }
   finished?: number
   pagename?: string
