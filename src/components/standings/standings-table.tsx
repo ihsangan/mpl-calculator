@@ -54,6 +54,38 @@ const getDiffClass = (diff: number) => {
   return "text-muted-foreground"
 }
 
+const CLINCH_BG = "bg-emerald-500/10 dark:bg-emerald-950/25"
+const CLINCH_BADGE =
+  "rounded bg-emerald-600/15 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400"
+const ELIMINATED_BG = "bg-destructive/10 dark:bg-destructive/20"
+const ELIMINATED_BADGE =
+  "rounded bg-destructive/15 px-1.5 py-0.5 text-[10px] font-bold text-destructive"
+
+/**
+ * Resolve the status badge for a team.
+ *
+ * Order matters: clinching Top 2 implies a playoff spot, so `top2Clinched`
+ * must be tested before `playoffsClinched` or the UPPER label is unreachable.
+ * Certainty comes from exact simulation counts rather than the rounded
+ * percentage strings, because "100.00" can be produced by 99.995%.
+ */
+const resolveStatus = (prob?: Probability) => {
+  if (prob?.top2Clinched) {
+    return { label: "UPPER", rowBg: CLINCH_BG, badgeCls: CLINCH_BADGE }
+  }
+  if (prob?.playoffsClinched) {
+    return { label: "CLINCHED", rowBg: CLINCH_BG, badgeCls: CLINCH_BADGE }
+  }
+  if (prob?.eliminatedOut) {
+    return {
+      label: "ELIMINATED",
+      rowBg: ELIMINATED_BG,
+      badgeCls: ELIMINATED_BADGE,
+    }
+  }
+  return { label: null, rowBg: "", badgeCls: "" }
+}
+
 export const StandingsTable: React.FC<StandingsTableProps> = ({
   standings,
   teams,
@@ -126,27 +158,11 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
               <TableBody>
                 {standings.map((team, idx) => {
                   const prob = probabilities[team.id]
-                  const elimNum = prob ? Number(prob.eliminated) : null
-                  let rowBg = ""
-                  let statusBadge: React.ReactNode = null
-
-                  if (elimNum !== null && elimNum === 0) {
-                    // Clinched Playoff spot
-                    rowBg = "bg-emerald-500/10 dark:bg-emerald-950/25"
-                    statusBadge = (
-                      <span className="rounded bg-emerald-600/15 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
-                        CLINCHED
-                      </span>
-                    )
-                  } else if (elimNum !== null && elimNum === 100) {
-                    // Clinched Elimination
-                    rowBg = "bg-destructive/10 dark:bg-destructive/20"
-                    statusBadge = (
-                      <span className="rounded bg-destructive/15 px-1.5 py-0.5 text-[10px] font-bold text-destructive">
-                        ELIMINATED
-                      </span>
-                    )
-                  }
+                  const status = resolveStatus(prob)
+                  const rowBg = status.rowBg
+                  const statusBadge = status.label ? (
+                    <span className={status.badgeCls}>{status.label}</span>
+                  ) : null
 
                   const logoUrl = getTeamLogo(
                     team.id,

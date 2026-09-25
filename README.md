@@ -8,7 +8,7 @@ Supports **MPL Indonesia**, **MPL Philippines**, and **MPL Malaysia**.
 
 ## Features
 
-- **Live Standings Table** — Auto-calculated standings with W/L record, game differential, and win rate. Includes CLINCHED / ELIMINATED badges.
+- **Live Standings Table** — Auto-calculated standings with W/L record, game differential, and win rate. Includes UPPER / CLINCHED / ELIMINATED badges: a team shows UPPER once its Top 2 (Upper Bracket) probability hits 100%, CLINCHED once it is guaranteed at least a playoff spot, and ELIMINATED once it can no longer qualify.
 - **Dual-Model Playoff Probability Simulator** — Monte Carlo simulation engine with two distinct calculation methods:
   - **Standard (50:50)** — Equal odds model for unplayed matches.
   - **ELO-Weighted** — Dynamic team ELO rating calculated from season match performance (base 1500, K=32, 1.2x clean sweep multiplier) with game-by-game Bernoulli Bo3 sampling. Includes interactive ELO rating badges and formula tooltips.

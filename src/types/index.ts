@@ -32,6 +32,14 @@ export interface Probability {
   playoffs: string
   eliminated: string
   totalPlayoffs: string
+  /**
+   * Certainty flags derived from raw simulation counts, not the rounded
+   * percentage strings. A value like "100.00" can come from 99.995% and must
+   * not be read as mathematically guaranteed.
+   */
+  top2Clinched: boolean
+  playoffsClinched: boolean
+  eliminatedOut: boolean
 }
 
 export interface LeagueConfig {

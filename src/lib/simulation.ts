@@ -43,6 +43,9 @@ export const runMonteCarloSimulation = (
         playoffs: isLower ? "100.00" : "0.00",
         totalPlayoffs: isTop2 || isLower ? "100.00" : "0.00",
         eliminated: isElim ? "100.00" : "0.00",
+        top2Clinched: isTop2,
+        playoffsClinched: isTop2 || isLower,
+        eliminatedOut: isElim,
       }
     })
     return result
@@ -97,16 +100,25 @@ export const runMonteCarloSimulation = (
 
   const result: Record<string, Probability> = {}
   Object.keys(stats).forEach((id) => {
-    const top2Pct = (stats[id].top2 / iterations) * 100
-    const lowerPct = (stats[id].lowerBracket / iterations) * 100
+    const { top2, lowerBracket, eliminated } = stats[id]
+    const top2Pct = (top2 / iterations) * 100
+    const lowerPct = (lowerBracket / iterations) * 100
     const totalPlayoffPct = top2Pct + lowerPct
-    const elimPct = (stats[id].eliminated / iterations) * 100
+    const elimPct = (eliminated / iterations) * 100
 
     result[id] = {
       top2: top2Pct.toFixed(2),
       playoffs: lowerPct.toFixed(2),
       totalPlayoffs: totalPlayoffPct.toFixed(2),
       eliminated: elimPct.toFixed(2),
+      // Exact certainty from raw counts. `top2 === iterations` means the team
+      // made Top 2 in every simulated scenario, which is stricter than the
+      // rounded "100.00" string (e.g. 99.995% also rounds to "100.00").
+      // The `iterations > 0` guard keeps a degenerate zero-iteration call from
+      // reporting every team as certain (0 === 0).
+      top2Clinched: iterations > 0 && top2 === iterations,
+      playoffsClinched: iterations > 0 && top2 + lowerBracket === iterations,
+      eliminatedOut: iterations > 0 && eliminated === iterations,
     }
   })
 
