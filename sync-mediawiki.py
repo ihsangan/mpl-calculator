@@ -2,7 +2,7 @@
 """
 Liquipedia Match Schedule & Score Synchronizer
 Fetches match results and revision timestamps from Liquipedia MediaWiki Revisions API
-and synchronizes schedule and scores for MPL Indonesia (ID), Philippines (PH), and Malaysia (MY).
+and synchronizes schedule and scores for MPL Indonesia (ID), Philippines (PH), Malaysia (MY), and MCC (EECA).
 """
 
 import argparse
@@ -41,9 +41,15 @@ LEAGUES_CONFIG: Dict[str, Dict[str, Any]] = {
         "file": os.path.join(SCRIPT_DIR, "src", "schedule-my.json"),
         "default_league_name": "MPL Malaysia Season 18",
     },
+    "mcc": {
+        "name": "MCC",
+        "title": "MLBB_Continental_Championships/Season_8/Regular_Season",
+        "file": os.path.join(SCRIPT_DIR, "src", "schedule-mcc.json"),
+        "default_league_name": "MCC Season 8",
+    },
 }
 
-# Map Liquipedia team names to project team IDs across ID, PH, and MY
+# Map Liquipedia team names to project team IDs across ID, PH, MY and MCC (EECA)
 TEAM_MAP: Dict[str, str] = {
     # --- INDONESIA (ID) ---
     "team liquid id": "TLID",
@@ -102,6 +108,27 @@ TEAM_MAP: Dict[str, str] = {
     "selangor red giant": "SRG",
     "team flash": "FL",
     "flash": "FL",
+    # --- MCC (EECA) ---
+    "team spirit": "TS",
+    "spirit": "TS",
+    "ts": "TS",
+    "team yandex": "YNDX",
+    "yandex": "YNDX",
+    "yndx": "YNDX",
+    "aurevia team": "ARV",
+    "aurevia": "ARV",
+    "arv": "ARV",
+    "rune eaters": "RUNE",
+    "rune": "RUNE",
+    "cyberhero": "CH",
+    "ch": "CH",
+    "rakuzan": "RKZ",
+    "rkz": "RKZ",
+    "level up": "LVL",
+    "level up esports": "LVL",
+    "lvl": "LVL",
+    "omnix": "OMNX",
+    "omnx": "OMNX",
 }
 
 
@@ -456,9 +483,9 @@ def main():
     parser.add_argument(
         "--league",
         "-l",
-        choices=["all", "id", "ph", "my"],
+        choices=["all", "id", "ph", "my", "mcc"],
         default="all",
-        help="League to sync: 'id', 'ph', 'my', or 'all' (default: all)",
+        help="League to sync: 'id', 'ph', 'my', 'mcc' or 'all' (default: all)",
     )
     parser.add_argument(
         "--push",
@@ -473,7 +500,7 @@ def main():
     args = parser.parse_args()
 
     leagues_to_sync = (
-        ["id", "ph", "my"] if args.league == "all" else [args.league]
+        ["id", "ph", "my", "mcc"] if args.league == "all" else [args.league]
     )
 
     # Collect page titles to fetch in a single batch request

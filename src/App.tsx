@@ -75,6 +75,7 @@ export default function App() {
     teams: currentLeague.teams,
     iterations,
     mode: simulationMode,
+    pointSystem: currentLeague.pointSystem,
   })
 
   // Sync URL pathname on initial load (replace if missing or wrong)
@@ -107,8 +108,13 @@ export default function App() {
 
   // Calculate current standings
   const standings = useMemo(
-    () => calculateStandings(matches, currentLeague.teams),
-    [matches, currentLeague.teams]
+    () =>
+      calculateStandings(
+        matches,
+        currentLeague.teams,
+        currentLeague.pointSystem
+      ),
+    [matches, currentLeague.teams, currentLeague.pointSystem]
   )
 
   // Check if scores differ from official league schedule baseline
@@ -270,6 +276,7 @@ export default function App() {
               probabilities={probabilities}
               resolvedTheme={resolvedTheme}
               leagueName={currentLeague.leagueName}
+              pointSystem={currentLeague.pointSystem}
             />
 
             <ProbabilitiesCard

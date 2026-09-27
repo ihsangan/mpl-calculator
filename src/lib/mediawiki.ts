@@ -52,6 +52,11 @@ export const LEAGUES_WIKI_CONFIG: Record<string, LeagueWikiConfig> = {
     name: "Malaysia",
     title: "MPL/Malaysia/Season_18/Regular_Season",
   },
+  MCC: {
+    id: "MCC",
+    name: "EECA",
+    title: "MLBB_Continental_Championships/Season_8/Regular_Season",
+  },
 }
 
 export const TEAM_MAP: Record<string, string> = {
@@ -114,6 +119,28 @@ export const TEAM_MAP: Record<string, string> = {
   "selangor red giant": "SRG",
   "team flash": "FL",
   flash: "FL",
+
+  // --- CONTINENTAL (MCC) ---
+  "team spirit": "TS",
+  spirit: "TS",
+  ts: "TS",
+  "team yandex": "YNDX",
+  yandex: "YNDX",
+  yndx: "YNDX",
+  "level up": "LVL",
+  "level up esports": "LVL",
+  lvl: "LVL",
+  rakuzan: "RKZ",
+  rkz: "RKZ",
+  "aurevia team": "ARV",
+  aurevia: "ARV",
+  arv: "ARV",
+  cyberhero: "CH",
+  ch: "CH",
+  "rune eaters": "RUNE",
+  rune: "RUNE",
+  omnix: "OMNX",
+  omnx: "OMNX",
 }
 
 /**

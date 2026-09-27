@@ -117,6 +117,12 @@ export const LEAGUES_CONFIG: Record<string, LeagueConfig> = {
     file: path.join(__dirname, "src", "schedule-my.json"),
     defaultLeagueName: "MPL Malaysia Season 18",
   },
+  mcc: {
+    name: "EECA",
+    page: "MLBB_Continental_Championships/Season_8/Regular_Season",
+    file: path.join(__dirname, "src", "schedule-mcc.json"),
+    defaultLeagueName: "MCC Season 8",
+  },
 }
 
 // Map Liquipedia team names / shortnames to project team IDs across ID, PH, and MY
@@ -157,6 +163,28 @@ export const TEAM_MAP: Record<string, string> = {
   rrqt: "RRQ",
   "selangor red giants": "SRG",
   "team flash": "FL",
+
+  // --- CONTINENTAL (MCC) ---
+  "team spirit": "TS",
+  spirit: "TS",
+  ts: "TS",
+  "team yandex": "YNDX",
+  yandex: "YNDX",
+  yndx: "YNDX",
+  "level up": "LVL",
+  "level up esports": "LVL",
+  lvl: "LVL",
+  rakuzan: "RKZ",
+  rkz: "RKZ",
+  "aurevia team": "ARV",
+  aurevia: "ARV",
+  arv: "ARV",
+  cyberhero: "CH",
+  ch: "CH",
+  "rune eaters": "RUNE",
+  rune: "RUNE",
+  omnix: "OMNX",
+  omnx: "OMNX",
 }
 
 /**
@@ -692,7 +720,7 @@ export async function main() {
 Usage: node liquipedia.ts [options]
 
 Options:
-  -l, --league <id|ph|my|all>  League to sync (default: all)
+  -l, --league <id|ph|my|mcc|all>  League to sync (default: all)
   -f, --file <path>           Use local JSON response file (e.g. match.json) instead of API request
   --apikey <key>              Custom Liquipedia API key (overrides LIQUIPEDIA_API_KEY env)
   -s, --silent                Run silently without console output
@@ -709,7 +737,8 @@ Options:
   }
 
   const leagueArg = (args.league || "all").toLowerCase()
-  const leaguesToSync = leagueArg === "all" ? ["id", "ph", "my"] : [leagueArg]
+  const leaguesToSync =
+    leagueArg === "all" ? Object.keys(LEAGUES_CONFIG) : [leagueArg]
 
   const apiKey = (args.apikey as string) || process.env.LIQUIPEDIA_API_KEY || ""
   const changedFiles: string[] = []
