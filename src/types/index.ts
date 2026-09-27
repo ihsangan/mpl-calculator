@@ -49,6 +49,7 @@ export interface LeagueConfig {
   currentWeek: number
   allMatches: Match[]
   teams: Team[]
+  pointSystem?: "standard" | "three_point"
 }
 
 export interface ExportData {

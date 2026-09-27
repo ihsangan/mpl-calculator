@@ -11,6 +11,7 @@ interface UseSimulationOptions {
   teams: Team[]
   iterations: number
   mode?: SimulationMode
+  pointSystem?: "standard" | "three_point"
   trigger?: number
   debounceMs?: number
 }
@@ -26,13 +27,16 @@ export function useSimulation({
   teams,
   iterations,
   mode = "uniform",
+  pointSystem = "standard",
   trigger = 0,
   debounceMs = 40,
 }: UseSimulationOptions): UseSimulationReturn {
   // Initial calculation for fast initial render
   const [probabilities, setProbabilities] = useState<
     Record<string, Probability>
-  >(() => runMonteCarloSimulation(matches, teams, iterations, mode))
+  >(() =>
+    runMonteCarloSimulation(matches, teams, iterations, mode, pointSystem)
+  )
 
   const [isSimulating, setIsSimulating] = useState(false)
   const [manualTrigger, setManualTrigger] = useState(0)
@@ -100,6 +104,7 @@ export function useSimulation({
           teams,
           iterations,
           mode,
+          pointSystem,
         }
         workerRef.current.postMessage(payload)
       } else {
@@ -108,7 +113,8 @@ export function useSimulation({
           matches,
           teams,
           iterations,
-          mode
+          mode,
+          pointSystem
         )
         if (isMountedRef.current && currentId === requestIdRef.current) {
           setProbabilities(results)
@@ -120,7 +126,16 @@ export function useSimulation({
     return () => {
       clearTimeout(timer)
     }
-  }, [matches, teams, iterations, mode, trigger, manualTrigger, debounceMs])
+  }, [
+    matches,
+    teams,
+    iterations,
+    mode,
+    pointSystem,
+    trigger,
+    manualTrigger,
+    debounceMs,
+  ])
 
   const triggerSimulation = useCallback(() => {
     setIsSimulating(true)

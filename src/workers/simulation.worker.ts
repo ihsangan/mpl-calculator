@@ -7,6 +7,7 @@ export interface SimulationWorkerRequest {
   teams: Team[]
   iterations: number
   mode?: SimulationMode
+  pointSystem?: "standard" | "three_point"
 }
 
 export interface SimulationWorkerResponse {
@@ -15,9 +16,15 @@ export interface SimulationWorkerResponse {
 }
 
 self.onmessage = (event: MessageEvent<SimulationWorkerRequest>) => {
-  const { id, matches, teams, iterations, mode } = event.data
+  const { id, matches, teams, iterations, mode, pointSystem } = event.data
   try {
-    const results = runMonteCarloSimulation(matches, teams, iterations, mode)
+    const results = runMonteCarloSimulation(
+      matches,
+      teams,
+      iterations,
+      mode,
+      pointSystem
+    )
     const response: SimulationWorkerResponse = { id, results }
     self.postMessage(response)
   } catch (error) {

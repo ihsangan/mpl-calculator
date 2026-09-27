@@ -15,7 +15,8 @@ export const runMonteCarloSimulation = (
   matches: Match[],
   teams: Team[],
   iterations: number,
-  mode: SimulationMode = "uniform"
+  mode: SimulationMode = "uniform",
+  pointSystem: "standard" | "three_point" = "standard"
 ): Record<string, Probability> => {
   const stats: Record<
     string,
@@ -31,7 +32,7 @@ export const runMonteCarloSimulation = (
 
   // If there are no unplayed matches, calculate exact standing once
   if (unplayed.length === 0) {
-    const finalStandings = calculateStandings(matches, teams)
+    const finalStandings = calculateStandings(matches, teams, pointSystem)
     const result: Record<string, Probability> = {}
     finalStandings.forEach((team, idx) => {
       const rank = idx + 1
@@ -85,7 +86,11 @@ export const runMonteCarloSimulation = (
       }
     }
 
-    const simStandings = calculateStandings([...played, ...simMatches], teams)
+    const simStandings = calculateStandings(
+      [...played, ...simMatches],
+      teams,
+      pointSystem
+    )
     simStandings.forEach((team, index) => {
       const rank = index + 1
       if (rank <= 2) {

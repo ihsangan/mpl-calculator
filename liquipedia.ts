@@ -2,7 +2,7 @@
 /**
  * Liquipedia OpenAPI Match Schedule & Score Synchronizer
  * Fetches match results via the official Liquipedia OpenAPI v3 (JSON API)
- * and synchronizes schedule and scores for MPL Indonesia (ID), Philippines (PH), Malaysia (MY), and MCC (EECA).
+ * and synchronizes schedule and scores for MPL Indonesia (ID), Philippines (PH), and Malaysia (MY).
  */
 
 import fs from "node:fs"
@@ -118,14 +118,14 @@ export const LEAGUES_CONFIG: Record<string, LeagueConfig> = {
     defaultLeagueName: "MPL Malaysia Season 18",
   },
   mcc: {
-    name: "MCC",
+    name: "Continental",
     page: "MLBB_Continental_Championships/Season_8/Regular_Season",
     file: path.join(__dirname, "src", "schedule-mcc.json"),
-    defaultLeagueName: "MLBB Continental Championships Season 8",
+    defaultLeagueName: "MCC Season 8",
   },
 }
 
-// Map Liquipedia team names / shortnames to project team IDs across ID, PH, MY and MCC (EECA)
+// Map Liquipedia team names / shortnames to project team IDs across ID, PH, and MY
 export const TEAM_MAP: Record<string, string> = {
   // --- INDONESIA (ID) ---
   "team liquid id": "TLID",
@@ -164,17 +164,27 @@ export const TEAM_MAP: Record<string, string> = {
   "selangor red giants": "SRG",
   "team flash": "FL",
 
-  // --- MCC (EECA) ---
+  // --- CONTINENTAL (MCC) ---
   "team spirit": "TS",
   spirit: "TS",
+  ts: "TS",
   "team yandex": "YNDX",
   yandex: "YNDX",
-  "aurevia team": "ARV",
-  "rune eaters": "RUNE",
-  cyberhero: "CH",
-  rakuzan: "RKZ",
+  yndx: "YNDX",
   "level up": "LVL",
+  "level up esports": "LVL",
+  lvl: "LVL",
+  rakuzan: "RKZ",
+  rkz: "RKZ",
+  "aurevia team": "ARV",
+  aurevia: "ARV",
+  arv: "ARV",
+  cyberhero: "CH",
+  ch: "CH",
+  "rune eaters": "RUNE",
+  rune: "RUNE",
   omnix: "OMNX",
+  omnx: "OMNX",
 }
 
 /**
@@ -727,7 +737,8 @@ Options:
   }
 
   const leagueArg = (args.league || "all").toLowerCase()
-  const leaguesToSync = leagueArg === "all" ? ["id", "ph", "my", "mcc"] : [leagueArg]
+  const leaguesToSync =
+    leagueArg === "all" ? Object.keys(LEAGUES_CONFIG) : [leagueArg]
 
   const apiKey = (args.apikey as string) || process.env.LIQUIPEDIA_API_KEY || ""
   const changedFiles: string[] = []

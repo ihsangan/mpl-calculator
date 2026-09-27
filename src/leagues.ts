@@ -13,6 +13,7 @@ export const LEAGUES: Record<string, LeagueConfig> = {
     currentWeek: ID.CURRENT_WEEK,
     allMatches: ID.ALL_MATCHES as Match[],
     teams: ID_TEAMS,
+    pointSystem: "standard",
   },
   PH: {
     id: "PH",
@@ -21,6 +22,7 @@ export const LEAGUES: Record<string, LeagueConfig> = {
     currentWeek: PH.CURRENT_WEEK,
     allMatches: PH.ALL_MATCHES as Match[],
     teams: PH_TEAMS,
+    pointSystem: "standard",
   },
   MY: {
     id: "MY",
@@ -29,14 +31,16 @@ export const LEAGUES: Record<string, LeagueConfig> = {
     currentWeek: MY.CURRENT_WEEK,
     allMatches: MY.ALL_MATCHES as Match[],
     teams: MY_TEAMS,
+    pointSystem: "standard",
   },
   MCC: {
     id: "MCC",
-    name: "MLBB Continental Championships",
+    name: "Continental",
     leagueName: MCC.LEAGUE_NAME,
     currentWeek: MCC.CURRENT_WEEK,
     allMatches: MCC.ALL_MATCHES as Match[],
     teams: MCC_TEAMS,
+    pointSystem: "three_point",
   },
 }
 

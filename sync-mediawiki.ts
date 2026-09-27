@@ -577,7 +577,8 @@ Options:
   }
 
   const leagueArg = (args.league || "all").toLowerCase()
-  const leaguesToSync = leagueArg === "all" ? ["id", "ph", "my", "mcc"] : [leagueArg]
+  const leaguesToSync =
+    leagueArg === "all" ? ["id", "ph", "my", "mcc"] : [leagueArg]
 
   // Collect page titles to fetch in a single batch request
   const titles = leaguesToSync.map((k) => {
