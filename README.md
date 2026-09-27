@@ -2,7 +2,7 @@
 
 Standings calculator and playoff probability simulator for [Mobile Legends: Bang Bang](https://www.mobilelegends.com/) Professional League (MPL) Season 18.
 
-Supports **MPL Indonesia**, **MPL Philippines**, and **MPL Malaysia**.
+Supports **MPL Indonesia**, **MPL Philippines**, **MPL Malaysia**, and **MCC (Continental)**.
 
 **Live site:** [mpl.isan.eu.org](https://mpl.isan.eu.org/)
 
@@ -15,7 +15,7 @@ Supports **MPL Indonesia**, **MPL Philippines**, and **MPL Malaysia**.
 - **Web Worker Architecture** — Simulations execute on a dedicated background thread with automatic debouncing and request cancellation, preventing UI thread blocking even at 100,000 iterations.
 - **Next Match Countdown & Live Badges** — Hero card showing the upcoming match with a live countdown timer (Days, Hours, Minutes, Seconds) and dynamic status badges (`LIVE MATCH`, `TODAY`, `NEXT MATCH`).
 - **Interactive Schedule Editor** — Modify match scores to explore "what-if" scenarios. Filter by week or view all matches at once. Displays scheduled match times in the user's local timezone and day dates in group headers. Import/export schedule data as JSON.
-- **Multi-League Support** — Switch between MPL ID, PH, and MY. Each league is accessible via URL (`/id`, `/ph`, `/my`) with state persisted in localStorage.
+- **Multi-League Support** — Switch between MPL ID, PH, MY, and MCC. Each league is accessible via URL (`/id`, `/ph`, `/my`, `/mcc`) with state persisted in localStorage.
 - **Tiebreaker System** — Standings are resolved using official MPL tiebreakers: 1. Match wins → 2. Game differential → 3. Head-to-head match wins → 4. Head-to-head game differential.
 - **Save as Image** — Export standings and probability tables as PNG images with compact, mobile-friendly rendering.
 - **Dark / Light Theme** — System-aware theme toggle with smooth transitions.
@@ -40,9 +40,9 @@ Supports **MPL Indonesia**, **MPL Philippines**, and **MPL Malaysia**.
 ```
 ├── src/
 │   ├── App.tsx                    # Main application with routing and state
-│   ├── leagues.ts                 # League configuration (ID, PH, MY)
+│   ├── leagues.ts                 # League configuration (ID, PH, MY, MCC)
 │   ├── teams.ts                   # Team definitions with logos
-│   ├── schedule-{id,ph,my}.json   # Match schedule, dates, and score data
+│   ├── schedule-{id,ph,my,mcc}.json # Match schedule, dates, and score data
 │   ├── components/
 │   │   ├── header.tsx             # League selector and theme toggle
 │   │   ├── footer.tsx             # Liquipedia attribution
@@ -94,7 +94,7 @@ pnpm build
 
 ## Data Sync
 
-Match schedules, dates, and scores are sourced directly from the official [Liquipedia OpenAPI v3](https://api.liquipedia.net/) (JSON API) and stored in `src/schedule-{id,ph,my}.json`. The sync script fetches all three leagues concurrently in a single batch request using `OR` conditions, normalizes team names, extracts match timestamps, and updates the JSON files with the latest results.
+Match schedules, dates, and scores are sourced directly from the official [Liquipedia OpenAPI v3](https://api.liquipedia.net/) (JSON API) and stored in `src/schedule-{id,ph,my,mcc}.json`. The sync script fetches configured leagues in a single batch request using `OR` conditions, normalizes team names, extracts match timestamps, and updates the JSON files with the latest results.
 
 ### Environment Variable
 
@@ -114,6 +114,7 @@ pnpm sync
 pnpm sync --league id
 pnpm sync --league ph
 pnpm sync --league my
+pnpm sync --league mcc
 
 # Sync with custom API key
 pnpm sync --apikey your_api_key_here

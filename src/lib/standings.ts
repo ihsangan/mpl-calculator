@@ -60,7 +60,8 @@ export const formatProbability = (value: string | number): string => {
 
 export const calculateStandings = (
   matches: Match[],
-  teams: Team[]
+  teams: Team[],
+  pointSystem: "standard" | "three_point" = "standard"
 ): TeamRow[] => {
   const table: Record<string, TeamRow> = {}
 
@@ -108,12 +109,30 @@ export const calculateStandings = (
     if (m.scoreA > m.scoreB) {
       table[m.teamA].matchW += 1
       table[m.teamB].matchL += 1
-      table[m.teamA].pts += 1
+      if (pointSystem === "three_point") {
+        if (m.scoreA === 2 && m.scoreB === 0) {
+          table[m.teamA].pts += 3
+        } else if (m.scoreA === 2 && m.scoreB === 1) {
+          table[m.teamA].pts += 2
+          table[m.teamB].pts += 1
+        }
+      } else {
+        table[m.teamA].pts += 1
+      }
       if (h2hWins[m.teamA]) h2hWins[m.teamA][m.teamB] += 1
     } else if (m.scoreB > m.scoreA) {
       table[m.teamB].matchW += 1
       table[m.teamA].matchL += 1
-      table[m.teamB].pts += 1
+      if (pointSystem === "three_point") {
+        if (m.scoreB === 2 && m.scoreA === 0) {
+          table[m.teamB].pts += 3
+        } else if (m.scoreB === 2 && m.scoreA === 1) {
+          table[m.teamB].pts += 2
+          table[m.teamA].pts += 1
+        }
+      } else {
+        table[m.teamB].pts += 1
+      }
       if (h2hWins[m.teamB]) h2hWins[m.teamB][m.teamA] += 1
     }
   })
@@ -126,6 +145,28 @@ export const calculateStandings = (
   })
 
   return Object.values(table).sort((a, b) => {
+    if (pointSystem === "three_point") {
+      // 1. Points
+      if (b.pts !== a.pts) return b.pts - a.pts
+      // 2. Net Game difference
+      if (b.diff !== a.diff) return b.diff - a.diff
+      // 3. Head-to-head match wins tiebreaker
+      if (h2hWins[a.id] && h2hWins[b.id]) {
+        const aWinsVsB = h2hWins[a.id][b.id] ?? 0
+        const bWinsVsA = h2hWins[b.id][a.id] ?? 0
+        if (aWinsVsB !== bWinsVsA) return bWinsVsA - aWinsVsB
+
+        // 4. Head-to-head game difference tiebreaker
+        const aNetVsB = h2hGameDiff[a.id]?.[b.id] ?? 0
+        const bNetVsA = h2hGameDiff[b.id]?.[a.id] ?? 0
+        if (aNetVsB !== bNetVsA) return bNetVsA - aNetVsB
+      }
+      // 5. Match wins
+      if (b.matchW !== a.matchW) return b.matchW - a.matchW
+      // 6. Fallback: alphabetical
+      return a.name.localeCompare(b.name)
+    }
+
     // 1. Match wins / Points
     if (b.matchW !== a.matchW) return b.matchW - a.matchW
     // 2. Net Game difference

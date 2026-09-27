@@ -26,6 +26,7 @@ interface StandingsTableProps {
   probabilities: Record<string, Probability>
   resolvedTheme: "light" | "dark"
   leagueName: string
+  pointSystem?: "standard" | "three_point"
 }
 
 const getRankBadgeClass = (idx: number) => {
@@ -92,6 +93,7 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
   probabilities,
   resolvedTheme,
   leagueName,
+  pointSystem = "standard",
 }) => {
   const { ref, save, isExporting } = useSaveAsImage(
     `standings-${leagueName.replace(/\s+/g, "-").toLowerCase()}`,
@@ -153,6 +155,11 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
                   <TableHead className="text-center font-semibold">
                     Diff
                   </TableHead>
+                  {pointSystem === "three_point" && (
+                    <TableHead className="text-center font-semibold">
+                      Pts
+                    </TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -227,6 +234,11 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
                       >
                         {team.diff > 0 ? `+${team.diff}` : team.diff}
                       </TableCell>
+                      {pointSystem === "three_point" && (
+                        <TableCell className="py-3 text-center text-sm font-bold text-primary tabular-nums">
+                          {team.pts}p
+                        </TableCell>
+                      )}
                     </TableRow>
                   )
                 })}
