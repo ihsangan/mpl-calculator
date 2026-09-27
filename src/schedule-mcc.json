@@ -1,7 +1,7 @@
 {
   "LEAGUE_NAME": "MCC Season 8",
-  "CURRENT_WEEK": 5,
-  "LAST_UPDATED": "2026-09-27T13:00:00Z",
+  "CURRENT_WEEK": 6,
+  "LAST_UPDATED": "2026-09-27T17:00:00Z",
   "ALL_MATCHES": [
     {
       "id": "w1d1m1",
@@ -343,7 +343,7 @@
       "id": "w5d2m3",
       "teamA": "YNDX",
       "teamB": "OMNX",
-      "scoreA": 0,
+      "scoreA": 2,
       "scoreB": 0,
       "date": "2026-09-27T15:00:00.000Z"
     },
@@ -352,7 +352,7 @@
       "teamA": "RKZ",
       "teamB": "TS",
       "scoreA": 0,
-      "scoreB": 0,
+      "scoreB": 2,
       "date": "2026-09-27T17:00:00.000Z"
     },
     {
