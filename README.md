@@ -2,7 +2,7 @@
 
 Standings calculator and playoff probability simulator for [Mobile Legends: Bang Bang](https://www.mobilelegends.com/) Professional League (MPL) Season 18 and MCC Season 8.
 
-Supports **MPL Indonesia**, **MPL Philippines**, **MPL Malaysia**, and **MCC (Continental)**.
+Supports **MPL Indonesia**, **MPL Philippines**, **MPL Malaysia**, and **MCC (EECA)**.
 
 **Live site:** [mpl.isan.eu.org](https://mpl.isan.eu.org/)
 

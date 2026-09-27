@@ -118,7 +118,7 @@ export const LEAGUES_CONFIG: Record<string, LeagueConfig> = {
     defaultLeagueName: "MPL Malaysia Season 18",
   },
   mcc: {
-    name: "Continental",
+    name: "EECA",
     page: "MLBB_Continental_Championships/Season_8/Regular_Season",
     file: path.join(__dirname, "src", "schedule-mcc.json"),
     defaultLeagueName: "MCC Season 8",

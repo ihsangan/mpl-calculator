@@ -35,7 +35,7 @@ export const LEAGUES: Record<string, LeagueConfig> = {
   },
   MCC: {
     id: "MCC",
-    name: "Continental",
+    name: "EECA",
     leagueName: MCC.LEAGUE_NAME,
     currentWeek: MCC.CURRENT_WEEK,
     allMatches: MCC.ALL_MATCHES as Match[],
