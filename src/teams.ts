@@ -147,3 +147,54 @@ export const MY_TEAMS: Team[] = [
     logo: `${imgPre}flash`,
   },
 ]
+
+export const MCC_TEAMS: Team[] = [
+  {
+    id: "TS",
+    name: "Team Spirit",
+    logo: ``,
+    logoDark: ``,
+  },
+  {
+    id: "YNDX",
+    name: "Team Yandex",
+    logo: ``,
+    logoDark: ``,
+  },
+  {
+    id: "ARV",
+    name: "Aurevia Team",
+    logo: ``,
+    logoDark: ``,
+  },
+  {
+    id: "RUNE",
+    name: "Rune Eaters",
+    logo: ``,
+    logoDark: ``,
+  },
+  {
+    id: "CH",
+    name: "CyberHero",
+    logo: ``,
+    logoDark: ``,
+  },
+  {
+    id: "RKZ",
+    name: "Rakuzan",
+    logo: ``,
+    logoDark: ``,
+  },
+  {
+    id: "LVL",
+    name: "Level UP",
+    logo: ``,
+    logoDark: ``,
+  },
+  {
+    id: "OMNX",
+    name: "Omnix",
+    logo: ``,
+    logoDark: ``,
+  },
+]

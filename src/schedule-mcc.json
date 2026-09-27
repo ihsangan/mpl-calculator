@@ -1,0 +1,455 @@
+{
+  "LEAGUE_NAME": "MLBB Continental Championships Season 8",
+  "CURRENT_WEEK": 5,
+  "LAST_UPDATED": "2026-09-27T11:30:00Z",
+  "ALL_MATCHES": [
+    {
+      "id": "w1d1m1",
+      "teamA": "RUNE",
+      "teamB": "TS",
+      "scoreA": 0,
+      "scoreB": 2,
+      "date": "2026-08-28T14:00:00.000Z"
+    },
+    {
+      "id": "w1d1m2",
+      "teamA": "OMNX",
+      "teamB": "YNDX",
+      "scoreA": 0,
+      "scoreB": 2,
+      "date": "2026-08-28T16:00:00.000Z"
+    },
+    {
+      "id": "w1d1m3",
+      "teamA": "RKZ",
+      "teamB": "LVL",
+      "scoreA": 1,
+      "scoreB": 2,
+      "date": "2026-08-28T18:00:00.000Z"
+    },
+    {
+      "id": "w1d1m4",
+      "teamA": "ARV",
+      "teamB": "CH",
+      "scoreA": 2,
+      "scoreB": 1,
+      "date": "2026-08-28T20:00:00.000Z"
+    },
+    {
+      "id": "w1d2m1",
+      "teamA": "RKZ",
+      "teamB": "OMNX",
+      "scoreA": 2,
+      "scoreB": 0,
+      "date": "2026-08-29T14:00:00.000Z"
+    },
+    {
+      "id": "w1d2m2",
+      "teamA": "RUNE",
+      "teamB": "YNDX",
+      "scoreA": 0,
+      "scoreB": 2,
+      "date": "2026-08-29T16:00:00.000Z"
+    },
+    {
+      "id": "w1d2m3",
+      "teamA": "TS",
+      "teamB": "ARV",
+      "scoreA": 2,
+      "scoreB": 0,
+      "date": "2026-08-29T18:00:00.000Z"
+    },
+    {
+      "id": "w1d2m4",
+      "teamA": "CH",
+      "teamB": "LVL",
+      "scoreA": 0,
+      "scoreB": 2,
+      "date": "2026-08-29T20:00:00.000Z"
+    },
+    {
+      "id": "w1d3m1",
+      "teamA": "RKZ",
+      "teamB": "ARV",
+      "scoreA": 2,
+      "scoreB": 1,
+      "date": "2026-08-30T14:00:00.000Z"
+    },
+    {
+      "id": "w1d3m2",
+      "teamA": "LVL",
+      "teamB": "RUNE",
+      "scoreA": 2,
+      "scoreB": 1,
+      "date": "2026-08-30T16:00:00.000Z"
+    },
+    {
+      "id": "w1d3m3",
+      "teamA": "YNDX",
+      "teamB": "CH",
+      "scoreA": 2,
+      "scoreB": 0,
+      "date": "2026-08-30T18:00:00.000Z"
+    },
+    {
+      "id": "w1d3m4",
+      "teamA": "OMNX",
+      "teamB": "TS",
+      "scoreA": 0,
+      "scoreB": 2,
+      "date": "2026-08-30T20:00:00.000Z"
+    },
+    {
+      "id": "w2d1m1",
+      "teamA": "ARV",
+      "teamB": "RUNE",
+      "scoreA": 1,
+      "scoreB": 2,
+      "date": "2026-09-05T14:00:00.000Z"
+    },
+    {
+      "id": "w2d1m2",
+      "teamA": "LVL",
+      "teamB": "OMNX",
+      "scoreA": 0,
+      "scoreB": 2,
+      "date": "2026-09-05T16:00:00.000Z"
+    },
+    {
+      "id": "w2d1m3",
+      "teamA": "CH",
+      "teamB": "TS",
+      "scoreA": 1,
+      "scoreB": 2,
+      "date": "2026-09-05T18:00:00.000Z"
+    },
+    {
+      "id": "w2d1m4",
+      "teamA": "YNDX",
+      "teamB": "RKZ",
+      "scoreA": 2,
+      "scoreB": 1,
+      "date": "2026-09-05T20:00:00.000Z"
+    },
+    {
+      "id": "w2d2m1",
+      "teamA": "CH",
+      "teamB": "OMNX",
+      "scoreA": 1,
+      "scoreB": 2,
+      "date": "2026-09-06T14:00:00.000Z"
+    },
+    {
+      "id": "w2d2m2",
+      "teamA": "RKZ",
+      "teamB": "RUNE",
+      "scoreA": 2,
+      "scoreB": 0,
+      "date": "2026-09-06T16:00:00.000Z"
+    },
+    {
+      "id": "w2d2m3",
+      "teamA": "LVL",
+      "teamB": "ARV",
+      "scoreA": 1,
+      "scoreB": 2,
+      "date": "2026-09-06T18:00:00.000Z"
+    },
+    {
+      "id": "w2d2m4",
+      "teamA": "TS",
+      "teamB": "YNDX",
+      "scoreA": 0,
+      "scoreB": 2,
+      "date": "2026-09-06T20:00:00.000Z"
+    },
+    {
+      "id": "w3d1m1",
+      "teamA": "OMNX",
+      "teamB": "RUNE",
+      "scoreA": 0,
+      "scoreB": 2,
+      "date": "2026-09-12T14:00:00.000Z"
+    },
+    {
+      "id": "w3d1m2",
+      "teamA": "CH",
+      "teamB": "RKZ",
+      "scoreA": 0,
+      "scoreB": 2,
+      "date": "2026-09-12T16:00:00.000Z"
+    },
+    {
+      "id": "w3d1m3",
+      "teamA": "TS",
+      "teamB": "LVL",
+      "scoreA": 2,
+      "scoreB": 0,
+      "date": "2026-09-12T18:00:00.000Z"
+    },
+    {
+      "id": "w3d1m4",
+      "teamA": "YNDX",
+      "teamB": "ARV",
+      "scoreA": 2,
+      "scoreB": 1,
+      "date": "2026-09-12T20:00:00.000Z"
+    },
+    {
+      "id": "w3d2m1",
+      "teamA": "RUNE",
+      "teamB": "CH",
+      "scoreA": 2,
+      "scoreB": 1,
+      "date": "2026-09-13T14:00:00.000Z"
+    },
+    {
+      "id": "w3d2m2",
+      "teamA": "YNDX",
+      "teamB": "LVL",
+      "scoreA": 2,
+      "scoreB": 1,
+      "date": "2026-09-13T16:00:00.000Z"
+    },
+    {
+      "id": "w3d2m3",
+      "teamA": "ARV",
+      "teamB": "OMNX",
+      "scoreA": 2,
+      "scoreB": 0,
+      "date": "2026-09-13T18:00:00.000Z"
+    },
+    {
+      "id": "w3d2m4",
+      "teamA": "TS",
+      "teamB": "RKZ",
+      "scoreA": 2,
+      "scoreB": 0,
+      "date": "2026-09-13T20:00:00.000Z"
+    },
+    {
+      "id": "w4d1m1",
+      "teamA": "TS",
+      "teamB": "OMNX",
+      "scoreA": 2,
+      "scoreB": 0,
+      "date": "2026-09-19T14:00:00.000Z"
+    },
+    {
+      "id": "w4d1m2",
+      "teamA": "LVL",
+      "teamB": "YNDX",
+      "scoreA": 0,
+      "scoreB": 2,
+      "date": "2026-09-19T16:00:00.000Z"
+    },
+    {
+      "id": "w4d1m3",
+      "teamA": "CH",
+      "teamB": "RUNE",
+      "scoreA": 2,
+      "scoreB": 1,
+      "date": "2026-09-19T18:00:00.000Z"
+    },
+    {
+      "id": "w4d1m4",
+      "teamA": "ARV",
+      "teamB": "RKZ",
+      "scoreA": 2,
+      "scoreB": 1,
+      "date": "2026-09-19T20:00:00.000Z"
+    },
+    {
+      "id": "w4d2m1",
+      "teamA": "RUNE",
+      "teamB": "OMNX",
+      "scoreA": 1,
+      "scoreB": 2,
+      "date": "2026-09-20T14:00:00.000Z"
+    },
+    {
+      "id": "w4d2m2",
+      "teamA": "LVL",
+      "teamB": "TS",
+      "scoreA": 0,
+      "scoreB": 2,
+      "date": "2026-09-20T16:00:00.000Z"
+    },
+    {
+      "id": "w4d2m3",
+      "teamA": "RKZ",
+      "teamB": "YNDX",
+      "scoreA": 1,
+      "scoreB": 2,
+      "date": "2026-09-20T18:00:00.000Z"
+    },
+    {
+      "id": "w4d2m4",
+      "teamA": "CH",
+      "teamB": "ARV",
+      "scoreA": 0,
+      "scoreB": 2,
+      "date": "2026-09-20T20:00:00.000Z"
+    },
+    {
+      "id": "w5d1m1",
+      "teamA": "LVL",
+      "teamB": "RKZ",
+      "scoreA": 1,
+      "scoreB": 2,
+      "date": "2026-09-26T14:00:00.000Z"
+    },
+    {
+      "id": "w5d1m2",
+      "teamA": "OMNX",
+      "teamB": "ARV",
+      "scoreA": 0,
+      "scoreB": 2,
+      "date": "2026-09-26T16:00:00.000Z"
+    },
+    {
+      "id": "w5d1m3",
+      "teamA": "TS",
+      "teamB": "RUNE",
+      "scoreA": 2,
+      "scoreB": 0,
+      "date": "2026-09-26T18:00:00.000Z"
+    },
+    {
+      "id": "w5d1m4",
+      "teamA": "CH",
+      "teamB": "YNDX",
+      "scoreA": 0,
+      "scoreB": 2,
+      "date": "2026-09-26T20:00:00.000Z"
+    },
+    {
+      "id": "w5d2m1",
+      "teamA": "RUNE",
+      "teamB": "RKZ",
+      "scoreA": 0,
+      "scoreB": 0,
+      "date": "2026-09-27T14:00:00.000Z"
+    },
+    {
+      "id": "w5d2m2",
+      "teamA": "LVL",
+      "teamB": "CH",
+      "scoreA": 0,
+      "scoreB": 0,
+      "date": "2026-09-27T16:00:00.000Z"
+    },
+    {
+      "id": "w5d2m3",
+      "teamA": "YNDX",
+      "teamB": "OMNX",
+      "scoreA": 0,
+      "scoreB": 0,
+      "date": "2026-09-27T18:00:00.000Z"
+    },
+    {
+      "id": "w5d2m4",
+      "teamA": "RKZ",
+      "teamB": "TS",
+      "scoreA": 0,
+      "scoreB": 0,
+      "date": "2026-09-27T20:00:00.000Z"
+    },
+    {
+      "id": "w6d1m1",
+      "teamA": "OMNX",
+      "teamB": "LVL",
+      "scoreA": 0,
+      "scoreB": 0,
+      "date": "2026-10-02T14:00:00.000Z"
+    },
+    {
+      "id": "w6d1m2",
+      "teamA": "YNDX",
+      "teamB": "RUNE",
+      "scoreA": 0,
+      "scoreB": 0,
+      "date": "2026-10-02T16:00:00.000Z"
+    },
+    {
+      "id": "w6d1m3",
+      "teamA": "ARV",
+      "teamB": "TS",
+      "scoreA": 0,
+      "scoreB": 0,
+      "date": "2026-10-02T18:00:00.000Z"
+    },
+    {
+      "id": "w6d1m4",
+      "teamA": "RKZ",
+      "teamB": "CH",
+      "scoreA": 0,
+      "scoreB": 0,
+      "date": "2026-10-02T20:00:00.000Z"
+    },
+    {
+      "id": "w6d2m1",
+      "teamA": "RUNE",
+      "teamB": "LVL",
+      "scoreA": 0,
+      "scoreB": 0,
+      "date": "2026-10-03T14:00:00.000Z"
+    },
+    {
+      "id": "w6d2m2",
+      "teamA": "OMNX",
+      "teamB": "RKZ",
+      "scoreA": 0,
+      "scoreB": 0,
+      "date": "2026-10-03T16:00:00.000Z"
+    },
+    {
+      "id": "w6d2m3",
+      "teamA": "TS",
+      "teamB": "CH",
+      "scoreA": 0,
+      "scoreB": 0,
+      "date": "2026-10-03T18:00:00.000Z"
+    },
+    {
+      "id": "w6d2m4",
+      "teamA": "ARV",
+      "teamB": "YNDZ",
+      "scoreA": 0,
+      "scoreB": 0,
+      "date": "2026-10-03T20:00:00.000Z"
+    },
+    {
+      "id": "w6d3m1",
+      "teamA": "OMNX",
+      "teamB": "CH",
+      "scoreA": 0,
+      "scoreB": 0,
+      "date": "2026-10-04T14:00:00.000Z"
+    },
+    {
+      "id": "w6d3m2",
+      "teamA": "ARV",
+      "teamB": "LVL",
+      "scoreA": 0,
+      "scoreB": 0,
+      "date": "2026-10-04T16:00:00.000Z"
+    },
+    {
+      "id": "w6d3m3",
+      "teamA": "RUNE",
+      "teamB": "RKZ",
+      "scoreA": 0,
+      "scoreB": 0,
+      "date": "2026-10-04T18:00:00.000Z"
+    },
+    {
+      "id": "w6d3m4",
+      "teamA": "YNDX",
+      "teamB": "TS",
+      "scoreA": 0,
+      "scoreB": 0,
+      "date": "2026-10-04T20:00:00.000Z"
+    }
+  ]
+}

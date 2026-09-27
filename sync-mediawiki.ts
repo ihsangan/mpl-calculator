@@ -2,7 +2,7 @@
 /**
  * Liquipedia Match Schedule & Score Synchronizer (TypeScript Edition)
  * Fetches match results and revision timestamps from Liquipedia MediaWiki Revisions API
- * and synchronizes schedule and scores for MPL Indonesia (ID), Philippines (PH), and Malaysia (MY).
+ * and synchronizes schedule and scores for MPL Indonesia (ID), Philippines (PH), Malaysia (MY), and MCC (EECA).
  */
 
 import fs from "node:fs"
@@ -65,9 +65,15 @@ export const LEAGUES_CONFIG: Record<string, LeagueConfig> = {
     file: path.join(__dirname, "src", "schedule-my.json"),
     defaultLeagueName: "MPL Malaysia Season 18",
   },
+  mcc: {
+    name: "MCC",
+    title: "MLBB_Continental_Championships/Season_8/Regular_Season",
+    file: path.join(__dirname, "src", "schedule-mcc.json"),
+    defaultLeagueName: "MLBB Continental Championships Season 8",
+  },
 }
 
-// Map Liquipedia team names to project team IDs across ID, PH, and MY
+// Map Liquipedia team names to project team IDs across ID, PH, MY and MCC (EECA)
 export const TEAM_MAP: Record<string, string> = {
   // --- INDONESIA (ID) ---
   "team liquid id": "TLID",
@@ -128,6 +134,18 @@ export const TEAM_MAP: Record<string, string> = {
   "selangor red giant": "SRG",
   "team flash": "FL",
   flash: "FL",
+
+  // --- MCC (EECA) ---
+  "team spirit": "TS",
+  spirit: "TS",
+  "team yandex": "YNDX",
+  yandex: "YNDX",
+  "aurevia team": "ARV",
+  "rune eaters": "RUNE",
+  cyberhero: "CH",
+  rakuzan: "RKZ",
+  "level up": "LVL",
+  omnix: "OMNX",
 }
 
 /**
@@ -550,7 +568,7 @@ export async function main() {
 Usage: node sync.ts [options]
 
 Options:
-  -l, --league <id|ph|my|all>  League to sync (default: all)
+  -l, --league <id|ph|my|mcc|all>  League to sync (default: all)
   --push                      Automatically git commit and push modified JSON files
   --dry-run                   Fetch and parse without writing to files
   -h, --help                  Show help
@@ -559,7 +577,7 @@ Options:
   }
 
   const leagueArg = (args.league || "all").toLowerCase()
-  const leaguesToSync = leagueArg === "all" ? ["id", "ph", "my"] : [leagueArg]
+  const leaguesToSync = leagueArg === "all" ? ["id", "ph", "my", "mcc"] : [leagueArg]
 
   // Collect page titles to fetch in a single batch request
   const titles = leaguesToSync.map((k) => {

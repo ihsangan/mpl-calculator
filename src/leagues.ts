@@ -1,7 +1,8 @@
 import ID from "./schedule-id.json"
 import PH from "./schedule-ph.json"
 import MY from "./schedule-my.json"
-import { ID_TEAMS, PH_TEAMS, MY_TEAMS } from "./teams"
+import MCC from "./schedule-mcc.json"
+import { ID_TEAMS, PH_TEAMS, MY_TEAMS, MCC_TEAMS } from "./teams"
 import type { LeagueConfig, Match } from "./types"
 
 export const LEAGUES: Record<string, LeagueConfig> = {
@@ -28,6 +29,14 @@ export const LEAGUES: Record<string, LeagueConfig> = {
     currentWeek: MY.CURRENT_WEEK,
     allMatches: MY.ALL_MATCHES as Match[],
     teams: MY_TEAMS,
+  },
+  MCC: {
+    id: "MCC",
+    name: "MLBB Continental Championships",
+    leagueName: MCC.LEAGUE_NAME,
+    currentWeek: MCC.CURRENT_WEEK,
+    allMatches: MCC.ALL_MATCHES as Match[],
+    teams: MCC_TEAMS,
   },
 }
 
