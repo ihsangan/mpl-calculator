@@ -138,14 +138,24 @@ export const TEAM_MAP: Record<string, string> = {
   // --- MCC (EECA) ---
   "team spirit": "TS",
   spirit: "TS",
+  ts: "TS",
   "team yandex": "YNDX",
   yandex: "YNDX",
+  yndx: "YNDX",
   "aurevia team": "ARV",
+  aurevia: "ARV",
+  arv: "ARV",
   "rune eaters": "RUNE",
+  rune: "RUNE",
   cyberhero: "CH",
+  ch: "CH",
   rakuzan: "RKZ",
+  rkz: "RKZ",
   "level up": "LVL",
+  "level up esports": "LVL",
+  lvl: "LVL",
   omnix: "OMNX",
+  omnx: "OMNX",
 }
 
 /**

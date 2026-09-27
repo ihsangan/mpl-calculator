@@ -43,10 +43,10 @@ LEAGUES_CONFIG: Dict[str, Dict[str, Any]] = {
     },
     "mcc": {
         "name": "MCC",
-        "page": "MLBB_Continental_Championships/Season_8/Regular_Season",
+        "title": "MLBB_Continental_Championships/Season_8/Regular_Season",
         "file": os.path.join(SCRIPT_DIR, "src", "schedule-mcc.json"),
-        "defaultLeagueName": "MLBB Continental Championships Season 8",
-  },
+        "default_league_name": "MCC Season 8",
+    },
 }
 
 # Map Liquipedia team names to project team IDs across ID, PH, MY and MCC (EECA)
@@ -111,14 +111,24 @@ TEAM_MAP: Dict[str, str] = {
     # --- MCC (EECA) ---
     "team spirit": "TS",
     "spirit": "TS",
+    "ts": "TS",
     "team yandex": "YNDX",
     "yandex": "YNDX",
+    "yndx": "YNDX",
     "aurevia team": "ARV",
+    "aurevia": "ARV",
+    "arv": "ARV",
     "rune eaters": "RUNE",
+    "rune": "RUNE",
     "cyberhero": "CH",
+    "ch": "CH",
     "rakuzan": "RKZ",
+    "rkz": "RKZ",
     "level up": "LVL",
+    "level up esports": "LVL",
+    "lvl": "LVL",
     "omnix": "OMNX",
+    "omnx": "OMNX",
 }
 
 

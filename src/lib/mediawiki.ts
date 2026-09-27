@@ -54,7 +54,7 @@ export const LEAGUES_WIKI_CONFIG: Record<string, LeagueWikiConfig> = {
   },
   MCC: {
     id: "MCC",
-    name: "Continental (MCC)",
+    name: "EECA",
     title: "MLBB_Continental_Championships/Season_8/Regular_Season",
   },
 }
