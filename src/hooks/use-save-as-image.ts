@@ -17,12 +17,49 @@ export function useSaveAsImage(filename: string, options?: SaveAsImageOptions) {
 
     setIsExporting(true)
 
-    // Measure table and content width
+    // Measure table and content width to prevent cropping when columns expand
     const tableEl = el.querySelector("table")
-    const tableScrollWidth = tableEl ? tableEl.scrollWidth : 0
+    let minContentWidth = 0
+    if (tableEl) {
+      let clone: HTMLTableElement | null = null
+      try {
+        clone = tableEl.cloneNode(true) as HTMLTableElement
+        clone.style.width = "max-content"
+        clone.style.minWidth = "max-content"
+        clone.style.maxWidth = "none"
+        clone.style.position = "absolute"
+        clone.style.visibility = "hidden"
+        clone.style.top = "-9999px"
+        clone.style.left = "-9999px"
+        clone.style.height = "auto"
+        clone.style.overflow = "visible"
 
-    // Compact target width: user custom width, or tightly measured fit (default ~540px)
-    const targetWidth = options?.width ?? Math.max(tableScrollWidth + 32, 540)
+        const parent = tableEl.parentElement || document.body
+        parent.appendChild(clone)
+        minContentWidth = clone.getBoundingClientRect().width
+      } catch {
+        // Fallback below
+      } finally {
+        clone?.remove()
+      }
+    }
+
+    const scrollContainer = tableEl?.closest(
+      ".overflow-x-auto, [data-slot='table-container']"
+    )
+    const fallbackWidth = Math.max(
+      tableEl?.scrollWidth ?? 0,
+      tableEl?.offsetWidth ?? 0,
+      scrollContainer?.scrollWidth ?? 0
+    )
+    const contentWidth = minContentWidth > 0 ? minContentWidth : fallbackWidth
+
+    // Compact target width: at least 540px (or custom width), expanding as needed so content is never cropped
+    const minTargetWidth = options?.width ?? 540
+    const targetWidth = Math.max(
+      minTargetWidth,
+      contentWidth > 0 ? Math.ceil(contentWidth) + 32 : minTargetWidth
+    )
     const targetScale = options?.scale ?? 2
     const isDark = document.documentElement.classList.contains("dark")
 

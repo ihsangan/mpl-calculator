@@ -57,10 +57,10 @@ const getDiffClass = (diff: number) => {
 
 const CLINCH_BG = "bg-emerald-500/10 dark:bg-emerald-950/25"
 const CLINCH_BADGE =
-  "rounded bg-emerald-600/15 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400"
+  "shrink-0 rounded bg-emerald-600/15 px-1.5 py-0.5 text-[10px] font-bold whitespace-nowrap text-emerald-700 dark:text-emerald-400"
 const ELIMINATED_BG = "bg-destructive/10 dark:bg-destructive/20"
 const ELIMINATED_BADGE =
-  "rounded bg-destructive/15 px-1.5 py-0.5 text-[10px] font-bold text-destructive"
+  "shrink-0 rounded bg-destructive/15 px-1.5 py-0.5 text-[10px] font-bold whitespace-nowrap text-destructive"
 
 /**
  * Resolve the status badge for a team.
@@ -96,8 +96,7 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
   pointSystem = "standard",
 }) => {
   const { ref, save, isExporting } = useSaveAsImage(
-    `standings-${leagueName.replace(/\s+/g, "-").toLowerCase()}`,
-    { width: 540 }
+    `standings-${leagueName.replace(/\s+/g, "-").toLowerCase()}`
   )
 
   return (
