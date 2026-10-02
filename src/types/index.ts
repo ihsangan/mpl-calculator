@@ -40,6 +40,8 @@ export interface Probability {
   top2Clinched: boolean
   playoffsClinched: boolean
   eliminatedOut: boolean
+  bestRank: number
+  worstRank: number
 }
 
 export interface LeagueConfig {

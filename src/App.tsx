@@ -15,6 +15,7 @@ import { Header } from "./components/header"
 import { Footer } from "./components/footer"
 import { StandingsTable } from "./components/standings/standings-table"
 import { ProbabilitiesCard } from "./components/probabilities/probabilities-card"
+import { RankScenariosCard } from "./components/probabilities/rank-scenarios-card"
 import { ScheduleEditor } from "./components/schedule/schedule-editor"
 import { NextMatchCard } from "./components/schedule/next-match-card"
 
@@ -293,6 +294,16 @@ export default function App() {
               onSimulate={handleSimulate}
               resolvedTheme={resolvedTheme}
               leagueName={currentLeague.leagueName}
+            />
+
+            <RankScenariosCard
+              standings={standings}
+              teams={currentLeague.teams}
+              probabilities={probabilities}
+              isSimulating={isSimulating}
+              resolvedTheme={resolvedTheme}
+              leagueName={currentLeague.leagueName}
+              pointSystem={currentLeague.pointSystem}
             />
           </div>
 

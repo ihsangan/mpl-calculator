@@ -31,11 +31,18 @@ export function useSimulation({
   trigger = 0,
   debounceMs = 40,
 }: UseSimulationOptions): UseSimulationReturn {
-  // Initial calculation for fast initial render
+  // Initial lightweight calculation for fast initial render without blocking main thread
   const [probabilities, setProbabilities] = useState<
     Record<string, Probability>
   >(() =>
-    runMonteCarloSimulation(matches, teams, iterations, mode, pointSystem)
+    runMonteCarloSimulation(
+      matches,
+      teams,
+      Math.min(iterations, 100),
+      mode,
+      pointSystem,
+      true
+    )
   )
 
   const [isSimulating, setIsSimulating] = useState(false)

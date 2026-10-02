@@ -249,6 +249,8 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
                       top2Clinched: false,
                       playoffsClinched: false,
                       eliminatedOut: false,
+                      bestRank: 1,
+                      worstRank: teams.length,
                     }
 
                     const top2Val = Number(prob.top2)
