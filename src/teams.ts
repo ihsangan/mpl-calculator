@@ -169,8 +169,8 @@ export const MCC_TEAMS: Team[] = [
   {
     id: "RKZ",
     name: "RAKUZAN",
-    logo: `${imgPre}rakuzan_lightmode`,
-    logoDark: `${imgPre}rakuzan_darkmode`,
+    logo: `${imgPre}rkz_lightmode`,
+    logoDark: `${imgPre}rkz_darkmode`,
   },
   {
     id: "ARV",
