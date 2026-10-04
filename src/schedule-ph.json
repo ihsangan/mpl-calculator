@@ -1,7 +1,7 @@
 {
   "LEAGUE_NAME": "MPL Philippines Season 18",
-  "CURRENT_WEEK": 7,
-  "LAST_UPDATED": "2026-10-03T11:30:00Z",
+  "CURRENT_WEEK": 8,
+  "LAST_UPDATED": "2026-10-04T11:30:00Z",
   "ALL_MATCHES": [
     {
       "id": "w1d1m1",
@@ -383,7 +383,7 @@
       "id": "w7d3m1",
       "teamA": "TLPH",
       "teamB": "APBR",
-      "scoreA": 0,
+      "scoreA": 2,
       "scoreB": 0,
       "date": "2026-10-04T09:00:00.000Z"
     },
@@ -391,7 +391,7 @@
       "id": "w7d3m2",
       "teamA": "FLCN",
       "teamB": "OMG",
-      "scoreA": 0,
+      "scoreA": 2,
       "scoreB": 0,
       "date": "2026-10-04T11:30:00.000Z"
     },
