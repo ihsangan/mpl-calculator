@@ -1,5 +1,11 @@
 import React, { useState, useMemo } from "react"
-import { RefreshCw, Check, AlertCircle } from "lucide-react"
+import {
+  RefreshCw,
+  Check,
+  AlertCircle,
+  TriangleAlert,
+  ChevronDown,
+} from "lucide-react"
 import type { Match, Team, ExportData } from "@/types"
 import type { MergeResult } from "@/lib/mediawiki"
 import { cn } from "@/lib/utils"
@@ -22,6 +28,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 interface ScheduleEditorProps {
   leagueId: string
@@ -78,7 +103,14 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   onApplyPendingUpdate,
   onDismissPendingUpdate,
 }) => {
-  const [teamFilter, setTeamFilter] = useState<string>("ALL")
+  // Multi-select team filter: empty Set = all teams (no filtering)
+  const [selectedTeams, setSelectedTeams] = useState<Set<string>>(new Set())
+  const [importError, setImportError] = useState<string | null>(null)
+  const [importMismatch, setImportMismatch] = useState<{
+    data: ExportData
+    fileLeague: string
+  } | null>(null)
+  const [syncDialogOpen, setSyncDialogOpen] = useState(false)
 
   const weeks = useMemo(() => {
     const weekSet = new Set(matches.map((m) => getWeekFromId(m.id)))
@@ -91,6 +123,20 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       (match) =>
         getWeekFromId(match.id) === selectedWeek && isMatchPlayed(match)
     )
+
+  const toggleTeam = (teamId: string) => {
+    setSelectedTeams((prev) => {
+      const next = new Set(prev)
+      if (next.has(teamId)) {
+        next.delete(teamId)
+      } else {
+        next.add(teamId)
+      }
+      return next
+    })
+  }
+
+  const clearTeamFilter = () => setSelectedTeams(new Set())
 
   const handleSaveAsJSON = () => {
     const dataToSave: ExportData = {
@@ -112,33 +158,37 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     URL.revokeObjectURL(url)
   }
 
+  const applyImport = (data: ExportData) => {
+    onLoadMatches(sortMatchesById(data.matches), data.selectedWeek)
+    if (data.iterations && onLoadIterations) {
+      onLoadIterations(data.iterations)
+    }
+    setImportError(null)
+  }
+
   const handleLoadFromJSON = (file: File) => {
+    setImportError(null)
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string
         const data = JSON.parse(content)
         if (!data || !Array.isArray(data.matches)) {
-          alert(
+          setImportError(
             "Invalid JSON format. Expected an object with a 'matches' array."
           )
           return
         }
 
-        // Validate league ID match or ask confirmation
+        // Validate league ID match; if mismatched, confirm via dialog
         if (data.leagueId && data.leagueId !== leagueId) {
-          const proceed = window.confirm(
-            `This file is from league '${data.leagueId}', but current league is '${leagueId}'. Importing may cause mismatches. Do you want to proceed?`
-          )
-          if (!proceed) return
+          setImportMismatch({ data: data as ExportData, fileLeague: data.leagueId })
+          return
         }
 
-        onLoadMatches(sortMatchesById(data.matches), data.selectedWeek)
-        if (data.iterations && onLoadIterations) {
-          onLoadIterations(data.iterations)
-        }
+        applyImport(data as ExportData)
       } catch (error) {
-        alert(
+        setImportError(
           "Error loading JSON file: " +
             (error instanceof Error ? error.message : String(error))
         )
@@ -153,13 +203,13 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         ? matches
         : matches.filter((m) => getWeekFromId(m.id) === selectedWeek)
 
-    if (teamFilter !== "ALL") {
+    if (selectedTeams.size > 0) {
       list = list.filter(
-        (m) => m.teamA === teamFilter || m.teamB === teamFilter
+        (m) => selectedTeams.has(m.teamA) || selectedTeams.has(m.teamB)
       )
     }
     return list
-  }, [matches, selectedWeek, teamFilter])
+  }, [matches, selectedWeek, selectedTeams])
 
   const groupedMatches = useMemo(() => {
     if (selectedWeek === "ALL") {
@@ -218,15 +268,12 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
   const handleSyncClick = () => {
     if (!onSyncNow) return
-    if (
-      hasScoreChanges &&
-      !window.confirm(
-        "You have custom score modifications in your scenario. Do you want to overwrite them with live scores from Liquipedia?"
-      )
-    ) {
-      return
+    // With unsaved edits, open the confirm dialog; otherwise sync directly
+    if (hasScoreChanges) {
+      setSyncDialogOpen(true)
+    } else {
+      onSyncNow(false)
     }
-    onSyncNow(hasScoreChanges)
   }
 
   return (
@@ -236,25 +283,53 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
           <CardTitle className="text-xl">Schedule Editor</CardTitle>
           <div className="flex flex-wrap items-center gap-1.5">
             {onSyncNow && (
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                disabled={isSyncing}
-                onClick={handleSyncClick}
-                className="h-7 gap-1.5 text-xs font-semibold text-primary hover:bg-primary/10"
-                title={
-                  lastSyncTime
-                    ? `Last synced: ${lastSyncTime.toLocaleTimeString()}`
-                    : "Sync scores with Liquipedia MediaWiki"
-                }
-              >
-                <RefreshCw
-                  className={cn("size-3", isSyncing && "animate-spin")}
-                  aria-hidden="true"
-                />
-                <span>{isSyncing ? "Syncing..." : "Sync Liquipedia"}</span>
-              </Button>
+              <>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={isSyncing}
+                  onClick={handleSyncClick}
+                  className="h-7 gap-1.5 text-xs font-semibold text-primary hover:bg-primary/10"
+                  title={
+                    lastSyncTime
+                      ? `Last synced: ${lastSyncTime.toLocaleTimeString()}`
+                      : "Sync scores with Liquipedia MediaWiki"
+                  }
+                >
+                  <RefreshCw
+                    className={cn("size-3", isSyncing && "animate-spin")}
+                    aria-hidden="true"
+                  />
+                  <span>{isSyncing ? "Syncing..." : "Sync Liquipedia"}</span>
+                </Button>
+                <AlertDialog
+                  open={syncDialogOpen}
+                  onOpenChange={setSyncDialogOpen}
+                >
+                  <AlertDialogContent size="sm">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Overwrite scenario?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        You have custom score modifications in your scenario.
+                        Syncing will overwrite them with live scores from
+                        Liquipedia.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Keep Scenario</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => {
+                          onSyncNow(true)
+                          setSyncDialogOpen(false)
+                        }}
+                      >
+                        Overwrite
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
             )}
             <Button
               size="sm"
@@ -379,27 +454,67 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
           </div>
         )}
 
+        {/* Import Error Alert */}
+        {importError && (
+          <Alert variant="destructive">
+            <TriangleAlert />
+            <AlertTitle>Import failed</AlertTitle>
+            <AlertDescription>{importError}</AlertDescription>
+          </Alert>
+        )}
+
         {/* Team Filter & Auto-Sync Controls */}
         <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
           <div className="flex items-center gap-2">
             <span className="text-xs font-medium text-muted-foreground">
               Filter Team:
             </span>
-            <div className="w-36">
-              <Select value={teamFilter} onValueChange={setTeamFilter}>
-                <SelectTrigger className="h-7 text-xs">
-                  <SelectValue placeholder="All Teams" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">All Teams</SelectItem>
-                  {teams.map((t) => (
-                    <SelectItem key={t.id} value={t.id}>
-                      {t.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 w-44 justify-between gap-1.5 text-xs font-normal"
+                >
+                  <span className="line-clamp-1 flex-1 text-left">
+                    {selectedTeams.size === 0
+                      ? "All Teams"
+                      : `${selectedTeams.size} team${selectedTeams.size > 1 ? "s" : ""} selected`}
+                  </span>
+                  <ChevronDown className="size-3.5 shrink-0 text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-44">
+                <DropdownMenuLabel className="flex items-center justify-between">
+                  <span>
+                    {selectedTeams.size === 0
+                      ? "Showing all teams"
+                      : `${selectedTeams.size} selected`}
+                  </span>
+                  {selectedTeams.size > 0 && (
+                    <button
+                      type="button"
+                      onClick={clearTeamFilter}
+                      className="text-xs font-medium text-primary hover:underline"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {teams.map((t) => (
+                  <DropdownMenuCheckboxItem
+                    key={t.id}
+                    checked={selectedTeams.has(t.id)}
+                    onCheckedChange={() => toggleTeam(t.id)}
+                    onSelect={(e) => e.preventDefault()}
+                  >
+                    {t.name}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {onAutoSyncIntervalChange && (
@@ -513,6 +628,35 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
           })
         )}
       </CardContent>
+      {/* Import league-mismatch confirmation */}
+      <AlertDialog
+        open={importMismatch !== null}
+        onOpenChange={(open) => {
+          if (!open) setImportMismatch(null)
+        }}
+      >
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Different league file</AlertDialogTitle>
+            <AlertDialogDescription>
+              This file is from league '{importMismatch?.fileLeague}', but the
+              current league is '{leagueId}'. Importing may cause mismatches.
+              Do you want to proceed?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (importMismatch) applyImport(importMismatch.data)
+                setImportMismatch(null)
+              }}
+            >
+              Import Anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   )
 }

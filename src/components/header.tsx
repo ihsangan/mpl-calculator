@@ -3,6 +3,13 @@ import { RefreshCw } from "lucide-react"
 import { LEAGUE_OPTIONS } from "@/leagues"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface HeaderProps {
   leagueName: string
@@ -79,33 +86,25 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* League Selector */}
-        <div
-          aria-label="Select league"
-          className="inline-flex max-w-full gap-1 overflow-x-auto rounded-xl border bg-muted/50 p-1"
-          role="group"
-        >
-          {LEAGUE_OPTIONS.map((option) => {
-            const isActive = selectedLeague === option.value
-
-            return (
-              <button
-                key={option.value}
-                type="button"
-                aria-pressed={isActive}
-                onClick={() => onLeagueChange(option.value)}
-                className={`flex min-w-max shrink-0 items-center gap-2 rounded-lg px-3.5 py-1.5 text-left text-sm font-medium transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none ${
-                  isActive
-                    ? "bg-background font-semibold text-foreground shadow-xs"
-                    : "text-muted-foreground hover:bg-background/60 hover:text-foreground"
-                }`}
-              >
-                <span className="font-mono text-xs font-bold tracking-wider">
-                  {option.value}
-                </span>
-                <span>{option.label}</span>
-              </button>
-            )
-          })}
+        <div className="w-full max-w-xs">
+          <Select value={selectedLeague} onValueChange={onLeagueChange}>
+            <SelectTrigger
+              aria-label="Select league"
+              className="h-9 w-full text-sm font-semibold"
+            >
+              <SelectValue placeholder="Select league" />
+            </SelectTrigger>
+            <SelectContent>
+              {LEAGUE_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  <span className="font-mono text-xs font-bold tracking-wider">
+                    {option.value}
+                  </span>
+                  <span>{option.label}</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </header>
