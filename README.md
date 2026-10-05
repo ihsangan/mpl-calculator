@@ -12,7 +12,7 @@ Supports **MPL Indonesia**, **MPL Philippines**, **MPL Malaysia**, and **MCC (EE
 - **Dual-Model Playoff Probability Simulator** — Monte Carlo simulation engine with two distinct calculation methods:
   - **Standard (50:50)** — Equal odds model for unplayed matches.
   - **ELO-Weighted** — Dynamic team ELO rating calculated from season match performance (base 1500, K=32, 1.2x clean sweep multiplier) with game-by-game Bernoulli Bo3 sampling. Includes interactive ELO rating badges and formula tooltips.
-- **Web Worker Architecture** — Simulations execute on a dedicated background thread with automatic debouncing and request cancellation, preventing UI thread blocking even at 100,000 iterations.
+- **Web Worker Architecture** — Simulations execute on a dedicated background thread with automatic debouncing and request cancellation, preventing UI thread blocking even at 1,000,000 iterations (runs above 100,000 ask for confirmation first).
 - **Next Match Countdown & Live Badges** — Hero card showing the upcoming match with a live countdown timer (Days, Hours, Minutes, Seconds) and dynamic status badges (`LIVE MATCH`, `TODAY`, `NEXT MATCH`).
 - **Interactive Schedule Editor** — Modify match scores to explore "what-if" scenarios. Filter by week or view all matches at once. Displays scheduled match times in the user's local timezone and day dates in group headers. Import/export schedule data as JSON.
 - **Multi-League Support** — Switch between MPL ID, PH, MY, and MCC. Each league is accessible via URL (`/id`, `/ph`, `/my`, `/mcc`) with state persisted in localStorage.

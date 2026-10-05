@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, useRef } from "react"
 import { LEAGUES } from "./leagues"
 import type { Match } from "./types"
 import {
@@ -18,6 +18,16 @@ import { ProbabilitiesCard } from "./components/probabilities/probabilities-card
 import { RankScenariosCard } from "./components/probabilities/rank-scenarios-card"
 import { ScheduleEditor } from "./components/schedule/schedule-editor"
 import { NextMatchCard } from "./components/schedule/next-match-card"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./components/ui/alert-dialog"
 
 // Parse league ID from URL pathname (e.g. "/ph" → "PH")
 const getLeagueFromUrl = (): string | null => {
@@ -56,11 +66,18 @@ export default function App() {
     const urlIter = params.get("iteration") || params.get("i")
     if (urlIter) {
       const parsed = parseInt(urlIter, 10)
-      if (!isNaN(parsed) && parsed > 0) return parsed
+      if (!isNaN(parsed) && parsed > 0) {
+        // URL-supplied iterations are capped at 10,000
+        return Math.min(parsed, 10000)
+      }
     }
     return 1000
   })
   const [iterationsInput, setIterationsInput] = useState(iterations.toString())
+  const [highIterationsPrompt, setHighIterationsPrompt] = useState<
+    number | null
+  >(null)
+  const confirmHighIterationsRef = useRef<HTMLButtonElement>(null)
   const [simulationMode, setSimulationMode] =
     useState<SimulationMode>("uniform")
 
@@ -195,9 +212,31 @@ export default function App() {
   const handleSimulate = () => {
     const parsed = parseInt(iterationsInput, 10)
     const clamped =
-      isNaN(parsed) || parsed < 100 ? 100 : Math.min(parsed, 100000)
+      isNaN(parsed) || parsed < 100 ? 100 : Math.min(parsed, 1000000)
+    // Above 100K requires confirmation (heavy computation)
+    if (clamped > 100000) {
+      setHighIterationsPrompt(clamped)
+      return
+    }
     setIterations(clamped)
     setIterationsInput(String(clamped))
+    triggerSimulation()
+  }
+
+  // Confirm: run with the requested high iteration count
+  const handleConfirmHighIterations = () => {
+    if (highIterationsPrompt === null) return
+    setIterations(highIterationsPrompt)
+    setIterationsInput(String(highIterationsPrompt))
+    setHighIterationsPrompt(null)
+    triggerSimulation()
+  }
+
+  // Reject: fall back to 100K and run
+  const handleRejectHighIterations = () => {
+    setIterations(100000)
+    setIterationsInput(String(100000))
+    setHighIterationsPrompt(null)
     triggerSimulation()
   }
 
@@ -337,8 +376,18 @@ export default function App() {
               onResetWeek={handleResetSelectedWeek}
               onLoadMatches={handleLoadMatches}
               onLoadIterations={(val) => {
-                setIterations(val)
-                setIterationsInput(val.toString())
+                // Imported files carry arbitrary values; apply the same
+                // 100–1,000,000 bounds and confirmation gate as manual input.
+                const raw = Number(val)
+                const clamped = Number.isFinite(raw)
+                  ? Math.max(100, Math.min(Math.floor(raw), 1000000))
+                  : 1000
+                if (clamped > 100000) {
+                  setHighIterationsPrompt(clamped)
+                  return
+                }
+                setIterations(clamped)
+                setIterationsInput(String(clamped))
               }}
               onSyncNow={syncNow}
               onAutoSyncIntervalChange={setAutoSyncInterval}
@@ -350,6 +399,45 @@ export default function App() {
 
         {/* Attribution Footer */}
         <Footer />
+
+        {/* High iteration count confirmation */}
+        <AlertDialog
+          open={highIterationsPrompt !== null}
+          onOpenChange={(open) => {
+            if (!open) setHighIterationsPrompt(null)
+          }}
+        >
+          <AlertDialogContent
+            size="sm"
+            // Focus "Continue" instead of Radix's default (the Cancel
+            // button), so a repeated Enter confirms the high iteration
+            // count rather than silently falling back to 100k.
+            onOpenAutoFocus={(e) => {
+              e.preventDefault()
+              confirmHighIterationsRef.current?.focus()
+            }}
+          >
+            <AlertDialogHeader>
+              <AlertDialogTitle>Run heavy simulation?</AlertDialogTitle>
+              <AlertDialogDescription>
+                {highIterationsPrompt?.toLocaleString()} iterations is a heavy
+                computation and may take a while. Continue, or use 100,000
+                iterations instead?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={handleRejectHighIterations}>
+                Use 100,000
+              </AlertDialogCancel>
+              <AlertDialogAction
+                ref={confirmHighIterationsRef}
+                onClick={handleConfirmHighIterations}
+              >
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   )

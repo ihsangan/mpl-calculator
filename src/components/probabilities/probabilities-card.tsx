@@ -23,6 +23,14 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useSaveAsImage } from "@/hooks/use-save-as-image"
 import { Info } from "lucide-react"
 
+// Format ASCII digit string with thousand separators (e.g. "1000000" → "1,000,000").
+// Manual comma insertion keeps the output ASCII-only and avoids Number() locale
+// surprises (non-Latin digits in some locales, Infinity for very long strings).
+const formatIterationInput = (value: string): string => {
+  const digits = value.replace(/\D/g, "").slice(0, 7)
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+}
+
 interface ProbabilitiesCardProps {
   standings: TeamRow[]
   teams: Team[]
@@ -89,20 +97,30 @@ export const ProbabilitiesCard: React.FC<ProbabilitiesCardProps> = ({
             </div>
             <div className="flex shrink-0 items-center gap-2" data-capture-hide>
               <input
-                type="number"
-                min="100"
-                max="100000"
-                value={iterationsInput}
-                onChange={(e) => onIterationsInputChange(e.target.value)}
+                type="text"
+                inputMode="numeric"
+                value={formatIterationInput(iterationsInput)}
+                onChange={(e) =>
+                  onIterationsInputChange(
+                    e.target.value.replace(/\D/g, "").slice(0, 7)
+                  )
+                }
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") onSimulate()
+                  if (e.key === "Enter") {
+                    // Prevent the default action from activating the dialog
+                    // button that Radix auto-focuses (Cancel) on this same
+                    // keypress, which would instantly reject the prompt.
+                    e.preventDefault()
+                    onSimulate()
+                  }
                 }}
-                className="h-8 w-24 rounded-lg border border-input bg-transparent px-2.5 text-xs font-semibold tabular-nums transition-colors outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 dark:bg-input/30"
+                placeholder="100,000"
+                className="h-8 w-28 rounded-lg border border-input bg-transparent px-2.5 text-xs font-semibold tabular-nums transition-colors outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 dark:bg-input/30"
                 aria-label="Number of simulation iterations"
               />
               <Button
                 size="sm"
-                onClick={onSimulate}
+                onClick={() => onSimulate()}
                 disabled={isSimulating || isExporting}
                 className="h-8 text-xs font-semibold"
               >
