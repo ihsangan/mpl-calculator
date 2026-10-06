@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import type { Match, Team, Probability } from "../types"
-import { runMonteCarloSimulation, type SimulationMode } from "../lib/simulation"
+import {
+  runMonteCarloSimulation,
+  runMonteCarloSimulationAsync,
+  type SimulationMode,
+} from "../lib/simulation"
 import type {
   SimulationWorkerRequest,
   SimulationWorkerResponse,
@@ -40,8 +44,7 @@ export function useSimulation({
       teams,
       Math.min(iterations, 100),
       mode,
-      pointSystem,
-      true
+      pointSystem
     )
   )
 
@@ -100,6 +103,7 @@ export function useSimulation({
   // Execute simulation when inputs change (debounced)
   useEffect(() => {
     const currentId = ++requestIdRef.current
+    let cancelled = false
 
     const timer = setTimeout(() => {
       setIsSimulating(true)
@@ -115,22 +119,29 @@ export function useSimulation({
         }
         workerRef.current.postMessage(payload)
       } else {
-        // Fallback execution on main thread
-        const results = runMonteCarloSimulation(
+        // No Worker available. Run the same iterations in chunks so the main
+        // thread keeps rendering instead of freezing for the whole run.
+        void runMonteCarloSimulationAsync(
           matches,
           teams,
           iterations,
           mode,
-          pointSystem
-        )
-        if (isMountedRef.current && currentId === requestIdRef.current) {
-          setProbabilities(results)
-          setIsSimulating(false)
-        }
+          pointSystem,
+          {
+            shouldCancel: () => cancelled || currentId !== requestIdRef.current,
+          }
+        ).then((results) => {
+          if (results === null) return
+          if (isMountedRef.current && currentId === requestIdRef.current) {
+            setProbabilities(results)
+            setIsSimulating(false)
+          }
+        })
       }
     }, debounceMs)
 
     return () => {
+      cancelled = true
       clearTimeout(timer)
     }
   }, [
