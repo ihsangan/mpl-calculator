@@ -35,6 +35,18 @@ const getLeagueFromUrl = (): string | null => {
   return slug && LEAGUES[slug] ? slug : null
 }
 
+// Restore the week the user last viewed for a league, falling back to that
+// league's current week. Shared by initial load, back/forward navigation, and
+// the league switcher so all three paths restore the same value instead of
+// clobbering the saved week with currentWeek.
+const getSavedWeek = (leagueId: string): number | "ALL" => {
+  const saved = localStorage.getItem(`mpl-week-${leagueId}`)
+  if (saved === "ALL") return "ALL"
+  const parsed = saved ? parseInt(saved, 10) : NaN
+  if (!isNaN(parsed) && parsed >= 1) return parsed
+  return LEAGUES[leagueId]?.currentWeek ?? 1
+}
+
 export default function App() {
   const [selectedLeague, setSelectedLeague] = useState<string>(() => {
     const fromUrl = getLeagueFromUrl()
@@ -49,15 +61,11 @@ export default function App() {
   const [matches, setMatches] = useState<Match[]>(() =>
     JSON.parse(JSON.stringify(currentLeague.allMatches))
   )
-  const [selectedWeek, setSelectedWeek] = useState<number | "ALL">(() => {
+  const [selectedWeek, setSelectedWeek] = useState<number | "ALL">(() =>
     // Week is remembered per league, so switching leagues does not carry one
     // league's week selection into another.
-    const savedWeek = localStorage.getItem(`mpl-week-${selectedLeague}`)
-    if (savedWeek === "ALL") return "ALL"
-    const parsed = savedWeek ? parseInt(savedWeek, 10) : NaN
-    if (!isNaN(parsed) && parsed >= 1) return parsed
-    return currentLeague.currentWeek
-  })
+    getSavedWeek(selectedLeague)
+  )
 
   const [iterations, setIterations] = useState(() => {
     const params = new URLSearchParams(window.location.search)
@@ -114,15 +122,7 @@ export default function App() {
 
         // Restore the week the user last viewed for this league, mirroring the
         // initial-load behaviour instead of always snapping to currentWeek.
-        const savedWeek = localStorage.getItem(`mpl-week-${fromUrl}`)
-        if (savedWeek === "ALL") {
-          setSelectedWeek("ALL")
-        } else {
-          const parsed = savedWeek ? parseInt(savedWeek, 10) : NaN
-          setSelectedWeek(
-            !isNaN(parsed) && parsed >= 1 ? parsed : league.currentWeek
-          )
-        }
+        setSelectedWeek(getSavedWeek(fromUrl))
       }
     }
 
@@ -216,7 +216,9 @@ export default function App() {
     if (!league) return
     setSelectedLeague(leagueId)
     setMatches(JSON.parse(JSON.stringify(league.allMatches)))
-    setSelectedWeek(league.currentWeek)
+    // Restore this league's own saved week instead of snapping to currentWeek,
+    // which would overwrite the saved value via the persistence effect.
+    setSelectedWeek(getSavedWeek(leagueId))
     // Push new URL so browser history tracks league switches
     window.history.pushState(null, "", `/${leagueId.toLowerCase()}`)
   }
