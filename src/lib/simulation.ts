@@ -12,12 +12,24 @@ const POSSIBLE_SCORES = [
 ]
 
 /**
- * Compute maximum number of competitors that can simultaneously achieve
- * at least `tMin` match wins, constrained by head-to-head match capacity.
+ * Compute the maximum number of competitors that can finish with at least
+ * `tMin` match wins, where `tMin` is the target's tally when it loses every
+ * remaining match.
  *
  * Modeled after the classical Baseball Elimination network flow (Wayne 1999).
- * Avoids the independence flaw where two competitors playing each other are
- * both assumed to win the same fixture.
+ * Each remaining match is a unit of capacity that can credit exactly one
+ * winner, so mutual opponents cannot both be counted as winning their fixture.
+ *
+ * The target is assumed to lose all of its remaining matches, which is the
+ * adversary's best case for the target's rank: every defeat hands a win to the
+ * opponent while the target stays at `tMin`. Matches involving the target are
+ * therefore kept in the network but can only credit the opponent. Non-subset
+ * teams deliberately have no edge to the sink: a win for them would consume
+ * match capacity without helping the subset reach `tMin`.
+ *
+ * A subset is feasible when its total required wins can be routed through
+ * distinct remaining matches; the answer is the largest feasible subset, plus
+ * the competitors already at or above `tMin`.
  */
 function maxCompetitorsReachingWins(
   targetTeamId: string,
@@ -34,23 +46,19 @@ function maxCompetitorsReachingWins(
     const uWins = baseWins.get(u.id) ?? 0
     if (uWins >= tMin) {
       already += 1
-    } else {
-      const uRem = unplayed.filter(
-        (m) => m.teamA === u.id || m.teamB === u.id
-      ).length
-      if (uWins + uRem >= tMin) {
-        candidates.push({ id: u.id, needed: tMin - uWins })
-      }
+      continue
+    }
+    const uRem = unplayed.filter(
+      (m) => m.teamA === u.id || m.teamB === u.id
+    ).length
+    if (uWins + uRem >= tMin) {
+      candidates.push({ id: u.id, needed: tMin - uWins })
     }
   }
 
-  // If no candidates need additional wins or trivial size, return immediately
   if (candidates.length === 0) return already
 
-  const nonTargetMatches = unplayed.filter(
-    (m) => m.teamA !== targetTeamId && m.teamB !== targetTeamId
-  )
-  const M = nonTargetMatches.length
+  const M = unplayed.length
   const teamIdx = new Map(teams.map((t, i) => [t.id, i]))
   const S = 0
   const T = M + teams.length + 1
@@ -70,25 +78,27 @@ function maxCompetitorsReachingWins(
       adj[v].push(u)
     }
 
-    nonTargetMatches.forEach((m, i) => {
+    unplayed.forEach((m, i) => {
       const mNode = 1 + i
-      const uIdx = teamIdx.get(m.teamA)
-      const vIdx = teamIdx.get(m.teamB)
-      if (uIdx !== undefined && vIdx !== undefined) {
-        addEdge(S, mNode, 1)
-        addEdge(mNode, M + 1 + uIdx, 1)
-        addEdge(mNode, M + 1 + vIdx, 1)
+      addEdge(S, mNode, 1)
+      // The target always loses, so its matches can only credit the opponent.
+      if (m.teamA !== targetTeamId) {
+        const uIdx = teamIdx.get(m.teamA)
+        if (uIdx !== undefined) addEdge(mNode, M + 1 + uIdx, 1)
+      }
+      if (m.teamB !== targetTeamId) {
+        const vIdx = teamIdx.get(m.teamB)
+        if (vIdx !== undefined) addEdge(mNode, M + 1 + vIdx, 1)
       }
     })
 
+    // Only subset teams need wins. Everyone else gets no sink edge, because a
+    // win for them cannot help the subset reach `tMin`.
     const subsetMap = new Map(subset.map((c) => [c.id, c.needed]))
     teams.forEach((t, i) => {
-      const tNode = M + 1 + i
       const neededWins = subsetMap.get(t.id)
       if (neededWins !== undefined) {
-        addEdge(tNode, T, neededWins)
-      } else {
-        addEdge(tNode, T, 100)
+        addEdge(M + 1 + i, T, neededWins)
       }
     })
 
