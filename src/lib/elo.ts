@@ -1,8 +1,35 @@
 import type { Match, Team } from "../types"
-import { isMatchPlayed } from "./standings"
+import { isMatchPlayed, sortMatchesById } from "./standings"
 
 export const DEFAULT_INITIAL_ELO = 1500
 export const DEFAULT_K_FACTOR = 32
+
+/**
+ * Order matches chronologically for rating updates.
+ *
+ * ELO is path-dependent: replaying the same results in a different order yields
+ * different ratings. Played matches are therefore sorted by scheduled date, with
+ * the schedule's own week/day/match ordering (see `sortMatchesById`) as a
+ * tiebreaker. Matches without a usable date fall back to that ID ordering, so
+ * the result is deterministic for hand-edited or imported schedules.
+ */
+export function sortMatchesChronologically(matches: Match[]): Match[] {
+  const byId = sortMatchesById(matches)
+  const idOrder = new Map(byId.map((m, idx) => [m.id, idx]))
+
+  return [...matches].sort((a, b) => {
+    const aTime = a.date ? new Date(a.date).getTime() : NaN
+    const bTime = b.date ? new Date(b.date).getTime() : NaN
+    const aValid = !isNaN(aTime)
+    const bValid = !isNaN(bTime)
+
+    if (aValid && bValid && aTime !== bTime) return aTime - bTime
+    // A dated match is placed before an undated one so known kickoff times win.
+    if (aValid !== bValid) return aValid ? -1 : 1
+
+    return (idOrder.get(a.id) ?? 0) - (idOrder.get(b.id) ?? 0)
+  })
+}
 
 /**
  * Calculate expected win probability for Team A against Team B based on Elo ratings.
@@ -27,8 +54,10 @@ export function calculateTeamElos(
     elos[t.id] = initialRating
   })
 
-  // Sort played matches by date / ID order
-  const playedMatches = matches.filter((m) => isMatchPlayed(m))
+  // Replay played matches in chronological order
+  const playedMatches = sortMatchesChronologically(
+    matches.filter((m) => isMatchPlayed(m))
+  )
 
   for (const match of playedMatches) {
     const eloA = elos[match.teamA] ?? initialRating
