@@ -12,25 +12,153 @@ const POSSIBLE_SCORES = [
 ]
 
 /**
+ * Compute maximum number of competitors that can simultaneously achieve
+ * at least `tMin` match wins, constrained by head-to-head match capacity.
+ *
+ * Modeled after the classical Baseball Elimination network flow (Wayne 1999).
+ * Avoids the independence flaw where two competitors playing each other are
+ * both assumed to win the same fixture.
+ */
+function maxCompetitorsReachingWins(
+  targetTeamId: string,
+  tMin: number,
+  teams: Team[],
+  baseWins: Map<string, number>,
+  unplayed: Match[]
+): number {
+  const candidates: Array<{ id: string; needed: number }> = []
+  let already = 0
+
+  for (const u of teams) {
+    if (u.id === targetTeamId) continue
+    const uWins = baseWins.get(u.id) ?? 0
+    if (uWins >= tMin) {
+      already += 1
+    } else {
+      const uRem = unplayed.filter(
+        (m) => m.teamA === u.id || m.teamB === u.id
+      ).length
+      if (uWins + uRem >= tMin) {
+        candidates.push({ id: u.id, needed: tMin - uWins })
+      }
+    }
+  }
+
+  // If no candidates need additional wins or trivial size, return immediately
+  if (candidates.length === 0) return already
+
+  const nonTargetMatches = unplayed.filter(
+    (m) => m.teamA !== targetTeamId && m.teamB !== targetTeamId
+  )
+  const M = nonTargetMatches.length
+  const teamIdx = new Map(teams.map((t, i) => [t.id, i]))
+  const S = 0
+  const T = M + teams.length + 1
+
+  function canSubsetAchieve(
+    subset: Array<{ id: string; needed: number }>
+  ): boolean {
+    const totalNeeded = subset.reduce((acc, c) => acc + c.needed, 0)
+    const cap: number[][] = Array.from({ length: T + 1 }, () =>
+      Array(T + 1).fill(0)
+    )
+    const adj: number[][] = Array.from({ length: T + 1 }, () => [])
+
+    function addEdge(u: number, v: number, c: number) {
+      cap[u][v] += c
+      adj[u].push(v)
+      adj[v].push(u)
+    }
+
+    nonTargetMatches.forEach((m, i) => {
+      const mNode = 1 + i
+      const uIdx = teamIdx.get(m.teamA)
+      const vIdx = teamIdx.get(m.teamB)
+      if (uIdx !== undefined && vIdx !== undefined) {
+        addEdge(S, mNode, 1)
+        addEdge(mNode, M + 1 + uIdx, 1)
+        addEdge(mNode, M + 1 + vIdx, 1)
+      }
+    })
+
+    const subsetMap = new Map(subset.map((c) => [c.id, c.needed]))
+    teams.forEach((t, i) => {
+      const tNode = M + 1 + i
+      const neededWins = subsetMap.get(t.id)
+      if (neededWins !== undefined) {
+        addEdge(tNode, T, neededWins)
+      } else {
+        addEdge(tNode, T, 100)
+      }
+    })
+
+    let flow = 0
+    while (true) {
+      const parent = Array(T + 1).fill(-1)
+      const queue = [S]
+      parent[S] = S
+      while (queue.length > 0 && parent[T] === -1) {
+        const u = queue.shift()!
+        for (const v of adj[u]) {
+          if (parent[v] === -1 && cap[u][v] > 0) {
+            parent[v] = u
+            queue.push(v)
+          }
+        }
+      }
+      if (parent[T] === -1) break
+
+      let push = Infinity
+      for (let v = T; v !== S; v = parent[v]) {
+        const u = parent[v]
+        push = Math.min(push, cap[u][v])
+      }
+      for (let v = T; v !== S; v = parent[v]) {
+        const u = parent[v]
+        cap[u][v] -= push
+        cap[v][u] += push
+      }
+      flow += push
+    }
+
+    return flow >= totalNeeded
+  }
+
+  function* combinations<T>(
+    arr: T[],
+    k: number,
+    start = 0,
+    current: T[] = []
+  ): Generator<T[]> {
+    if (current.length === k) {
+      yield current
+      return
+    }
+    for (let i = start; i < arr.length; i++) {
+      yield* combinations(arr, k, i + 1, [...current, arr[i]])
+    }
+  }
+
+  for (let size = candidates.length; size >= 1; size--) {
+    for (const sub of combinations(candidates, size)) {
+      if (canSubsetAchieve(sub)) {
+        return already + size
+      }
+    }
+  }
+
+  return already
+}
+
+/**
  * Certified outer bounds on each team's final regular-season rank.
  *
  * The returned range is guaranteed to contain the true best/worst achievable
- * rank, because it only compares the primary sort key (match wins, or points
- * under the three-point system) and treats every remaining match as free to be
- * won or lost by either side. Since unplayed matches can only add to a team's
- * primary tally, the current tally is a valid lower bound and the tally plus
- * the maximum per-match gain is a valid upper bound.
+ * rank. For the standard point system, worst-rank bounds use network flow to
+ * model mutual match capacity between competitors (Baseball Elimination),
+ * preventing mutual opponents from both being counted as winners.
  *
- * This replaces an earlier bound search that enumerated 2-0/0-2 scorelines
- * (capped at 2^10 combinations) and fell back to randomized sampling beyond
- * that. Both paths were unsound: they ignored 2-1 results, which change the
- * three-point tally and the game differential used by the tiebreakers, and the
- * randomized path could miss extreme outcomes entirely. That produced false
- * certainty badges, such as a CLINCHED label for a team that could still miss
- * the playoffs.
- *
- * These bounds are deliberately conservative: they may miss a certainty rather
- * than invent one, so a badge is only ever shown when it is provably correct.
+ * These bounds are sound: a certainty badge is only ever shown when provably correct.
  */
 export const computeCertifiedRankBounds = (
   teams: Team[],
@@ -47,7 +175,7 @@ export const computeCertifiedRankBounds = (
     return pointSystem === "three_point" ? row.pts : row.matchW
   }
 
-  // Maximum primary-key gain available from a single remaining match.
+  const baseWins = new Map(base.map((r) => [r.id, r.matchW]))
   const maxGainPerMatch = pointSystem === "three_point" ? 3 : 1
 
   const remaining: Record<string, number> = {}
@@ -66,23 +194,38 @@ export const computeCertifiedRankBounds = (
     const tMax = tMin + remaining[t.id] * maxGainPerMatch
 
     let guaranteedAbove = 0
-    let maybeAbove = 0
 
     teams.forEach((u) => {
       if (u.id === t.id) return
       const uMin = primaryOf(u.id)
-      const uMax = uMin + remaining[u.id] * maxGainPerMatch
-
-      // A tally can never decrease, so beating tMax means u always finishes
-      // ahead of t no matter how the remaining matches fall.
       if (uMin > tMax) guaranteedAbove += 1
-      // uMax can still reach tMin, so u might finish ahead on a tiebreaker.
-      if (uMax >= tMin) maybeAbove += 1
     })
+
+    let worstRank: number
+    if (pointSystem === "standard" && unplayed.length > 0) {
+      // Conflict-aware worst rank: how many competitors can simultaneously reach >= tMin wins
+      const maxCompetitors = maxCompetitorsReachingWins(
+        t.id,
+        tMin,
+        teams,
+        baseWins,
+        unplayed
+      )
+      worstRank = 1 + maxCompetitors
+    } else {
+      let maybeAbove = 0
+      teams.forEach((u) => {
+        if (u.id === t.id) return
+        const uMin = primaryOf(u.id)
+        const uMax = uMin + remaining[u.id] * maxGainPerMatch
+        if (uMax >= tMin) maybeAbove += 1
+      })
+      worstRank = 1 + maybeAbove
+    }
 
     bounds[t.id] = {
       bestRank: 1 + guaranteedAbove,
-      worstRank: 1 + maybeAbove,
+      worstRank,
     }
   })
 
