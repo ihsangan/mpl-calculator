@@ -50,14 +50,12 @@ export default function App() {
     JSON.parse(JSON.stringify(currentLeague.allMatches))
   )
   const [selectedWeek, setSelectedWeek] = useState<number | "ALL">(() => {
-    const savedLeague = localStorage.getItem("mpl-league")
-    // Only restore saved week if the URL league matches the localStorage league
-    if (savedLeague === selectedLeague) {
-      const savedWeek = localStorage.getItem("mpl-week")
-      if (savedWeek === "ALL") return "ALL"
-      const parsed = savedWeek ? parseInt(savedWeek, 10) : NaN
-      if (!isNaN(parsed) && parsed >= 1) return parsed
-    }
+    // Week is remembered per league, so switching leagues does not carry one
+    // league's week selection into another.
+    const savedWeek = localStorage.getItem(`mpl-week-${selectedLeague}`)
+    if (savedWeek === "ALL") return "ALL"
+    const parsed = savedWeek ? parseInt(savedWeek, 10) : NaN
+    if (!isNaN(parsed) && parsed >= 1) return parsed
     return currentLeague.currentWeek
   })
 
@@ -113,7 +111,18 @@ export default function App() {
         if (!league) return
         setSelectedLeague(fromUrl)
         setMatches(JSON.parse(JSON.stringify(league.allMatches)))
-        setSelectedWeek(league.currentWeek)
+
+        // Restore the week the user last viewed for this league, mirroring the
+        // initial-load behaviour instead of always snapping to currentWeek.
+        const savedWeek = localStorage.getItem(`mpl-week-${fromUrl}`)
+        if (savedWeek === "ALL") {
+          setSelectedWeek("ALL")
+        } else {
+          const parsed = savedWeek ? parseInt(savedWeek, 10) : NaN
+          setSelectedWeek(
+            !isNaN(parsed) && parsed >= 1 ? parsed : league.currentWeek
+          )
+        }
       }
     }
 
@@ -135,12 +144,16 @@ export default function App() {
     [matches, currentLeague.teams, currentLeague.pointSystem]
   )
 
-  // Check if scores differ from official league schedule baseline
+  // Check if scores differ from official league schedule baseline.
+  // Compared by match ID rather than array position, so a reordered import or
+  // sync merge is not misreported as a score change (and vice versa).
   const hasScoreChanges = useMemo(() => {
     const initial = currentLeague.allMatches
     if (matches.length !== initial.length) return true
-    return matches.some((m, idx) => {
-      const initMatch = initial[idx]
+
+    const baseline = new Map(initial.map((m) => [m.id, m]))
+    return matches.some((m) => {
+      const initMatch = baseline.get(m.id)
       if (!initMatch) return true
       return m.scoreA !== initMatch.scoreA || m.scoreB !== initMatch.scoreB
     })
@@ -176,8 +189,8 @@ export default function App() {
   }, [selectedLeague])
 
   useEffect(() => {
-    localStorage.setItem("mpl-week", String(selectedWeek))
-  }, [selectedWeek])
+    localStorage.setItem(`mpl-week-${selectedLeague}`, String(selectedWeek))
+  }, [selectedWeek, selectedLeague])
 
   // Detect dark mode from HTML class and theme setting
   useEffect(() => {

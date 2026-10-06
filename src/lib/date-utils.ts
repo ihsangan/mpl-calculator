@@ -156,10 +156,8 @@ export function getMatchStatus(
     return "TODAY"
   }
 
-  if (matchDate.getTime() > now.getTime()) {
-    return "UPCOMING"
-  }
-
+  // Anything not live, not today, and not yet played is still upcoming,
+  // whether its kickoff time is in the future or has just passed.
   return "UPCOMING"
 }
 
