@@ -12,6 +12,8 @@ export default defineConfig({
     },
   },
   build: {
-    sourcemap: true,
+    // Sourcemaps expose the full source to anyone downloading the bundle, so
+    // they are opt-in for local debugging rather than shipped by default.
+    sourcemap: process.env.BUILD_SOURCEMAP === "true",
   },
 })
