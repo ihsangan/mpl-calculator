@@ -1,8 +1,30 @@
 import type { Match, Team, Probability } from "../types"
 import { calculateStandings, isMatchPlayed } from "./standings"
-import { calculateTeamElos, simulateBo3Match } from "./elo"
 
 export type SimulationMode = "uniform" | "elo"
+
+/**
+ * The ELO functions the simulation needs in `"elo"` mode.
+ *
+ * Injected rather than imported so the ELO module stays out of the entry and
+ * worker bundles: callers load it with a dynamic `import()` only when ELO mode
+ * is actually selected.
+ */
+export interface EloEngine {
+  calculateTeamElos: (matches: Match[], teams: Team[]) => Record<string, number>
+  simulateBo3Match: (
+    eloA: number,
+    eloB: number
+  ) => { scoreA: number; scoreB: number }
+}
+
+/**
+ * Load the ELO engine on demand.
+ *
+ * This dynamic import keeps `./elo` in its own chunk instead of the entry and
+ * worker bundles, so visitors who never pick ELO mode never download it.
+ */
+export const loadEloEngine = (): Promise<EloEngine> => import("./elo")
 
 const POSSIBLE_SCORES = [
   { a: 2, b: 0 },
@@ -259,6 +281,27 @@ const createStats = (teams: Team[]): SimulationStats => {
 }
 
 /**
+ * ELO ratings plus the per-match sampler, prepared once per simulation run.
+ */
+interface EloSimulation {
+  ratings: Record<string, number>
+  simulate: (eloA: number, eloB: number) => { scoreA: number; scoreB: number }
+}
+
+const prepareEloSimulation = (
+  mode: SimulationMode,
+  played: Match[],
+  teams: Team[],
+  engine: EloEngine | null | undefined
+): EloSimulation | null => {
+  if (mode !== "elo" || !engine) return null
+  return {
+    ratings: engine.calculateTeamElos(played, teams),
+    simulate: engine.simulateBo3Match,
+  }
+}
+
+/**
  * Run `count` simulated seasons, accumulating finish counts into `stats`.
  *
  * Extracted so the synchronous and chunked entry points share one
@@ -271,7 +314,7 @@ const accumulateIterations = (
   unplayed: Match[],
   teams: Team[],
   mode: SimulationMode,
-  teamElos: Record<string, number> | null,
+  eloSimulation: EloSimulation | null,
   pointSystem: "standard" | "three_point"
 ): void => {
   const unplayedLen = unplayed.length
@@ -284,10 +327,10 @@ const accumulateIterations = (
       let scoreA = 0
       let scoreB = 0
 
-      if (mode === "elo" && teamElos) {
-        const eloA = teamElos[uMatch.teamA] ?? 1500
-        const eloB = teamElos[uMatch.teamB] ?? 1500
-        const simRes = simulateBo3Match(eloA, eloB)
+      if (mode === "elo" && eloSimulation) {
+        const eloA = eloSimulation.ratings[uMatch.teamA] ?? 1500
+        const eloB = eloSimulation.ratings[uMatch.teamB] ?? 1500
+        const simRes = eloSimulation.simulate(eloA, eloB)
         scoreA = simRes.scoreA
         scoreB = simRes.scoreB
       } else {
@@ -372,7 +415,8 @@ export const runMonteCarloSimulation = (
   teams: Team[],
   iterations: number,
   mode: SimulationMode = "uniform",
-  pointSystem: "standard" | "three_point" = "standard"
+  pointSystem: "standard" | "three_point" = "standard",
+  eloEngine?: EloEngine | null
 ): Record<string, Probability> => {
   const stats = createStats(teams)
 
@@ -403,8 +447,14 @@ export const runMonteCarloSimulation = (
     return result
   }
 
-  // Pre-calculate team ELOs if ELO mode is active
-  const teamElos = mode === "elo" ? calculateTeamElos(played, teams) : null
+  // Pre-calculate team ELOs if ELO mode is active. The engine is injected by
+  // the caller (worker or chunked fallback), which lazy-loads it on demand.
+  if (mode === "elo" && !eloEngine) {
+    throw new Error(
+      "ELO mode requires an ELO engine; load it with loadEloEngine() first"
+    )
+  }
+  const eloSimulation = prepareEloSimulation(mode, played, teams, eloEngine)
 
   accumulateIterations(
     iterations,
@@ -413,7 +463,7 @@ export const runMonteCarloSimulation = (
     unplayed,
     teams,
     mode,
-    teamElos,
+    eloSimulation,
     pointSystem
   )
 
@@ -448,8 +498,12 @@ export const runMonteCarloSimulationAsync = async (
     return runMonteCarloSimulation(matches, teams, 0, mode, pointSystem)
   }
 
+  // ELO mode fetches its engine chunk here, before the loop starts. The
+  // early return above runs first so a finished season never loads it.
+  const eloEngine = mode === "elo" ? await loadEloEngine() : null
+  const eloSimulation = prepareEloSimulation(mode, played, teams, eloEngine)
+
   const stats = createStats(teams)
-  const teamElos = mode === "elo" ? calculateTeamElos(played, teams) : null
 
   let completed = 0
   while (completed < iterations) {
@@ -463,7 +517,7 @@ export const runMonteCarloSimulationAsync = async (
       unplayed,
       teams,
       mode,
-      teamElos,
+      eloSimulation,
       pointSystem
     )
     completed += slice

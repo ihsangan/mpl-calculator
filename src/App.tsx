@@ -6,10 +6,9 @@ import {
   getWeekFromId,
   isMatchPlayed,
 } from "./lib/standings"
-import { calculateTeamElos } from "./lib/elo"
+import { loadEloEngine, type SimulationMode } from "./lib/simulation"
 import { useSimulation } from "./hooks/use-simulation"
 import { useLiquipediaSync } from "./hooks/use-liquipedia-sync"
-import type { SimulationMode } from "./lib/simulation"
 import { useTheme } from "./components/theme-provider"
 import { Header } from "./components/header"
 import { Footer } from "./components/footer"
@@ -87,11 +86,31 @@ export default function App() {
   const [simulationMode, setSimulationMode] =
     useState<SimulationMode>("uniform")
 
-  // Calculate dynamic ELO ratings for all teams
-  const teamElos = useMemo(
-    () => calculateTeamElos(matches, currentLeague.teams),
-    [matches, currentLeague.teams]
+  // Dynamic ELO ratings for the probability table's rating badges. The ELO
+  // engine is a lazy chunk, so it is fetched only after ELO mode is selected
+  // rather than on first render.
+  const [teamElos, setTeamElos] = useState<Record<string, number> | undefined>(
+    undefined
   )
+  useEffect(() => {
+    if (simulationMode !== "elo") return
+
+    let cancelled = false
+    loadEloEngine()
+      .then((engine) => {
+        if (cancelled) return
+        setTeamElos(engine.calculateTeamElos(matches, currentLeague.teams))
+      })
+      .catch((error) => {
+        // Ratings are display-only, so a failed chunk load degrades to the
+        // fallback rating in the table instead of surfacing an error.
+        console.error("Failed to load ELO engine for ratings:", error)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [simulationMode, matches, currentLeague.teams])
 
   // Web Worker-powered Monte Carlo simulation with debouncing and cancellation
   const { probabilities, isSimulating, triggerSimulation } = useSimulation({
