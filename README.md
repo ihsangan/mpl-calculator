@@ -32,7 +32,7 @@ Supports **MPL Indonesia**, **MPL Philippines**, **MPL Malaysia**, and **MCC (EE
 | Concurrency  | Web Worker (`simulation.worker.ts`)            |
 | Image Export | html2canvas-pro (lazy-loaded)                  |
 | Data Sync    | Liquipedia OpenAPI v3 (`liquipedia.ts`)        |
-| CI/CD        | GitHub Actions (scheduled cron + manual)       |
+| CI/CD        | GitHub Actions (CI on push/PR + scheduled sync) |
 | Deployment   | Cloudflare Pages                               |
 
 ## Project Structure
@@ -63,7 +63,10 @@ Supports **MPL Indonesia**, **MPL Philippines**, **MPL Malaysia**, and **MCC (EE
 │   └── types/
 │       └── index.ts               # Shared TypeScript interfaces
 ├── liquipedia.ts                  # Liquipedia OpenAPI sync script
-└── .github/workflows/sync.yml    # Scheduled GitHub Actions workflow
+├── sync-mediawiki.ts / .py        # Legacy MediaWiki sync (local dev fallback)
+└── .github/workflows/
+    ├── ci.yml                     # Type check, lint, and build on push/PR
+    └── sync.yml                   # Scheduled Liquipedia data sync
 ```
 
 ## Getting Started
@@ -90,6 +93,9 @@ pnpm lint
 
 # Production build
 pnpm build
+
+# Production build with sourcemaps (opt-in; not shipped by default)
+BUILD_SOURCEMAP=true pnpm build
 ```
 
 ## Data Sync
@@ -126,11 +132,27 @@ pnpm sync --silent
 pnpm sync --dry-run
 
 # Sync from a local response JSON file
-pnpm sync --file match.json
+pnpm sync --file match.json --league id
 
 # Sync and auto commit + push
 pnpm sync --push
 ```
+
+> `--file` requires an explicit `--league <id|ph|my|mcc>`, because a saved API
+> response contains the matches of a single league page.
+
+### Legacy MediaWiki Sync (local development fallback)
+
+`sync-mediawiki.ts` and `sync-mediawiki.py` are kept for local development when
+you do not have access to the Liquipedia **LPDB / OpenAPI v3** (for example, no
+API key). They scrape the public MediaWiki `api.php` endpoint instead, which
+needs no credentials. They are not wired into any npm script or CI workflow —
+run them directly with `node sync-mediawiki.ts`. The CLI (`liquipedia.ts`) is
+the supported path for normal development and for CI.
+
+Note that `src/lib/mediawiki.ts` is a *separate* browser-side implementation
+used by the in-app "Live Sync" button; it also talks to `api.php` and has its
+own `TEAM_MAP`.
 
 ### Automated Sync (GitHub Actions)
 
@@ -138,12 +160,19 @@ A [workflow](.github/workflows/sync.yml) runs on a cron schedule during match da
 
 Make sure to add `LIQUIPEDIA_API_KEY` to your repository secrets (**Settings → Secrets and variables → Actions → Repository secrets**).
 
+### Continuous Integration
+
+A [CI workflow](.github/workflows/ci.yml) runs `pnpm typecheck`, `pnpm lint`, and
+`pnpm build` on every push to `main`/`dev` and on every pull request. There is no
+test runner, so these three commands are the verification gate.
+
 ### Sync Rules
 
 - Only **completed Bo3 matches** (where one team has reached 2 wins) are recorded. In-progress matches (`1-0`, `0-1`, `1-1`) remain `0-0` until decided.
 - Match date and time are parsed in ISO UTC format and stored on each match object.
 - `LAST_UPDATED` is set to the latest match timestamp, or current UTC time.
-- `CURRENT_WEEK` is auto-detected as the first week containing unplayed matches.
+- `CURRENT_WEEK` is auto-detected as the first week containing unplayed matches. Once every match is played, it falls back to the final week of the schedule.
+- Live sync verifies that a match ID still refers to the same fixture before applying a score. IDs are positional (`w{week}d{day}m{index}`), so if upstream reorders or reschedules matches the sync reports a conflict and applies nothing, rather than crediting a score to the wrong teams.
 
 ## License
 

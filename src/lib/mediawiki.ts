@@ -20,6 +20,20 @@ export interface MergeResult {
   mergedMatches: Match[]
   updatedCount: number
   changes: MatchScoreChange[]
+  /**
+   * Live entries that matched an existing match ID but disagreed on the teams
+   * involved. These are never applied, because writing the score would credit
+   * the wrong teams.
+   */
+  conflicts: MatchConflict[]
+}
+
+export interface MatchConflict {
+  id: string
+  localTeamA: string
+  localTeamB: string
+  liveTeamA: string
+  liveTeamB: string
 }
 
 export interface MediaWikiSyncResult {
@@ -309,6 +323,13 @@ export async function fetchMediaWikiLeague(
 
 /**
  * Merge live match scores into existing match list, preserving metadata such as date and postponed status.
+ *
+ * Match IDs are positional (`w{week}d{day}m{index}`) in both parsers, so they
+ * are only comparable when the upstream fixture list is unchanged. If a match
+ * is reordered, inserted, or rescheduled upstream, later IDs shift and an ID
+ * match can pair the wrong teams. Every ID match is therefore verified against
+ * the teams it claims to describe; mismatches are reported in `conflicts` and
+ * left untouched rather than writing a score onto the wrong fixture.
  */
 export function mergeMatchesWithLive(
   currentMatches: Match[],
@@ -321,10 +342,23 @@ export function mergeMatchesWithLive(
 
   let updatedCount = 0
   const changes: MatchScoreChange[] = []
+  const conflicts: MatchConflict[] = []
 
   const mergedMatches = currentMatches.map((existing) => {
     const live = liveMap.get(existing.id)
     if (!live) return existing
+
+    // The ID is positional, so confirm it still refers to the same fixture.
+    if (existing.teamA !== live.teamA || existing.teamB !== live.teamB) {
+      conflicts.push({
+        id: existing.id,
+        localTeamA: existing.teamA,
+        localTeamB: existing.teamB,
+        liveTeamA: live.teamA,
+        liveTeamB: live.teamB,
+      })
+      return existing
+    }
 
     const oldScore = `${existing.scoreA}-${existing.scoreB}`
     const newScore = `${live.scoreA}-${live.scoreB}`
@@ -353,5 +387,6 @@ export function mergeMatchesWithLive(
     mergedMatches,
     updatedCount,
     changes,
+    conflicts,
   }
 }

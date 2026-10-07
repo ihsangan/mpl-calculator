@@ -15,7 +15,6 @@ export interface UseLiquipediaSyncReturn {
   isSyncing: boolean
   syncStatus: SyncStatus
   lastSyncTime: Date | null
-  lastRevisionTime: string | null
   syncMessage: string | null
   autoSyncInterval: number
   pendingUpdate: MergeResult | null
@@ -36,7 +35,6 @@ export function useLiquipediaSync({
   const [isSyncing, setIsSyncing] = useState<boolean>(false)
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("idle")
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null)
-  const [lastRevisionTime, setLastRevisionTime] = useState<string | null>(null)
   const [syncMessage, setSyncMessage] = useState<string | null>(null)
   const [pendingUpdate, setPendingUpdate] = useState<MergeResult | null>(null)
 
@@ -111,7 +109,19 @@ export function useLiquipediaSync({
         )
 
         setLastSyncTime(new Date())
-        setLastRevisionTime(remoteData.timestamp)
+
+        // A mismatch between a local fixture and the live entry for the same
+        // positional ID means upstream reordered or rescheduled matches. Never
+        // write those scores; surface the problem so the user can re-import.
+        if (mergeResult.conflicts.length > 0) {
+          setPendingUpdate(null)
+          setSyncStatus("error")
+          setSyncMessage(
+            `${mergeResult.conflicts.length} fixture(s) no longer match Liquipedia's schedule order. ` +
+              `Scores were not applied. Reset to default or re-import the schedule to continue.`
+          )
+          return false
+        }
 
         // If user has custom score changes and didn't force overwrite, warn about conflict
         if (
@@ -210,7 +220,6 @@ export function useLiquipediaSync({
     isSyncing,
     syncStatus,
     lastSyncTime,
-    lastRevisionTime,
     syncMessage,
     autoSyncInterval,
     pendingUpdate,

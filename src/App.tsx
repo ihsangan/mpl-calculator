@@ -6,10 +6,9 @@ import {
   getWeekFromId,
   isMatchPlayed,
 } from "./lib/standings"
-import { calculateTeamElos } from "./lib/elo"
+import { loadEloEngine, type SimulationMode } from "./lib/simulation"
 import { useSimulation } from "./hooks/use-simulation"
 import { useLiquipediaSync } from "./hooks/use-liquipedia-sync"
-import type { SimulationMode } from "./lib/simulation"
 import { useTheme } from "./components/theme-provider"
 import { Header } from "./components/header"
 import { Footer } from "./components/footer"
@@ -35,6 +34,18 @@ const getLeagueFromUrl = (): string | null => {
   return slug && LEAGUES[slug] ? slug : null
 }
 
+// Restore the week the user last viewed for a league, falling back to that
+// league's current week. Shared by initial load, back/forward navigation, and
+// the league switcher so all three paths restore the same value instead of
+// clobbering the saved week with currentWeek.
+const getSavedWeek = (leagueId: string): number | "ALL" => {
+  const saved = localStorage.getItem(`mpl-week-${leagueId}`)
+  if (saved === "ALL") return "ALL"
+  const parsed = saved ? parseInt(saved, 10) : NaN
+  if (!isNaN(parsed) && parsed >= 1) return parsed
+  return LEAGUES[leagueId]?.currentWeek ?? 1
+}
+
 export default function App() {
   const [selectedLeague, setSelectedLeague] = useState<string>(() => {
     const fromUrl = getLeagueFromUrl()
@@ -49,17 +60,11 @@ export default function App() {
   const [matches, setMatches] = useState<Match[]>(() =>
     JSON.parse(JSON.stringify(currentLeague.allMatches))
   )
-  const [selectedWeek, setSelectedWeek] = useState<number | "ALL">(() => {
-    const savedLeague = localStorage.getItem("mpl-league")
-    // Only restore saved week if the URL league matches the localStorage league
-    if (savedLeague === selectedLeague) {
-      const savedWeek = localStorage.getItem("mpl-week")
-      if (savedWeek === "ALL") return "ALL"
-      const parsed = savedWeek ? parseInt(savedWeek, 10) : NaN
-      if (!isNaN(parsed) && parsed >= 1) return parsed
-    }
-    return currentLeague.currentWeek
-  })
+  const [selectedWeek, setSelectedWeek] = useState<number | "ALL">(() =>
+    // Week is remembered per league, so switching leagues does not carry one
+    // league's week selection into another.
+    getSavedWeek(selectedLeague)
+  )
 
   const [iterations, setIterations] = useState(() => {
     const params = new URLSearchParams(window.location.search)
@@ -81,11 +86,31 @@ export default function App() {
   const [simulationMode, setSimulationMode] =
     useState<SimulationMode>("uniform")
 
-  // Calculate dynamic ELO ratings for all teams
-  const teamElos = useMemo(
-    () => calculateTeamElos(matches, currentLeague.teams),
-    [matches, currentLeague.teams]
+  // Dynamic ELO ratings for the probability table's rating badges. The ELO
+  // engine is a lazy chunk, so it is fetched only after ELO mode is selected
+  // rather than on first render.
+  const [teamElos, setTeamElos] = useState<Record<string, number> | undefined>(
+    undefined
   )
+  useEffect(() => {
+    if (simulationMode !== "elo") return
+
+    let cancelled = false
+    loadEloEngine()
+      .then((engine) => {
+        if (cancelled) return
+        setTeamElos(engine.calculateTeamElos(matches, currentLeague.teams))
+      })
+      .catch((error) => {
+        // Ratings are display-only, so a failed chunk load degrades to the
+        // fallback rating in the table instead of surfacing an error.
+        console.error("Failed to load ELO engine for ratings:", error)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [simulationMode, matches, currentLeague.teams])
 
   // Web Worker-powered Monte Carlo simulation with debouncing and cancellation
   const { probabilities, isSimulating, triggerSimulation } = useSimulation({
@@ -113,7 +138,10 @@ export default function App() {
         if (!league) return
         setSelectedLeague(fromUrl)
         setMatches(JSON.parse(JSON.stringify(league.allMatches)))
-        setSelectedWeek(league.currentWeek)
+
+        // Restore the week the user last viewed for this league, mirroring the
+        // initial-load behaviour instead of always snapping to currentWeek.
+        setSelectedWeek(getSavedWeek(fromUrl))
       }
     }
 
@@ -135,12 +163,16 @@ export default function App() {
     [matches, currentLeague.teams, currentLeague.pointSystem]
   )
 
-  // Check if scores differ from official league schedule baseline
+  // Check if scores differ from official league schedule baseline.
+  // Compared by match ID rather than array position, so a reordered import or
+  // sync merge is not misreported as a score change (and vice versa).
   const hasScoreChanges = useMemo(() => {
     const initial = currentLeague.allMatches
     if (matches.length !== initial.length) return true
-    return matches.some((m, idx) => {
-      const initMatch = initial[idx]
+
+    const baseline = new Map(initial.map((m) => [m.id, m]))
+    return matches.some((m) => {
+      const initMatch = baseline.get(m.id)
       if (!initMatch) return true
       return m.scoreA !== initMatch.scoreA || m.scoreB !== initMatch.scoreB
     })
@@ -176,8 +208,8 @@ export default function App() {
   }, [selectedLeague])
 
   useEffect(() => {
-    localStorage.setItem("mpl-week", String(selectedWeek))
-  }, [selectedWeek])
+    localStorage.setItem(`mpl-week-${selectedLeague}`, String(selectedWeek))
+  }, [selectedWeek, selectedLeague])
 
   // Detect dark mode from HTML class and theme setting
   useEffect(() => {
@@ -203,7 +235,9 @@ export default function App() {
     if (!league) return
     setSelectedLeague(leagueId)
     setMatches(JSON.parse(JSON.stringify(league.allMatches)))
-    setSelectedWeek(league.currentWeek)
+    // Restore this league's own saved week instead of snapping to currentWeek,
+    // which would overwrite the saved value via the persistence effect.
+    setSelectedWeek(getSavedWeek(leagueId))
     // Push new URL so browser history tracks league switches
     window.history.pushState(null, "", `/${leagueId.toLowerCase()}`)
   }
@@ -307,7 +341,7 @@ export default function App() {
           onSyncNow={() => syncNow(hasScoreChanges)}
         />
 
-        <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
+        <main className="grid grid-cols-1 gap-8 xl:grid-cols-12">
           {/* Left Column: Standings & Probabilities */}
           <div className="space-y-8 xl:col-span-7">
             <StandingsTable
@@ -395,7 +429,7 @@ export default function App() {
               onDismissPendingUpdate={dismissPendingUpdate}
             />
           </div>
-        </div>
+        </main>
 
         {/* Attribution Footer */}
         <Footer />

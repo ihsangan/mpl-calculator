@@ -12,6 +12,14 @@ export default defineConfig({
     },
   },
   build: {
-    sourcemap: true,
+    // Sourcemaps expose the full source to anyone downloading the bundle, so
+    // they are opt-in for local debugging rather than shipped by default.
+    sourcemap: process.env.BUILD_SOURCEMAP === "true",
+  },
+  worker: {
+    // The simulation worker dynamically imports the ELO engine so it ships as
+    // a separate chunk. IIFE workers cannot code-split, which would pull the
+    // ELO code back into the worker bundle.
+    format: "es",
   },
 })

@@ -533,12 +533,25 @@ export function processLeagueMatches(
     currentWeek = parseInt(weekPart, 10)
   } else {
     // Fallback: first unplayed match in schedule order
+    let foundUnplayed = false
     for (const m of finalMatches) {
       if (m.scoreA === 0 && m.scoreB === 0) {
         const weekPart = m.id.split("d")[0].substring(1)
         currentWeek = parseInt(weekPart, 10)
+        foundUnplayed = true
         break
       }
+    }
+
+    // Every match is played (or only postponed matches remain): the season is
+    // complete, so land on the final week instead of leaving the default of 1.
+    if (!foundUnplayed) {
+      const lastWeek = finalMatches.reduce((max, m) => {
+        const weekPart = m.id.split("d")[0].substring(1)
+        const weekNum = parseInt(weekPart, 10)
+        return isNaN(weekNum) ? max : Math.max(max, weekNum)
+      }, 1)
+      currentWeek = lastWeek
     }
   }
 
@@ -721,7 +734,8 @@ Usage: node liquipedia.ts [options]
 
 Options:
   -l, --league <id|ph|my|mcc|all>  League to sync (default: all)
-  -f, --file <path>           Use local JSON response file (e.g. match.json) instead of API request
+  -f, --file <path>           Use local JSON response file (e.g. match.json) instead of API request.
+                              Requires an explicit --league, since a saved response covers one league.
   --apikey <key>              Custom Liquipedia API key (overrides LIQUIPEDIA_API_KEY env)
   -s, --silent                Run silently without console output
   --push                      Automatically git commit and push modified JSON files
@@ -745,15 +759,34 @@ Options:
 
   // Check if a local file was provided (e.g. match.json)
   if (args.file) {
+    // A saved API response belongs to exactly one wiki page, so `--league`
+    // must name the league explicitly. Defaulting to ID would silently write
+    // PH/MY/MCC fixtures into the Indonesia schedule file.
+    if (leagueArg === "all") {
+      console.error(
+        "Error: --file requires an explicit --league <id|ph|my|mcc>."
+      )
+      console.error(
+        "A saved API response contains matches for a single league, so it cannot be applied to all of them."
+      )
+      process.exit(1)
+    }
+
+    if (!LEAGUES_CONFIG[leagueArg]) {
+      console.error(
+        `Error: Unknown league '${leagueArg}'. Supported: ${Object.keys(LEAGUES_CONFIG).join(", ")}`
+      )
+      process.exit(1)
+    }
+
     const filePath = path.resolve(args.file)
     log(`Reading match data from local file: ${filePath}`)
     const fileContent = fs.readFileSync(filePath, "utf-8")
     const data = JSON.parse(fileContent) as ApiResponse
     const matches = data.result || []
 
-    const targetLeague = leaguesToSync[0] || "id"
     const result = processLeagueMatches(
-      targetLeague,
+      leagueArg,
       matches,
       Boolean(args["dry-run"]),
       isSilent

@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import type { Match, Team, Probability } from "../types"
-import { runMonteCarloSimulation, type SimulationMode } from "../lib/simulation"
+import {
+  runMonteCarloSimulation,
+  runMonteCarloSimulationAsync,
+  type SimulationMode,
+} from "../lib/simulation"
 import type {
   SimulationWorkerRequest,
   SimulationWorkerResponse,
@@ -31,7 +35,10 @@ export function useSimulation({
   trigger = 0,
   debounceMs = 40,
 }: UseSimulationOptions): UseSimulationReturn {
-  // Initial lightweight calculation for fast initial render without blocking main thread
+  // Initial lightweight calculation for fast initial render without blocking
+  // main thread. ELO mode cannot run synchronously because its engine is a
+  // lazy chunk, so it falls back to uniform scoring for this placeholder;
+  // the debounced effect replaces it with real ELO results moments later.
   const [probabilities, setProbabilities] = useState<
     Record<string, Probability>
   >(() =>
@@ -39,9 +46,8 @@ export function useSimulation({
       matches,
       teams,
       Math.min(iterations, 100),
-      mode,
-      pointSystem,
-      true
+      mode === "elo" ? "uniform" : mode,
+      pointSystem
     )
   )
 
@@ -65,11 +71,15 @@ export function useSimulation({
 
         worker.onmessage = (event: MessageEvent<SimulationWorkerResponse>) => {
           if (!isMountedRef.current) return
-          const { id, results } = event.data
+          const { id, results, error } = event.data
 
           // Only accept the latest requested simulation result
           if (id === requestIdRef.current) {
-            setProbabilities(results)
+            if (error) {
+              console.error("Simulation worker reported an error:", error)
+            } else if (results) {
+              setProbabilities(results)
+            }
             setIsSimulating(false)
           }
         }
@@ -100,6 +110,7 @@ export function useSimulation({
   // Execute simulation when inputs change (debounced)
   useEffect(() => {
     const currentId = ++requestIdRef.current
+    let cancelled = false
 
     const timer = setTimeout(() => {
       setIsSimulating(true)
@@ -115,22 +126,38 @@ export function useSimulation({
         }
         workerRef.current.postMessage(payload)
       } else {
-        // Fallback execution on main thread
-        const results = runMonteCarloSimulation(
+        // No Worker available. Run the same iterations in chunks so the main
+        // thread keeps rendering instead of freezing for the whole run.
+        void runMonteCarloSimulationAsync(
           matches,
           teams,
           iterations,
           mode,
-          pointSystem
+          pointSystem,
+          {
+            shouldCancel: () => cancelled || currentId !== requestIdRef.current,
+          }
         )
-        if (isMountedRef.current && currentId === requestIdRef.current) {
-          setProbabilities(results)
-          setIsSimulating(false)
-        }
+          .then((results) => {
+            if (results === null) return
+            if (isMountedRef.current && currentId === requestIdRef.current) {
+              setProbabilities(results)
+              setIsSimulating(false)
+            }
+          })
+          .catch((error) => {
+            // e.g. the ELO engine chunk failed to load. Clear the loading
+            // state so the UI is not stuck on "Simulating..." forever.
+            console.error("Simulation fallback failed:", error)
+            if (isMountedRef.current && currentId === requestIdRef.current) {
+              setIsSimulating(false)
+            }
+          })
       }
     }, debounceMs)
 
     return () => {
+      cancelled = true
       clearTimeout(timer)
     }
   }, [
