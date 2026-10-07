@@ -139,7 +139,7 @@ export const NextMatchCard: React.FC<NextMatchCardProps> = ({
               {teamALogo ? (
                 <img
                   src={teamALogo}
-                  alt={nextMatch.teamA}
+                  alt={`Logo of ${teamAName}`}
                   className="max-h-full max-w-full object-contain"
                   crossOrigin="anonymous"
                 />
@@ -176,7 +176,7 @@ export const NextMatchCard: React.FC<NextMatchCardProps> = ({
               {teamBLogo ? (
                 <img
                   src={teamBLogo}
-                  alt={nextMatch.teamB}
+                  alt={`Logo of ${teamBName}`}
                   className="max-h-full max-w-full object-contain"
                   crossOrigin="anonymous"
                 />

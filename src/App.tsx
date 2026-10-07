@@ -341,7 +341,7 @@ export default function App() {
           onSyncNow={() => syncNow(hasScoreChanges)}
         />
 
-        <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
+        <main className="grid grid-cols-1 gap-8 xl:grid-cols-12">
           {/* Left Column: Standings & Probabilities */}
           <div className="space-y-8 xl:col-span-7">
             <StandingsTable
@@ -429,7 +429,7 @@ export default function App() {
               onDismissPendingUpdate={dismissPendingUpdate}
             />
           </div>
-        </div>
+        </main>
 
         {/* Attribution Footer */}
         <Footer />

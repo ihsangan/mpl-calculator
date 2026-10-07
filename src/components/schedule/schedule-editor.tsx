@@ -529,7 +529,10 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                     onAutoSyncIntervalChange(parseInt(val, 10))
                   }
                 >
-                  <SelectTrigger className="h-7 text-xs">
+                  <SelectTrigger
+                    className="h-7 text-xs"
+                    aria-label="Auto-sync interval"
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

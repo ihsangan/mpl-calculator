@@ -33,6 +33,11 @@ export const MatchCard: React.FC<MatchCardProps> = ({
   const teamALogo = getTeamLogo(match.teamA, resolvedTheme === "dark", teams)
   const teamBLogo = getTeamLogo(match.teamB, resolvedTheme === "dark", teams)
 
+  const teamAName =
+    teams.find((t) => t.id === match.teamA)?.name || match.teamA
+  const teamBName =
+    teams.find((t) => t.id === match.teamB)?.name || match.teamB
+
   const teamAWon = played && match.scoreA > match.scoreB
   const teamBWon = played && match.scoreB > match.scoreA
 
@@ -68,7 +73,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
             {teamALogo ? (
               <img
                 src={teamALogo}
-                alt={match.teamA}
+                alt={`Logo of ${teamAName}`}
                 className="max-h-5 max-w-6 object-contain"
                 crossOrigin="anonymous"
               />
@@ -108,7 +113,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
             {teamBLogo ? (
               <img
                 src={teamBLogo}
-                alt={match.teamB}
+                alt={`Logo of ${teamBName}`}
                 className="max-h-5 max-w-6 object-contain"
                 crossOrigin="anonymous"
               />

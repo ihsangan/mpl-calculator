@@ -165,7 +165,7 @@ export const RankScenariosCard: React.FC<RankScenariosCardProps> = ({
                             {logoUrl ? (
                               <img
                                 src={logoUrl}
-                                alt={team.name}
+                                alt={`Logo of ${team.name}`}
                                 crossOrigin="anonymous"
                                 className="h-5 w-5 shrink-0 object-contain"
                                 loading="lazy"
