@@ -52,13 +52,21 @@ const POSSIBLE_SCORES = [
  * A subset is feasible when its total required wins can be routed through
  * distinct remaining matches; the answer is the largest feasible subset, plus
  * the competitors already at or above `tMin`.
+ *
+ * When `tieBreakViable` is provided, a competitor that can only *tie* `tMin`
+ * wins is only counted if it can provably out-rank the target on the
+ * game-difference tiebreaker. A non-viable competitor must clear `tMin + 1`
+ * wins to be counted at all. This keeps the bound sound (a counted competitor
+ * really can finish above the target) while avoiding false "worst rank"
+ * values that assume the target loses every tie it could actually win.
  */
 function maxCompetitorsReachingWins(
   targetTeamId: string,
   tMin: number,
   teams: Team[],
   baseWins: Map<string, number>,
-  unplayed: Match[]
+  unplayed: Match[],
+  tieBreakViable?: Map<string, boolean>
 ): number {
   const candidates: Array<{ id: string; needed: number }> = []
   let already = 0
@@ -66,15 +74,20 @@ function maxCompetitorsReachingWins(
   for (const u of teams) {
     if (u.id === targetTeamId) continue
     const uWins = baseWins.get(u.id) ?? 0
-    if (uWins >= tMin) {
-      already += 1
-      continue
-    }
     const uRem = unplayed.filter(
       (m) => m.teamA === u.id || m.teamB === u.id
     ).length
-    if (uWins + uRem >= tMin) {
-      candidates.push({ id: u.id, needed: tMin - uWins })
+    // Viable competitors count at a tie (tMin); others must strictly exceed.
+    const threshold =
+      tieBreakViable && !(tieBreakViable.get(u.id) ?? false)
+        ? tMin + 1
+        : tMin
+    if (uWins >= threshold) {
+      already += 1
+      continue
+    }
+    if (uWins + uRem >= threshold) {
+      candidates.push({ id: u.id, needed: threshold - uWins })
     }
   }
 
@@ -208,6 +221,7 @@ export const computeCertifiedRankBounds = (
   }
 
   const baseWins = new Map(base.map((r) => [r.id, r.matchW]))
+  const baseDiff = new Map(base.map((r) => [r.id, r.diff]))
   const maxGainPerMatch = pointSystem === "three_point" ? 3 : 1
 
   const remaining: Record<string, number> = {}
@@ -218,6 +232,29 @@ export const computeCertifiedRankBounds = (
     if (remaining[m.teamA] !== undefined) remaining[m.teamA] += 1
     if (remaining[m.teamB] !== undefined) remaining[m.teamB] += 1
   })
+
+  // Tiebreaker viability for the standard system: standing rules order by
+  // match wins, then game difference, then head-to-head. A competitor that
+  // can only tie the target's win tally must beat the target's worst-case
+  // game difference to actually finish above. The target's worst case is
+  // losing every remaining game 0-2; the competitor's best case is winning
+  // its required games 2-0 and losing any others 1-2. Head-to-head and
+  // alphabetical fallback are deliberately ignored, so a competitor whose
+  // best possible diff still trails the target's worst possible diff is the
+  // only kind ruled non-viable — a conservative, sound refinement.
+  const viabilityFor = (targetId: string): Map<string, boolean> => {
+    const map = new Map<string, boolean>()
+    const tMin = primaryOf(targetId)
+    const tWorstDiff = (baseDiff.get(targetId) ?? 0) - 2 * remaining[targetId]
+    for (const u of teams) {
+      if (u.id === targetId) continue
+      const uWins = baseWins.get(u.id) ?? 0
+      const neededWins = Math.max(0, tMin - uWins)
+      const uBestDiff = (baseDiff.get(u.id) ?? 0) + 3 * neededWins - remaining[u.id]
+      map.set(u.id, uBestDiff >= tWorstDiff)
+    }
+    return map
+  }
 
   const bounds: Record<string, { bestRank: number; worstRank: number }> = {}
 
@@ -235,13 +272,17 @@ export const computeCertifiedRankBounds = (
 
     let worstRank: number
     if (pointSystem === "standard" && unplayed.length > 0) {
-      // Conflict-aware worst rank: how many competitors can simultaneously reach >= tMin wins
+      // Conflict-aware worst rank: how many competitors can simultaneously
+      // out-rank the target. Competitors that can only tie the target's wins
+      // are still counted, but only when they can win the game-difference
+      // tiebreaker; others must reach tMin + 1 wins.
       const maxCompetitors = maxCompetitorsReachingWins(
         t.id,
         tMin,
         teams,
         baseWins,
-        unplayed
+        unplayed,
+        viabilityFor(t.id)
       )
       worstRank = 1 + maxCompetitors
     } else {
