@@ -1,7 +1,7 @@
 {
   "LEAGUE_NAME": "MPL Malaysia Season 18",
   "CURRENT_WEEK": 7,
-  "LAST_UPDATED": "2026-10-08T09:00:00Z",
+  "LAST_UPDATED": "2026-10-08T12:15:00Z",
   "ALL_MATCHES": [
     {
       "id": "w1d1m1",
@@ -351,7 +351,7 @@
       "id": "w7d1m2",
       "teamA": "SRG",
       "teamB": "FL",
-      "scoreA": 0,
+      "scoreA": 2,
       "scoreB": 0,
       "date": "2026-10-08T12:15:00.000Z"
     },
