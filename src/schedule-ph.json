@@ -1,7 +1,7 @@
 {
   "LEAGUE_NAME": "MPL Philippines Season 18",
   "CURRENT_WEEK": 8,
-  "LAST_UPDATED": "2026-10-08T09:00:00Z",
+  "LAST_UPDATED": "2026-10-08T11:30:00Z",
   "ALL_MATCHES": [
     {
       "id": "w1d1m1",
@@ -400,7 +400,7 @@
       "teamA": "TWIS",
       "teamB": "TLPH",
       "scoreA": 0,
-      "scoreB": 0,
+      "scoreB": 2,
       "date": "2026-10-08T09:00:00.000Z"
     },
     {
