@@ -256,19 +256,38 @@ export const computeCertifiedRankBounds = (
     return map
   }
 
+  // Tiebreaker-aware "guaranteed above" for the standard system: a
+  // competitor whose minimum wins already exceed the target's maximum is
+  // certainly above. A competitor whose minimum only ties the target's
+  // maximum is also certainly above when its worst-case game difference
+  // still beats the target's best-case game difference (head-to-head and
+  // alphabetical fallback ignored, so only a strict diff edge counts).
+  const guaranteedAboveFor = (tId: string): number => {
+    let count = 0
+    const tMax = primaryOf(tId) + remaining[tId] * maxGainPerMatch
+    const tBestDiff = (baseDiff.get(tId) ?? 0) + 2 * remaining[tId]
+    for (const u of teams) {
+      if (u.id === tId) continue
+      const uMin = primaryOf(u.id)
+      if (uMin > tMax) {
+        count += 1
+      } else if (
+        pointSystem === "standard" &&
+        uMin === tMax &&
+        (baseDiff.get(u.id) ?? 0) - 2 * remaining[u.id] > tBestDiff
+      ) {
+        count += 1
+      }
+    }
+    return count
+  }
+
   const bounds: Record<string, { bestRank: number; worstRank: number }> = {}
 
   teams.forEach((t) => {
     const tMin = primaryOf(t.id)
-    const tMax = tMin + remaining[t.id] * maxGainPerMatch
 
-    let guaranteedAbove = 0
-
-    teams.forEach((u) => {
-      if (u.id === t.id) return
-      const uMin = primaryOf(u.id)
-      if (uMin > tMax) guaranteedAbove += 1
-    })
+    const guaranteedAbove = guaranteedAboveFor(t.id)
 
     let worstRank: number
     if (pointSystem === "standard" && unplayed.length > 0) {
