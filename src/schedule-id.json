@@ -1,7 +1,7 @@
 {
   "LEAGUE_NAME": "MPL Indonesia Season 18",
   "CURRENT_WEEK": 8,
-  "LAST_UPDATED": "2026-10-08T13:15:00Z",
+  "LAST_UPDATED": "2026-10-09T13:00:00Z",
   "ALL_MATCHES": [
     {
       "id": "w1d1m1",
@@ -471,8 +471,8 @@
       "id": "w8d2m1",
       "teamA": "EVOS",
       "teamB": "ONIC",
-      "scoreA": 0,
-      "scoreB": 0,
+      "scoreA": 2,
+      "scoreB": 1,
       "date": "2026-10-09T07:00:00.000Z"
     },
     {
@@ -480,7 +480,7 @@
       "teamA": "RRQ",
       "teamB": "TLID",
       "scoreA": 0,
-      "scoreB": 0,
+      "scoreB": 2,
       "date": "2026-10-09T10:00:00.000Z"
     },
     {
@@ -488,7 +488,7 @@
       "teamA": "DEWA",
       "teamB": "NAVI",
       "scoreA": 0,
-      "scoreB": 0,
+      "scoreB": 2,
       "date": "2026-10-09T13:00:00.000Z"
     },
     {
