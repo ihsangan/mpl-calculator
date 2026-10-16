@@ -750,10 +750,17 @@ Options:
     if (!isSilent) console.log(...msgs)
   }
 
-  const leagueArg = (args.league || "all").toLowerCase()
-  const leaguesToSync =
-    leagueArg === "all" ? Object.keys(LEAGUES_CONFIG) : [leagueArg]
+  // Support multiple leagues via repeated --league or comma-separated list, e.g. --league id --league ph or --league id,ph
+  const leagueArgRaw = args.league || "all" let requestedLeagues: string[] = []
+    if (Array.isArray(leagueArgRaw)) {
+      requestedLeagues = leagueArgRaw.flatMap((s) => String(s).split(",").map((x) => x.trim().toLowerCase()) )
+    } else {
+      requestedLeagues = String(leagueArgRaw) .split(",") .map((x) => x.trim().toLowerCase())
+    }
+  // normalize empty -> all
+  if (requestedLeagues.length === 0) requestedLeagues = ["all"]
 
+const leaguesToSync = requestedLeagues.includes("all") ? Object.keys(LEAGUES_CONFIG) : requestedLeagues
   const apiKey = (args.apikey as string) || process.env.LIQUIPEDIA_API_KEY || ""
   const changedFiles: string[] = []
 
