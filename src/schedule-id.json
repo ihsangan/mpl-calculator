@@ -1,7 +1,7 @@
 {
   "LEAGUE_NAME": "MPL Indonesia Season 18",
   "CURRENT_WEEK": 9,
-  "LAST_UPDATED": "2026-10-11T13:00:00Z",
+  "LAST_UPDATED": "2026-10-16T11:00:00Z",
   "ALL_MATCHES": [
     {
       "id": "w1d1m1",
@@ -519,8 +519,8 @@
       "id": "w9d1m1",
       "teamA": "NAVI",
       "teamB": "RRQ",
-      "scoreA": 0,
-      "scoreB": 0,
+      "scoreA": 2,
+      "scoreB": 1,
       "date": "2026-10-16T08:00:00.000Z"
     },
     {
@@ -528,7 +528,7 @@
       "teamA": "GEEK",
       "teamB": "AE",
       "scoreA": 0,
-      "scoreB": 0,
+      "scoreB": 2,
       "date": "2026-10-16T11:00:00.000Z"
     },
     {
