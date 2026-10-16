@@ -770,6 +770,7 @@ const leaguesToSync = requestedLeagues.includes("all") ? Object.keys(LEAGUES_CON
     // A saved API response belongs to exactly one wiki page, so `--league`
     // must name the league explicitly. Defaulting to ID would silently write
     // PH/MY/MCC fixtures into the Indonesia schedule file.
+    const leagueArg = requestedLeagues.length === 1 ? requestedLeagues[0] : "all"
     if (leagueArg === "all") {
       console.error(
         "Error: --file requires an explicit --league <id|ph|my|mcc>."
