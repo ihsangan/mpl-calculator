@@ -29,4 +29,4 @@ jobs:
       - name: Run Sync Script
         env:
           LIQUIPEDIA_API_KEY: ${{ secrets.LIQUIPEDIA_API_KEY }}
-        run: node liquipedia.ts --push
+        run: node liquipedia.ts --league id,my --push
