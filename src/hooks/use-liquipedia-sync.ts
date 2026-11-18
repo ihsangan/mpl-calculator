@@ -22,6 +22,7 @@ export interface UseLiquipediaSyncReturn {
   setAutoSyncInterval: (intervalSeconds: number) => void
   applyPendingUpdate: () => void
   dismissPendingUpdate: () => void
+  resetSync: () => void
 }
 
 const STORAGE_KEY = "mpl-auto-sync"
@@ -67,6 +68,19 @@ export function useLiquipediaSync({
 
   const activeAbortControllerRef = useRef<AbortController | null>(null)
 
+  // Sync state belongs to one league. Callers invoke this when switching
+  // leagues: discard any pending merge (built from the old fixtures) and abort
+  // an in-flight request so it cannot write the old league's matches into the
+  // new one.
+  const resetSync = useCallback(() => {
+    activeAbortControllerRef.current?.abort()
+    setPendingUpdate(null)
+    setSyncMessage(null)
+    setSyncStatus("idle")
+    setLastSyncTime(null)
+    setIsSyncing(false)
+  }, [])
+
   const setAutoSyncInterval = useCallback((intervalSeconds: number) => {
     const clamped = Math.max(0, intervalSeconds)
     setAutoSyncIntervalState(clamped)
@@ -101,6 +115,10 @@ export function useLiquipediaSync({
           targetLeague,
           abortController.signal
         )
+
+        // A league switch aborts this request; do not merge its fixtures into
+        // whatever league is now selected.
+        if (abortController.signal.aborted) return false
 
         const currentMatchesList = matchesRef.current
         const mergeResult = mergeMatchesWithLive(
@@ -165,8 +183,12 @@ export function useLiquipediaSync({
         setSyncMessage(errMsg)
         return false
       } finally {
-        setIsSyncing(false)
-        activeAbortControllerRef.current = null
+        // A newer request (or a league-switch reset) may already own the
+        // controller; only clear state that still belongs to this call.
+        if (activeAbortControllerRef.current === abortController) {
+          activeAbortControllerRef.current = null
+          setIsSyncing(false)
+        }
       }
     },
     []
@@ -227,5 +249,6 @@ export function useLiquipediaSync({
     setAutoSyncInterval,
     applyPendingUpdate,
     dismissPendingUpdate,
+    resetSync,
   }
 }
