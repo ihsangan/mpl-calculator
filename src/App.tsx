@@ -129,26 +129,6 @@ export default function App() {
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Handle browser back/forward navigation
-  useEffect(() => {
-    const handlePopState = () => {
-      const fromUrl = getLeagueFromUrl()
-      if (fromUrl && fromUrl !== selectedLeague) {
-        const league = LEAGUES[fromUrl]
-        if (!league) return
-        setSelectedLeague(fromUrl)
-        setMatches(JSON.parse(JSON.stringify(league.allMatches)))
-
-        // Restore the week the user last viewed for this league, mirroring the
-        // initial-load behaviour instead of always snapping to currentWeek.
-        setSelectedWeek(getSavedWeek(fromUrl))
-      }
-    }
-
-    window.addEventListener("popstate", handlePopState)
-    return () => window.removeEventListener("popstate", handlePopState)
-  }, [selectedLeague])
-
   const { theme } = useTheme()
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light")
 
@@ -190,12 +170,35 @@ export default function App() {
     setAutoSyncInterval,
     applyPendingUpdate,
     dismissPendingUpdate,
+    resetSync,
   } = useLiquipediaSync({
     leagueId: selectedLeague,
     matches,
     hasScoreChanges,
     onUpdateMatches: setMatches,
   })
+
+  // Handle browser back/forward navigation. Defined after the sync hook so a
+  // league switch can clear sync state that belongs to the old league.
+  useEffect(() => {
+    const handlePopState = () => {
+      const fromUrl = getLeagueFromUrl()
+      if (fromUrl && fromUrl !== selectedLeague) {
+        const league = LEAGUES[fromUrl]
+        if (!league) return
+        resetSync()
+        setSelectedLeague(fromUrl)
+        setMatches(JSON.parse(JSON.stringify(league.allMatches)))
+
+        // Restore the week the user last viewed for this league, mirroring the
+        // initial-load behaviour instead of always snapping to currentWeek.
+        setSelectedWeek(getSavedWeek(fromUrl))
+      }
+    }
+
+    window.addEventListener("popstate", handlePopState)
+    return () => window.removeEventListener("popstate", handlePopState)
+  }, [selectedLeague, resetSync])
 
   // Check if all matches are unplayed
   const allMatchesUnplayed = useMemo(() => {
@@ -233,6 +236,7 @@ export default function App() {
   const handleLeagueChange = (leagueId: string) => {
     const league = LEAGUES[leagueId]
     if (!league) return
+    resetSync()
     setSelectedLeague(leagueId)
     setMatches(JSON.parse(JSON.stringify(league.allMatches)))
     // Restore this league's own saved week instead of snapping to currentWeek,
@@ -338,7 +342,7 @@ export default function App() {
           isSyncing={isSyncing}
           autoSyncInterval={autoSyncInterval}
           lastSyncTime={lastSyncTime}
-          onSyncNow={() => syncNow(hasScoreChanges)}
+          onSyncNow={() => syncNow()}
         />
 
         <main className="grid grid-cols-1 gap-8 xl:grid-cols-12">

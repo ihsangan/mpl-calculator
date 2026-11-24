@@ -48,6 +48,107 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 
+const VALID_SCORES = new Set(["0-0", "2-0", "2-1", "1-2", "0-2"])
+
+type ImportValidation = { data: ExportData } | { error: string }
+
+/**
+ * Validate an imported schedule before it replaces live state.
+ *
+ * Only the shape is checked here; unknown extra fields (date, postponed) are
+ * preserved. A file for another league skips the team-membership check because
+ * the caller confirms that mismatch separately.
+ */
+const validateImport = (
+  raw: unknown,
+  leagueId: string,
+  teams: Team[]
+): ImportValidation => {
+  if (!raw || typeof raw !== "object") {
+    return { error: "Invalid JSON: expected an object." }
+  }
+
+  const record = raw as Record<string, unknown>
+  if (!Array.isArray(record.matches)) {
+    return {
+      error: "Invalid JSON format. Expected an object with a 'matches' array.",
+    }
+  }
+  if (record.matches.length === 0) {
+    return { error: "The file contains no matches." }
+  }
+  if (record.leagueId !== undefined && typeof record.leagueId !== "string") {
+    return { error: "The file has an invalid leagueId." }
+  }
+
+  const sameLeague = !record.leagueId || record.leagueId === leagueId
+  const teamIds = new Set(teams.map((t) => t.id))
+  const seenIds = new Set<string>()
+
+  for (let i = 0; i < record.matches.length; i++) {
+    const item = record.matches[i]
+    if (!item || typeof item !== "object") {
+      return { error: `Match ${i + 1} is not an object.` }
+    }
+
+    const { id, teamA, teamB, scoreA, scoreB } = item as Record<string, unknown>
+
+    if (typeof id !== "string" || !/^w\d+(d\d+)?m\d+$/.test(id)) {
+      return { error: `Match ${i + 1} has an invalid id.` }
+    }
+    if (seenIds.has(id)) {
+      return { error: `Duplicate match id "${id}".` }
+    }
+    seenIds.add(id)
+
+    if (
+      typeof teamA !== "string" ||
+      !teamA ||
+      typeof teamB !== "string" ||
+      !teamB ||
+      teamA === teamB
+    ) {
+      return { error: `Match "${id}" must have two different teams.` }
+    }
+    if (sameLeague && (!teamIds.has(teamA) || !teamIds.has(teamB))) {
+      return {
+        error: `Match "${id}" uses a team that is not in this league.`,
+      }
+    }
+
+    const scores = [scoreA, scoreB]
+    if (scores.some((s) => typeof s !== "number" || !Number.isInteger(s))) {
+      return { error: `Match "${id}" has invalid scores.` }
+    }
+    const score = `${scoreA}-${scoreB}`
+    if (!VALID_SCORES.has(score)) {
+      return {
+        error: `Match "${id}" has score ${score}; expected 0-0, 2-0, 2-1, 1-2, or 0-2.`,
+      }
+    }
+  }
+
+  const week = record.selectedWeek
+  if (
+    week !== undefined &&
+    week !== "ALL" &&
+    !(typeof week === "number" && Number.isInteger(week) && week >= 1)
+  ) {
+    return { error: "The file has an invalid selectedWeek." }
+  }
+
+  if (
+    record.iterations !== undefined &&
+    (typeof record.iterations !== "number" ||
+      !Number.isFinite(record.iterations) ||
+      record.iterations <= 0)
+  ) {
+    return { error: "The file has an invalid iterations value." }
+  }
+
+  return { data: record as unknown as ExportData }
+}
+
 interface ScheduleEditorProps {
   leagueId: string
   matches: Match[]
@@ -172,21 +273,21 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string
-        const data = JSON.parse(content)
-        if (!data || !Array.isArray(data.matches)) {
-          setImportError(
-            "Invalid JSON format. Expected an object with a 'matches' array."
-          )
+        const parsed = JSON.parse(content)
+        const result = validateImport(parsed, leagueId, teams)
+        if ("error" in result) {
+          setImportError(result.error)
           return
         }
 
+        const data = result.data
         // Validate league ID match; if mismatched, confirm via dialog
         if (data.leagueId && data.leagueId !== leagueId) {
-          setImportMismatch({ data: data as ExportData, fileLeague: data.leagueId })
+          setImportMismatch({ data, fileLeague: data.leagueId })
           return
         }
 
-        applyImport(data as ExportData)
+        applyImport(data)
       } catch (error) {
         setImportError(
           "Error loading JSON file: " +
@@ -643,8 +744,8 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             <AlertDialogTitle>Different league file</AlertDialogTitle>
             <AlertDialogDescription>
               This file is from league '{importMismatch?.fileLeague}', but the
-              current league is '{leagueId}'. Importing may cause mismatches.
-              Do you want to proceed?
+              current league is '{leagueId}'. Importing may cause mismatches. Do
+              you want to proceed?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

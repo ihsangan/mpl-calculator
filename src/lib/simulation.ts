@@ -79,9 +79,7 @@ function maxCompetitorsReachingWins(
     ).length
     // Viable competitors count at a tie (tMin); others must strictly exceed.
     const threshold =
-      tieBreakViable && !(tieBreakViable.get(u.id) ?? false)
-        ? tMin + 1
-        : tMin
+      tieBreakViable && !(tieBreakViable.get(u.id) ?? false) ? tMin + 1 : tMin
     if (uWins >= threshold) {
       already += 1
       continue
@@ -233,51 +231,16 @@ export const computeCertifiedRankBounds = (
     if (remaining[m.teamB] !== undefined) remaining[m.teamB] += 1
   })
 
-  // Head-to-head result between two teams, from played matches only. Returns
-  // +1 if `a` leads the pairwise series (more H2H match wins, or tied there
-  // but ahead on H2H game difference), -1 if `b` leads, 0 if perfectly tied
-  // or no H2H played yet. Only meaningful for the standard system, where H2H
-  // is the third tiebreaker after wins and overall game difference.
-  const h2hResult = (a: string, b: string): number => {
-    let aMatchWins = 0
-    let bMatchWins = 0
-    let aGameDiff = 0
-    for (const m of played) {
-      const involves = (x: string) => m.teamA === x || m.teamB === x
-      if (!involves(a) || !involves(b)) continue
-      const aIsA = m.teamA === a
-      const aScore = aIsA ? m.scoreA : m.scoreB
-      const bScore = aIsA ? m.scoreB : m.scoreA
-      aGameDiff += aScore - bScore
-      if (aScore > bScore) aMatchWins += 1
-      else if (bScore > aScore) bMatchWins += 1
-    }
-    if (aMatchWins !== bMatchWins) return aMatchWins > bMatchWins ? 1 : -1
-    if (aGameDiff !== 0) return aGameDiff > 0 ? 1 : -1
-    return 0
-  }
-
-  // Whether every fixture between two teams has already been played. When so,
-  // their head-to-head comparison is final: no remaining match can change it,
-  // so the current H2H leader is guaranteed to win that tiebreaker.
-  const h2hIsFinal = (a: string, b: string): boolean =>
-    !unplayed.some((m) => {
-      const involves = (x: string) => m.teamA === x || m.teamB === x
-      return involves(a) && involves(b)
-    })
-
-  // Tiebreaker viability for the standard system: standing rules order by
-  // match wins, then game difference, then head-to-head. A competitor that
-  // can only tie the target's win tally must beat the target's worst-case
-  // game difference to actually finish above. The target's worst case is
-  // losing every remaining game 0-2; the competitor's best case is winning
-  // its required games 2-0 and losing any others 1-2.
+  // Tiebreaker viability for the standard system: a competitor that can tie
+  // the target's win tally must not finish behind it on game difference. The
+  // target's worst case is losing every remaining game 0-2; the competitor's
+  // best case is winning its required games 2-0 and losing any others 1-2.
   //
-  // One more refinement: when the competitor and target end up tied on wins
-  // AND on game difference, the result falls to head-to-head. If every H2H
-  // fixture between them is already played, that comparison is final, so a
-  // competitor trailing the H2H series can never out-rank the target at a
-  // tie — it is marked non-viable and must strictly exceed the win tally.
+  // Ties on BOTH wins and game difference are deliberately treated as viable.
+  // Head-to-head cannot be evaluated pairwise once three or more teams tie:
+  // the pairwise results can cycle (A beat B, B beat C, C beat A), so who
+  // finishes higher depends on sort order, not on a single decisive series.
+  // Counting such ties as possible keeps worstRank an upper bound.
   const viabilityFor = (targetId: string): Map<string, boolean> => {
     const map = new Map<string, boolean>()
     const tMin = primaryOf(targetId)
@@ -286,30 +249,21 @@ export const computeCertifiedRankBounds = (
       if (u.id === targetId) continue
       const uWins = baseWins.get(u.id) ?? 0
       const neededWins = Math.max(0, tMin - uWins)
-      const uBestDiff = (baseDiff.get(u.id) ?? 0) + 3 * neededWins - remaining[u.id]
-      let viable = uBestDiff >= tWorstDiff
-      // Tied on achievable wins and on game difference: falls to H2H. A
-      // decided H2H that the competitor loses rules the tie out entirely.
-      if (viable && uBestDiff === tWorstDiff) {
-        if (h2hIsFinal(u.id, targetId) && h2hResult(u.id, targetId) < 0) {
-          viable = false
-        }
-      }
-      map.set(u.id, viable)
+      const uBestDiff =
+        (baseDiff.get(u.id) ?? 0) + 3 * neededWins - remaining[u.id]
+      map.set(u.id, uBestDiff >= tWorstDiff)
     }
     return map
   }
 
-  // Tiebreaker-aware "guaranteed above" for the standard system: a
-  // competitor whose minimum wins already exceed the target's maximum is
-  // certainly above. A competitor whose minimum only ties the target's
-  // maximum is also certainly above when its worst-case game difference
-  // strictly beats the target's best-case game difference.
+  // "Guaranteed above" for the standard system: a competitor whose minimum
+  // wins already exceed the target's maximum is certainly above. A competitor
+  // whose minimum only ties the target's maximum is also certainly above when
+  // its worst-case game difference strictly beats the target's best case.
   //
-  // When wins and game difference can both end tied, the result falls to
-  // head-to-head. If every H2H fixture is already played, that comparison is
-  // final: the H2H leader is guaranteed to win the tiebreaker, so it counts
-  // as certainly above even though wins and difference can still tie.
+  // Equal wins AND equal game difference is never counted: that falls to
+  // head-to-head, which is ambiguous in multi-team ties (see viabilityFor),
+  // so treating it as certain would overstate bestRank.
   const guaranteedAboveFor = (tId: string): number => {
     let count = 0
     const tMax = primaryOf(tId) + remaining[tId] * maxGainPerMatch
@@ -319,16 +273,12 @@ export const computeCertifiedRankBounds = (
       const uMin = primaryOf(u.id)
       if (uMin > tMax) {
         count += 1
-      } else if (pointSystem === "standard" && uMin === tMax) {
-        if ((baseDiff.get(u.id) ?? 0) - 2 * remaining[u.id] > tBestDiff) {
-          count += 1
-        } else if (
-          (baseDiff.get(u.id) ?? 0) - 2 * remaining[u.id] === tBestDiff &&
-          h2hIsFinal(u.id, tId) &&
-          h2hResult(u.id, tId) > 0
-        ) {
-          count += 1
-        }
+      } else if (
+        pointSystem === "standard" &&
+        uMin === tMax &&
+        (baseDiff.get(u.id) ?? 0) - 2 * remaining[u.id] > tBestDiff
+      ) {
+        count += 1
       }
     }
     return count
